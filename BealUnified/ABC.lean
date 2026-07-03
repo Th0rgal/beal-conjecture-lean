@@ -40,6 +40,20 @@ def ABCConjecture : Prop :=
         ((max (max a b) c : ℕ) : ℝ) ≤
           K * (((rad (a * b * c) : ℕ) : ℝ) ^ (1 + ε))
 
+/--
+The ABC inequality for one fixed exponent `ε` and constant `K`.
+
+This is the local assumption actually consumed by the Beal reduction below;
+`ABCConjecture` only supplies such a `K` existentially for each positive `ε`.
+-/
+def ABCBoundFor (ε K : ℝ) : Prop :=
+  0 < K ∧
+    ∀ a b c : ℕ,
+      0 < a → 0 < b → 0 < c →
+      a.Coprime b → a + b = c →
+      ((max (max a b) c : ℕ) : ℝ) ≤
+        K * (((rad (a * b * c) : ℕ) : ℝ) ^ (1 + ε))
+
 /-- A primitive Beal counterexample. -/
 def PrimitiveBealCounterexample (A B C x y z : ℕ) : Prop :=
   Solution A B C x y z ∧ Nat.gcd (Nat.gcd A B) C = 1
@@ -128,5 +142,34 @@ lemma abc_applies_to_primitive_beal_counterexample
     (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
       (lt_of_lt_of_le (by decide) sol.hy) sol.eqn hPrim)
     sol.eqn
+
+/--
+The exact ABC-quality threshold needed by the existing Beal scaffold.
+
+For a fixed ABC exponent `ε` and constant `K`, any primitive Beal
+counterexample must satisfy the displayed ABC inequality on the power triple
+`(A ^ x, B ^ y, C ^ z)`.  Therefore a strict violation of that inequality
+rules out that primitive counterexample.  This theorem is conditional only on
+the fixed bound `ABCBoundFor ε K`; it does not assert `ABCConjecture`.
+-/
+theorem not_primitive_beal_counterexample_of_abc_quality_threshold
+    {A B C x y z : ℕ} {ε K : ℝ}
+    (hBound : ABCBoundFor ε K)
+    (hThreshold :
+      K * (((rad ((A ^ x) * (B ^ y) * (C ^ z)) : ℕ) : ℝ) ^ (1 + ε)) <
+        ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ)) :
+    ¬ PrimitiveBealCounterexample A B C x y z := by
+  intro hCounter
+  rcases hCounter with ⟨sol, hPrim⟩
+  rcases hBound with ⟨_hK, hBound'⟩
+  have hABCOnPowers :
+      ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ) ≤
+        K * (((rad ((A ^ x) * (B ^ y) * (C ^ z)) : ℕ) : ℝ) ^ (1 + ε)) :=
+    hBound' (A ^ x) (B ^ y) (C ^ z)
+      (pow_pos sol.posA x) (pow_pos sol.posB y) (pow_pos sol.posC z)
+      (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
+        (lt_of_lt_of_le (by decide) sol.hy) sol.eqn hPrim)
+      sol.eqn
+  exact (not_lt_of_ge hABCOnPowers) hThreshold
 
 end BealUnified
