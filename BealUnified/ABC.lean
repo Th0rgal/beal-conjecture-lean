@@ -70,6 +70,59 @@ def ABCBoundFor (ε K : ℝ) : Prop :=
 def PrimitiveBealCounterexample (A B C x y z : ℕ) : Prop :=
   Solution A B C x y z ∧ Nat.gcd (Nat.gcd A B) C = 1
 
+/--
+For a positive Beal solution, the radical of the base product raised to the
+minimum exponent is bounded by the cube of the largest Beal power.
+
+The primitive hypothesis is present for the counterexample-facing API; the
+inequality itself only uses positivity and the exponent bounds in `Solution`.
+-/
+lemma rad_base_pow_min_le_max_cube
+    {A B C x y z : ℕ}
+    (hCounter : PrimitiveBealCounterexample A B C x y z) :
+    (rad (A * B * C)) ^ (min x (min y z)) ≤
+      (max (max (A ^ x) (B ^ y)) (C ^ z)) ^ 3 := by
+  rcases hCounter with ⟨sol, _hPrim⟩
+  let m := min x (min y z)
+  let M := max (max (A ^ x) (B ^ y)) (C ^ z)
+  have hABCpos : 0 < A * B * C := mul_pos (mul_pos sol.posA sol.posB) sol.posC
+  have hRadLe : rad (A * B * C) ≤ A * B * C :=
+    Nat.le_of_dvd hABCpos (rad_dvd (A * B * C))
+  have hmX : m ≤ x := Nat.min_le_left x (min y z)
+  have hmY : m ≤ y :=
+    le_trans (Nat.min_le_right x (min y z)) (Nat.min_le_left y z)
+  have hmZ : m ≤ z :=
+    le_trans (Nat.min_le_right x (min y z)) (Nat.min_le_right y z)
+  have hA1 : 1 ≤ A := sol.posA
+  have hB1 : 1 ≤ B := sol.posB
+  have hC1 : 1 ≤ C := sol.posC
+  have hAm : A ^ m ≤ A ^ x := pow_le_pow_right₀ hA1 hmX
+  have hBm : B ^ m ≤ B ^ y := pow_le_pow_right₀ hB1 hmY
+  have hCm : C ^ m ≤ C ^ z := pow_le_pow_right₀ hC1 hmZ
+  have hPowProd :
+      (A * B * C) ^ m ≤ A ^ x * B ^ y * C ^ z := by
+    calc
+      (A * B * C) ^ m = A ^ m * B ^ m * C ^ m := by
+        rw [mul_pow, mul_pow]
+      _ ≤ A ^ x * B ^ y * C ^ z :=
+        Nat.mul_le_mul (Nat.mul_le_mul hAm hBm) hCm
+  have hRadPow : (rad (A * B * C)) ^ m ≤ (A * B * C) ^ m :=
+    Nat.pow_le_pow_left hRadLe m
+  have hAxM : A ^ x ≤ M :=
+    le_trans (Nat.le_max_left (A ^ x) (B ^ y))
+      (Nat.le_max_left (max (A ^ x) (B ^ y)) (C ^ z))
+  have hByM : B ^ y ≤ M :=
+    le_trans (Nat.le_max_right (A ^ x) (B ^ y))
+      (Nat.le_max_left (max (A ^ x) (B ^ y)) (C ^ z))
+  have hCzM : C ^ z ≤ M :=
+    Nat.le_max_right (max (A ^ x) (B ^ y)) (C ^ z)
+  have hPowerProdMax : A ^ x * B ^ y * C ^ z ≤ M ^ 3 := by
+    calc
+      A ^ x * B ^ y * C ^ z ≤ M * M * M :=
+        Nat.mul_le_mul (Nat.mul_le_mul hAxM hByM) hCzM
+      _ = M ^ 3 := by ring
+  exact le_trans hRadPow (le_trans hPowProd hPowerProdMax)
+
 lemma common_prime_dvd_C_of_dvd_A_B
     {A B C x y z : ℕ}
     (hx : 0 < x) (hy : 0 < y)
