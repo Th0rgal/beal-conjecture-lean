@@ -2,6 +2,7 @@ import BealUnified.Statement
 import BealUnified.FLTReduction
 import BealUnified.Parity
 import BealUnified.Valuations
+import BealUnified.Research.BR20
 import BealUnified.ABC
 import BealUnified.Computational
 import BealUnified.BealConjecture
