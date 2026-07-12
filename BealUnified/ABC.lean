@@ -288,13 +288,13 @@ theorem max_power_sub_six_le_abc_constant_pow_min
   let m := min x (min y z)
   let M : ℕ := max (max (A ^ x) (B ^ y)) (C ^ z)
   let R : ℕ := rad (A * B * C)
+  rcases hBound with ⟨hK, hBound'⟩
   have hMpos : 0 < (M : ℝ) := by
     have hAxM : A ^ x ≤ M := by
       dsimp [M]
       exact le_trans (Nat.le_max_left _ _) (Nat.le_max_left _ _)
     exact_mod_cast lt_of_lt_of_le (pow_pos sol.posA x) hAxM
   have hABC : (M : ℝ) ≤ K * (R : ℝ) ^ 2 := by
-    rcases hBound with ⟨_hK, hBound'⟩
     have h := hBound' (A ^ x) (B ^ y) (C ^ z)
       (pow_pos sol.posA x) (pow_pos sol.posB y) (pow_pos sol.posC z)
       (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
@@ -320,11 +320,12 @@ theorem max_power_sub_six_le_abc_constant_pow_min
         pow_le_pow_left₀ (le_of_lt hMpos) hABC m
       _ = K ^ m * ((R : ℝ) ^ m) ^ 2 := by ring
       _ ≤ K ^ m * ((M : ℝ) ^ 3) ^ 2 := by
-        apply mul_le_mul_of_nonneg_left _ (by positivity)
+        apply mul_le_mul_of_nonneg_left _ (by positivity : 0 ≤ K ^ m)
         rw [pow_two, pow_two]
         exact mul_self_le_mul_self (by positivity) hRadBridge
       _ = K ^ m * (M : ℝ) ^ 6 := by ring
   rw [show m = (m - 6) + 6 by omega, pow_add] at hMain
-  exact le_of_mul_le_mul_right hMain (pow_pos hMpos 6)
+  simpa only [M, m] using
+    le_of_mul_le_mul_right hMain (pow_pos hMpos 6)
 
 end BealUnified
