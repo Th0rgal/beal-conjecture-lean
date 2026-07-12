@@ -271,4 +271,56 @@ theorem not_primitive_beal_counterexample_of_abc_quality_threshold_rad_base
   rw [hRad] at hABCOnPowers
   exact (not_lt_of_ge hABCOnPowers) hThreshold
 
+/--
+At the fixed ABC exponent `ε = 1`, the radical bridge forces a quantitative
+power bound for any primitive Beal counterexample whose minimum exponent is at
+least seven.
+-/
+theorem max_power_sub_six_le_abc_constant_pow_min
+    {A B C x y z : ℕ} {K : ℝ}
+    (hBound : ABCBoundFor 1 K)
+    (hCounter : PrimitiveBealCounterexample A B C x y z)
+    (hm : 7 ≤ min x (min y z)) :
+    ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ) ^
+        (min x (min y z) - 6) ≤
+      K ^ min x (min y z) := by
+  rcases hCounter with ⟨sol, hPrim⟩
+  let m := min x (min y z)
+  let M : ℕ := max (max (A ^ x) (B ^ y)) (C ^ z)
+  let R : ℕ := rad (A * B * C)
+  have hMpos : 0 < (M : ℝ) := by
+    exact_mod_cast lt_of_lt_of_le (pow_pos sol.posA x) (Nat.le_max_of_le_left (Nat.le_max_left _ _))
+  have hABC : (M : ℝ) ≤ K * (R : ℝ) ^ 2 := by
+    rcases hBound with ⟨_hK, hBound'⟩
+    have h := hBound' (A ^ x) (B ^ y) (C ^ z)
+      (pow_pos sol.posA x) (pow_pos sol.posB y) (pow_pos sol.posC z)
+      (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
+        (lt_of_lt_of_le (by decide) sol.hy) sol.eqn hPrim)
+      sol.eqn
+    have hRad :
+        rad ((A ^ x) * (B ^ y) * (C ^ z)) = R := by
+      dsimp [R]
+      exact rad_power_triple_mul sol.posA.ne' sol.posB.ne' sol.posC.ne'
+        (lt_of_lt_of_le (by decide) sol.hx).ne'
+        (lt_of_lt_of_le (by decide) sol.hy).ne'
+        (lt_of_lt_of_le (by decide) sol.hz).ne'
+    dsimp [M]
+    rw [hRad] at h
+    norm_num at h ⊢
+    exact h
+  have hRadBridge : (R : ℝ) ^ m ≤ (M : ℝ) ^ 3 := by
+    exact_mod_cast rad_base_pow_min_le_max_cube ⟨sol, hPrim⟩
+  have hm6 : 6 ≤ m := le_trans (by omega) hm
+  have hMain : (M : ℝ) ^ m ≤ K ^ m * (M : ℝ) ^ 6 := by
+    calc
+      (M : ℝ) ^ m ≤ (K * (R : ℝ) ^ 2) ^ m :=
+        pow_le_pow_left₀ (le_of_lt hMpos) hABC m
+      _ = K ^ m * ((R : ℝ) ^ m) ^ 2 := by ring
+      _ ≤ K ^ m * ((M : ℝ) ^ 3) ^ 2 := by
+        gcongr
+        exact pow_le_pow_left₀ (sq_nonneg ((R : ℝ) ^ m)) hRadBridge 2
+      _ = K ^ m * (M : ℝ) ^ 6 := by ring
+  rw [show m = (m - 6) + 6 by omega, pow_add] at hMain
+  exact (mul_le_mul_right hMpos).mp hMain
+
 end BealUnified
