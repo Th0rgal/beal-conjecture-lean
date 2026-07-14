@@ -1,4 +1,3 @@
 /.lake/
 /build/
 *.olean
-lake-manifest.json
