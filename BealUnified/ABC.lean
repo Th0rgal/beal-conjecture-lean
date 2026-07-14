@@ -30,6 +30,18 @@ lemma rad_dvd (n : ℕ) : rad n ∣ n := by
 lemma rad_pow_of_pos (n k : ℕ) (hk : k ≠ 0) : rad (n ^ k) = rad n := by
   simp [rad, Nat.primeFactors_pow n hk]
 
+lemma rad_power_triple_mul
+    {A B C x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    rad ((A ^ x) * (B ^ y) * (C ^ z)) = rad (A * B * C) := by
+  unfold rad
+  rw [Nat.primeFactors_mul
+      (mul_ne_zero (pow_ne_zero x hA) (pow_ne_zero y hB)) (pow_ne_zero z hC),
+    Nat.primeFactors_mul (pow_ne_zero x hA) (pow_ne_zero y hB),
+    Nat.primeFactors_pow A hx, Nat.primeFactors_pow B hy, Nat.primeFactors_pow C hz,
+    Nat.primeFactors_mul (mul_ne_zero hA hB) hC, Nat.primeFactors_mul hA hB]
+
 /-- Oesterle-Masser ABC, stated for positive coprime natural triples. -/
 def ABCConjecture : Prop :=
   ∀ ε : ℝ, 0 < ε →
@@ -39,6 +51,20 @@ def ABCConjecture : Prop :=
         a.Coprime b → a + b = c →
         ((max (max a b) c : ℕ) : ℝ) ≤
           K * (((rad (a * b * c) : ℕ) : ℝ) ^ (1 + ε))
+
+/--
+The ABC inequality for one fixed exponent `ε` and constant `K`.
+
+This is the local assumption actually consumed by the Beal reduction below;
+`ABCConjecture` only supplies such a `K` existentially for each positive `ε`.
+-/
+def ABCBoundFor (ε K : ℝ) : Prop :=
+  0 < K ∧
+    ∀ a b c : ℕ,
+      0 < a → 0 < b → 0 < c →
+      a.Coprime b → a + b = c →
+      ((max (max a b) c : ℕ) : ℝ) ≤
+        K * (((rad (a * b * c) : ℕ) : ℝ) ^ (1 + ε))
 
 /-- A primitive Beal counterexample. -/
 def PrimitiveBealCounterexample (A B C x y z : ℕ) : Prop :=
@@ -128,5 +154,68 @@ lemma abc_applies_to_primitive_beal_counterexample
     (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
       (lt_of_lt_of_le (by decide) sol.hy) sol.eqn hPrim)
     sol.eqn
+
+/--
+The exact ABC-quality threshold needed by the existing Beal scaffold.
+
+For a fixed ABC exponent `ε` and constant `K`, any primitive Beal
+counterexample must satisfy the displayed ABC inequality on the power triple
+`(A ^ x, B ^ y, C ^ z)`.  Therefore a strict violation of that inequality
+rules out that primitive counterexample.  This theorem is conditional only on
+the fixed bound `ABCBoundFor ε K`; it does not assert `ABCConjecture`.
+-/
+theorem not_primitive_beal_counterexample_of_abc_quality_threshold
+    {A B C x y z : ℕ} {ε K : ℝ}
+    (hBound : ABCBoundFor ε K)
+    (hThreshold :
+      K * (((rad ((A ^ x) * (B ^ y) * (C ^ z)) : ℕ) : ℝ) ^ (1 + ε)) <
+        ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ)) :
+    ¬ PrimitiveBealCounterexample A B C x y z := by
+  intro hCounter
+  rcases hCounter with ⟨sol, hPrim⟩
+  rcases hBound with ⟨_hK, hBound'⟩
+  have hABCOnPowers :
+      ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ) ≤
+        K * (((rad ((A ^ x) * (B ^ y) * (C ^ z)) : ℕ) : ℝ) ^ (1 + ε)) :=
+    hBound' (A ^ x) (B ^ y) (C ^ z)
+      (pow_pos sol.posA x) (pow_pos sol.posB y) (pow_pos sol.posC z)
+      (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
+        (lt_of_lt_of_le (by decide) sol.hy) sol.eqn hPrim)
+      sol.eqn
+  exact (not_lt_of_ge hABCOnPowers) hThreshold
+
+/--
+Cleaner ABC-quality threshold using the radical of the base triple.
+
+For positive Beal exponents, the radical of the ABC power triple has the same
+prime support as `A * B * C`, so the BR-18 threshold can be stated with
+`rad (A * B * C)`.
+-/
+theorem not_primitive_beal_counterexample_of_abc_quality_threshold_rad_base
+    {A B C x y z : ℕ} {ε K : ℝ}
+    (hBound : ABCBoundFor ε K)
+    (hThreshold :
+      K * (((rad (A * B * C) : ℕ) : ℝ) ^ (1 + ε)) <
+        ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ)) :
+    ¬ PrimitiveBealCounterexample A B C x y z := by
+  intro hCounter
+  rcases hCounter with ⟨sol, hPrim⟩
+  rcases hBound with ⟨_hK, hBound'⟩
+  have hABCOnPowers :
+      ((max (max (A ^ x) (B ^ y)) (C ^ z) : ℕ) : ℝ) ≤
+        K * (((rad ((A ^ x) * (B ^ y) * (C ^ z)) : ℕ) : ℝ) ^ (1 + ε)) :=
+    hBound' (A ^ x) (B ^ y) (C ^ z)
+      (pow_pos sol.posA x) (pow_pos sol.posB y) (pow_pos sol.posC z)
+      (coprime_pow_A_B_of_primitive (lt_of_lt_of_le (by decide) sol.hx)
+        (lt_of_lt_of_le (by decide) sol.hy) sol.eqn hPrim)
+      sol.eqn
+  have hRad :
+      rad ((A ^ x) * (B ^ y) * (C ^ z)) = rad (A * B * C) :=
+    rad_power_triple_mul sol.posA.ne' sol.posB.ne' sol.posC.ne'
+      (lt_of_lt_of_le (by decide) sol.hx).ne'
+      (lt_of_lt_of_le (by decide) sol.hy).ne'
+      (lt_of_lt_of_le (by decide) sol.hz).ne'
+  rw [hRad] at hABCOnPowers
+  exact (not_lt_of_ge hABCOnPowers) hThreshold
 
 end BealUnified

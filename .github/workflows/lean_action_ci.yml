@@ -18,4 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
-      - uses: leanprover-community/docgen-action@v1
+      # docgen-action@v1 only builds and deploys docs on push events, and its
+      # Pages deployment 404s while GitHub Pages is disabled on this repo.
+      # Re-add `leanprover-community/docgen-action@v1` once Pages is enabled.
