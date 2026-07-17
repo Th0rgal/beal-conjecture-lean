@@ -23,7 +23,7 @@ checks every CUDA repetition. Neither layer is a Lean proof.
 - PARI/GP: 2.15.4, pthread build; Python binding `cypari2` 2.1.4
 - SymPy: 1.14.0 for the separately implemented complete-domain reproduction
 - Producer commit: `4795b061133f7a24e6c522a2d9f64ad823259895`
-- Verification-checker commit: `b038d1a9d3befd7eee96dfa83593d61288b99aa3`
+- Verification-checker commit: `c56af4efa7a6eb71b4114706cc569b0f96385b14`
 - Run ID: `beal-dgx-20260717-4795b06`
 - Resident model: `gemma-4` through `vllm-backend`
 

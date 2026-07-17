@@ -7,13 +7,13 @@
   "lte_counterexamples_replayed": 3,
   "primality_checks": 1974,
   "provenance": {
-    "produced_at_utc": "2026-07-17T14:37:49.908947+00:00",
+    "produced_at_utc": "2026-07-17T14:51:09.356223+00:00",
     "producer": "verify_results.py",
-    "producer_sha256": "d80d94172d478c95443e5c22d839f58ee3854a1002b4063916bf323df6bf1572",
-    "run_id": "beal-dgx-verification-b038d1a",
-    "run_started_at_utc": "2026-07-17T14:37:33Z",
+    "producer_sha256": "5b5f9c823be5b12e3401a91254ac097fa718f673df9f5b36deccf11cc788f10c",
+    "run_id": "beal-dgx-verification-c56af4e",
+    "run_started_at_utc": "2026-07-17T14:50:26Z",
     "source_branch": "research/dgx-computational-experiments-20260717",
-    "source_commit": "b038d1a9d3befd7eee96dfa83593d61288b99aa3",
+    "source_commit": "c56af4efa7a6eb71b4114706cc569b0f96385b14",
     "source_tree_clean": true
   },
   "run_id": "beal-dgx-20260717-4795b06",
