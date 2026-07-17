@@ -34,6 +34,12 @@ EXPECTED_PRODUCERS = {
 HEX_40 = re.compile(r"[0-9a-f]{40}")
 HEX_64 = re.compile(r"[0-9a-f]{64}")
 
+# These are the fixed inputs of the documented GB10 differential calibration,
+# rather than merely internally consistent fields in an artifact.
+CUDA_CALIBRATION_COUNT = 4_000_000
+CUDA_CALIBRATION_EXPONENT = 65_537
+CUDA_CALIBRATION_MODULUS = 2_147_483_647
+
 
 def require(condition: object, message: str) -> None:
     if not condition:
@@ -91,6 +97,17 @@ def load_json(path: Path) -> dict:
         raise VerificationError(f"invalid artifact {path.name}: {exc}") from exc
     require(isinstance(value, dict), f"artifact {path.name} is not a JSON object")
     return value
+
+
+def vllm_health_is_ok(value: object) -> bool:
+    """Accept only the recorded successful JSON response from vLLM's health API."""
+    if not isinstance(value, str):
+        return False
+    try:
+        health = json.loads(value)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(health, dict) and health.get("status") == "ok"
 
 
 def git_blob(repo_root: Path, commit: str, path: str) -> bytes:
@@ -275,6 +292,12 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
             raise VerificationError("CUDA digest vector missing")
         require(all(value == cuda.get("cpu_output_digest") for value in repeat_digests),
                 "CUDA repeat digest differs from CPU reference")
+        require(cuda.get("count") == CUDA_CALIBRATION_COUNT,
+                "unexpected CUDA calibration count")
+        require(cuda.get("exponent") == CUDA_CALIBRATION_EXPONENT,
+                "unexpected CUDA calibration exponent")
+        require(cuda.get("modulus") == CUDA_CALIBRATION_MODULUS,
+                "unexpected CUDA calibration modulus")
         require(cuda.get("compute_capability") == "12.1", "unexpected CUDA capability")
         cuda_checked = True
 
@@ -290,6 +313,10 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
                 "shared-residency probe did not record CUDA OOM")
         require(shared.get("vllm_container_status_before") == "running",
                 "shared-residency probe did not observe running vLLM")
+        require(shared.get("vllm_container_status_after") == "running",
+                "shared-residency probe did not leave vLLM running")
+        require(vllm_health_is_ok(shared.get("vllm_health_after")),
+                "shared-residency probe did not leave vLLM healthy")
         shared_checked = True
 
     require(independent.get("verification") == "passed", "independent reproduction did not pass")

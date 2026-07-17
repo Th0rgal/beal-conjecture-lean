@@ -66,6 +66,31 @@ def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     assert report["shared_residency_failure_checked"] is False
 
 
+@pytest.mark.parametrize(
+    ("artifact", "field", "bad_value"),
+    [
+        ("cuda_modexp_calibration.json", "count", 4_000_001),
+        ("cuda_modexp_calibration.json", "exponent", 65_539),
+        ("cuda_modexp_calibration.json", "modulus", 2_147_483_629),
+        ("gpu_shared_residency_probe.json", "vllm_container_status_after", "exited"),
+        ("gpu_shared_residency_probe.json", "vllm_health_after", "unhealthy"),
+    ],
+)
+def test_verifier_rejects_mutated_required_gpu_calibration_or_post_probe_state(
+    tmp_path, artifact, field, bad_value
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    artifact_path = results / artifact
+    value = json.loads(artifact_path.read_text())
+    value[field] = bad_value
+    artifact_path.write_text(json.dumps(value))
+
+    with pytest.raises(VerificationError):
+        check(results, cuda_policy="required", shared_policy="required")
+
+
 def test_cyclotomic_ell_validation_requires_distinct_odd_primes():
     assert validate_ells([3, 5, 7]) == [3, 5, 7]
     with pytest.raises(ValueError):
