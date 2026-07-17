@@ -7,8 +7,11 @@ checker never relies on Python ``assert`` and remains active under ``python -O``
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
+import re
+import subprocess
 from pathlib import Path
 
 from provenance import artifact_provenance
@@ -16,6 +19,20 @@ from provenance import artifact_provenance
 
 class VerificationError(RuntimeError):
     pass
+
+
+EXPECTED_PRODUCERS = {
+    "finite_field_support.json": "finite_field_support.py",
+    "lte_assumption_miner.json": "lte_assumption_miner.py",
+    "cyclotomic_census.json": "cyclotomic_census.py",
+    "environment.json": "environment_probe.py",
+    "independent_reproduction.json": "independent_reproduce.py",
+    "cuda_modexp_calibration.json": "cuda_modexp_bench.cu",
+    "gpu_shared_residency_probe.json": "gpu_residency_probe.py",
+}
+
+HEX_40 = re.compile(r"[0-9a-f]{40}")
+HEX_64 = re.compile(r"[0-9a-f]{64}")
 
 
 def require(condition: object, message: str) -> None:
@@ -76,9 +93,23 @@ def load_json(path: Path) -> dict:
     return value
 
 
-def check_provenance(named_artifacts: dict[str, dict]) -> tuple[str, str]:
+def git_blob(repo_root: Path, commit: str, path: str) -> bytes:
+    process = subprocess.run(
+        ["git", "-C", str(repo_root), "show", f"{commit}:{path}"],
+        capture_output=True,
+        check=False,
+    )
+    if process.returncode:
+        raise VerificationError(f"cannot read {path} from source commit {commit}")
+    return process.stdout
+
+
+def check_provenance(
+    named_artifacts: dict[str, dict], environment: dict
+) -> tuple[str, str, int, int]:
     run_ids: set[str] = set()
     commits: set[str] = set()
+    provenances: dict[str, dict] = {}
     for name, artifact in named_artifacts.items():
         provenance = artifact.get("provenance")
         if not isinstance(provenance, dict):
@@ -87,17 +118,57 @@ def check_provenance(named_artifacts: dict[str, dict]) -> tuple[str, str]:
         commit = provenance.get("source_commit")
         if not isinstance(run_id, str) or not run_id:
             raise VerificationError(f"{name} has invalid run_id")
-        if not isinstance(commit, str) or len(commit) != 40:
+        if not isinstance(commit, str) or HEX_40.fullmatch(commit) is None:
             raise VerificationError(f"{name} has invalid source_commit")
         require(provenance.get("source_tree_clean") is True, f"{name} was not produced from clean source")
         producer_hash = provenance.get("producer_sha256")
-        require(isinstance(producer_hash, str) and len(producer_hash) == 64,
-                f"{name} has invalid producer_sha256")
+        if not isinstance(producer_hash, str) or HEX_64.fullmatch(producer_hash) is None:
+            raise VerificationError(f"{name} has invalid producer_sha256")
         run_ids.add(run_id)
         commits.add(commit)
+        provenances[name] = provenance
     require(len(run_ids) == 1, f"mixed run IDs: {sorted(run_ids)}")
     require(len(commits) == 1, f"mixed source commits: {sorted(commits)}")
-    return next(iter(run_ids)), next(iter(commits))
+    run_id, commit = next(iter(run_ids)), next(iter(commits))
+
+    source_hashes = environment.get("source_files_sha256")
+    if not isinstance(source_hashes, dict) or not source_hashes:
+        raise VerificationError("environment lacks source_files_sha256")
+    repo_root = Path(__file__).resolve().parents[2]
+    paths_by_basename: dict[str, list[str]] = {}
+    for path, expected_hash in source_hashes.items():
+        if not isinstance(path, str) or not path.startswith("experiments/dgx_spark/"):
+            raise VerificationError(f"invalid environment source path: {path!r}")
+        if not isinstance(expected_hash, str) or HEX_64.fullmatch(expected_hash) is None:
+            raise VerificationError(f"invalid environment source hash for {path}")
+        actual_hash = hashlib.sha256(git_blob(repo_root, commit, path)).hexdigest()
+        require(actual_hash == expected_hash, f"source hash differs from Git commit for {path}")
+        paths_by_basename.setdefault(Path(path).name, []).append(path)
+
+    for name, provenance in provenances.items():
+        expected_producer = EXPECTED_PRODUCERS.get(name)
+        if expected_producer is None:
+            raise VerificationError(f"no expected producer mapping for {name}")
+        require(provenance.get("producer") == expected_producer,
+                f"{name} names unexpected producer {provenance.get('producer')!r}")
+        matching_paths = paths_by_basename.get(expected_producer, [])
+        require(len(matching_paths) == 1,
+                f"environment does not identify one source path for {expected_producer}")
+        expected_hash = source_hashes[matching_paths[0]]
+        require(provenance.get("producer_sha256") == expected_hash,
+                f"{name} producer hash differs from source manifest")
+
+    status = environment.get("git_status_at_probe")
+    if not isinstance(status, str):
+        raise VerificationError("environment lacks git_status_at_probe")
+    for line in status.splitlines():
+        parts = line.strip().split(maxsplit=1)
+        require(len(parts) == 2, f"invalid git status line: {line!r}")
+        changed_path = parts[1].split(" -> ")[-1]
+        require(changed_path.startswith("experiments/dgx_spark/results/"),
+                f"producer source was dirty at environment probe: {changed_path}")
+
+    return run_id, commit, len(source_hashes), len(provenances)
 
 
 def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto") -> dict:
@@ -203,12 +274,29 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     require(independent.get("verification") == "passed", "independent reproduction did not pass")
     require(independent.get("finite_field_checks_reproduced") == finite.get("signature_prime_checks"),
             "independent finite-field coverage mismatch")
+    require(independent.get("finite_field_empty_witnesses_reproduced") ==
+            finite.get("unit_empty_branch_occurrences"),
+            "independent finite-field witness count mismatch")
     require(independent.get("lte_cases_reproduced") == lte.get("valid_hypothesis_cases_tested"),
             "independent LTE coverage mismatch")
+    require(independent.get("lte_violations_reproduced") ==
+            len(lte.get("valid_hypothesis_violations", [])),
+            "independent LTE violation count mismatch")
     require(independent.get("cyclotomic_cases_reproduced") == cyclo.get("pairs_tested"),
             "independent cyclotomic coverage mismatch")
+    require(independent.get("cyclotomic_factor_occurrences_reproduced") ==
+            cyclo.get("distinct_prime_factor_occurrences_tested"),
+            "independent cyclotomic factor count mismatch")
+    require(independent.get("cyclotomic_exceptional_occurrences_reproduced") ==
+            cyclo.get("ell_exception_factor_occurrences"),
+            "independent cyclotomic exceptional count mismatch")
+    require(independent.get("cyclotomic_higher_valuation_occurrences_reproduced") ==
+            cyclo.get("higher_valuation_occurrences"),
+            "independent cyclotomic higher-valuation count mismatch")
 
-    run_id, source_commit = check_provenance(artifacts)
+    run_id, source_commit, source_files_checked, producer_hashes_checked = check_provenance(
+        artifacts, environment
+    )
     return {
         "schema_version": 2,
         "verification": "passed",
@@ -219,6 +307,8 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         "cyclotomic_higher_valuation_cases_replayed": len(higher_cases),
         "primality_checks": finite_rows + 2 * len(higher_cases),
         "independent_complete_domain_reproduction_checked": True,
+        "source_files_checked_against_git_commit": source_files_checked,
+        "artifact_producer_hashes_checked": producer_hashes_checked,
         "cuda_all_repeats_differentially_checked": cuda_checked,
         "shared_residency_failure_checked": shared_checked,
         "scope": "Artifact consistency plus a separately implemented complete-domain reproduction; not Lean certification or an unrestricted proof.",

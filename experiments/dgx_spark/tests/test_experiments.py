@@ -116,3 +116,59 @@ def test_independent_reproduction_is_complete_and_passed():
     assert report["finite_field_checks_reproduced"] == 11664
     assert report["lte_cases_reproduced"] == 422340
     assert report["cyclotomic_cases_reproduced"] == 24348
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        ("finite_field_empty_witnesses_reproduced", 0),
+        ("lte_violations_reproduced", 1),
+        ("cyclotomic_factor_occurrences_reproduced", 0),
+        ("cyclotomic_exceptional_occurrences_reproduced", 0),
+        ("cyclotomic_higher_valuation_occurrences_reproduced", 0),
+    ],
+)
+def test_verifier_rejects_false_independent_aggregate(tmp_path, field, bad_value):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    report_path = results / "independent_reproduction.json"
+    report = json.loads(report_path.read_text())
+    report[field] = bad_value
+    report_path.write_text(json.dumps(report))
+    with pytest.raises(VerificationError):
+        check(results, cuda_policy="required", shared_policy="required")
+
+
+@pytest.mark.parametrize(
+    ("artifact", "provenance_field", "bad_value"),
+    [
+        ("finite_field_support.json", "producer", "not-the-producer.py"),
+        ("finite_field_support.json", "producer_sha256", "0" * 64),
+        ("finite_field_support.json", "source_commit", "z" * 40),
+    ],
+)
+def test_verifier_rejects_false_producer_provenance(
+    tmp_path, artifact, provenance_field, bad_value
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    artifact_path = results / artifact
+    value = json.loads(artifact_path.read_text())
+    value["provenance"][provenance_field] = bad_value
+    artifact_path.write_text(json.dumps(value))
+    with pytest.raises(VerificationError):
+        check(results, cuda_policy="required", shared_policy="required")
+
+
+def test_verifier_rejects_source_dirty_at_environment_probe(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    environment_path = results / "environment.json"
+    environment = json.loads(environment_path.read_text())
+    environment["git_status_at_probe"] += "\n M experiments/dgx_spark/verify_results.py\n"
+    environment_path.write_text(json.dumps(environment))
+    with pytest.raises(VerificationError):
+        check(results, cuda_policy="required", shared_policy="required")

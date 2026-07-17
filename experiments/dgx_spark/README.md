@@ -48,6 +48,11 @@ clean. Use one run ID and start timestamp across all phases:
 ```bash
 export RUN_ID="dgx-$(date -u +%Y%m%dT%H%M%SZ)-$(git rev-parse --short=12 HEAD)"
 export RUN_STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+export SOURCE_COMMIT="$(git rev-parse HEAD)"
+export SOURCE_BRANCH="$(git branch --show-current)"
+export SOURCE_TREE_CLEAN=true
+export PYTHONPATH="$(pwd)/experiments/dgx_spark"
+test -n "$SOURCE_BRANCH"  # create a named local run branch for a detached checkout
 ```
 
 ### 1. CPU domains, independent reproduction, and resident-vLLM probe
@@ -74,11 +79,25 @@ RUN_CPU=0 RUN_CUDA=1 RUN_SHARED_PROBE=0 RUN_TESTS=1 \
 ```
 
 The suite deliberately does not control host services. Restore vLLM and the
-arbiter even if the benchmark or tests fail. After restoration, rerun
-`environment_probe.py`, then `verify_results.py` with both optional artifacts
-`required`, and regenerate `results/SHA256SUMS`; this makes the canonical
-environment record prove the post-window service state rather than the stopped
-state.
+arbiter even if the benchmark or tests fail. The exported provenance variables
+above remain in the calling shell. After restoration, finalize with:
+
+```bash
+RESULTS=experiments/dgx_spark/results
+OUTPUT="$RESULTS/environment.json" \
+  python3 experiments/dgx_spark/environment_probe.py
+python3 experiments/dgx_spark/verify_results.py \
+  --results "$RESULTS" --cuda-policy required --shared-policy required \
+  --output "$RESULTS/verification_report.json"
+mapfile -t MANIFEST_PATHS < <(awk '{print $2}' "$RESULTS/SHA256SUMS")
+sha256sum "${MANIFEST_PATHS[@]}" > "$RESULTS/SHA256SUMS.next"
+mv "$RESULTS/SHA256SUMS.next" "$RESULTS/SHA256SUMS"
+sha256sum -c "$RESULTS/SHA256SUMS"
+```
+
+This makes the canonical environment record capture the post-window service
+state rather than the stopped state. Run these commands from the repository
+root and do not edit producer sources between the first phase and finalization.
 
 CPU work uses two workers/threads. Optional CUDA and shared-residency artifacts
 are never silently mixed into a new run: `verify_results.py` requires one run ID,

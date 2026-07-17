@@ -69,7 +69,8 @@ A fixed modulus cannot eliminate a primitive signature on its own.
 - Coprime positive bases `a,b <= 200`
 - Odd primes `q <= 97`
 - Odd exponents `3 <= n <= 31`
-- Required hypotheses: `q | a+b` and `q` divides neither base
+- Local LTE hypotheses: `q | a+b` and `q ∤ ab`; the sweep additionally restricts
+  to globally coprime bases, which is stronger than the local unit condition
 - 422,340 exact cases
 
 ### Results
@@ -82,14 +83,14 @@ v_q(a^n + b^n) = v_q(a+b) + v_q(n)
 
 under the stated hypotheses.
 
-The bounded falsifier immediately found counterexamples when essential
-hypotheses were removed:
+The bounded falsifier immediately found counterexamples when the displayed
+local hypotheses or oddness were removed:
 
 | Removed hypothesis | First counterexample | Actual / predicted valuation |
 |---|---|---|
 | `n` odd | `q=3, a=1, b=2, n=2` | `0 / 1` |
 | `q | a+b` | `q=3, a=1, b=1, n=3` | `0 / 1` |
-| base/unit coprimality (`gcd(a,b)=1`, hence `q ∤ ab`) | `q=3, a=3, b=3, n=3` | `3 / 2` |
+| local unit condition `q ∤ ab` (legacy JSON key: `remove_base_coprimality`) | `q=3, a=3, b=3, n=3` | `3 / 2` |
 
 No failure was found for `q=2` with odd `n` in this bounded search. That is an
 observation only; it is not promoted to a general theorem here.
@@ -98,8 +99,9 @@ observation only; it is not promoted to a general theorem here.
 
 The data support the exact hypothesis shape already targeted by
 `BealUnified.LTEConclusion`, but do not solve the formalization gap. They do
-show why a future Lean theorem must keep parity, divisibility, and unit
-hypotheses explicit rather than patching failures ad hoc.
+show why a future Lean theorem must keep parity, divisibility, and the local
+`q ∤ ab` unit hypothesis explicit rather than conflating it with the stronger
+global condition `gcd(a,b)=1` or patching failures ad hoc.
 
 ## Experiment 3 — odd plus-cyclotomic census
 
