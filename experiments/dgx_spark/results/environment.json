@@ -1,0 +1,18 @@
+{
+  "architecture": "aarch64",
+  "cpu_count": 20,
+  "cpu_policy": "OMP_NUM_THREADS=2 for the CUDA CPU baseline; cyclotomic census workers=2",
+  "cuda_nvcc": "Build cuda_13.0.r13.0/compiler.36424714_0",
+  "cypari2_package": "2.1.4-1build2",
+  "gpu": "NVIDIA GB10, 12.1, P0, 48, 13.85 W",
+  "gpu_window": "exclusive-vllm-stopped-restored-health-ok",
+  "hostname": "spark-de79",
+  "notes": "CPU experiments ran beside resident vLLM. CUDA calibration used an exclusive GPU window. Results are bounded computational evidence, not a proof of Beal.",
+  "pari_gp": "GP/PARI CALCULATOR Version 2.15.4 (released)",
+  "platform": "Linux-6.14.0-1015-nvidia-aarch64-with-glibc2.39",
+  "python": "3.12.3",
+  "schema_version": 1,
+  "source_branch": "research/dgx-computational-experiments-20260717",
+  "source_commit": "d83704e0904c504ef314bc9cabe08ffd7f67c8a8",
+  "vllm_container_state": "vllm-backend|Up 12 minutes"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "experiment": "cuda_modexp_calibration",
+  "gpu_name": "NVIDIA GB10",
+  "compute_capability": "12.1",
+  "cuda_runtime_version": 13000,
+  "count": 4000000,
+  "repeats": 5,
+  "exponent": 65537,
+  "modulus": 2147483647,
+  "cpu_openmp_threads": 2,
+  "cpu_seconds": 0.110142,
+  "cpu_candidates_per_second": 36316880.031363,
+  "gpu_kernel_seconds_per_repeat": 0.000688,
+  "gpu_kernel_candidates_per_second": 5817146119.961137,
+  "gpu_total_seconds_all_repeats_including_transfers": 0.004857,
+  "gpu_end_to_end_seconds_per_repeat_amortized": 0.000971,
+  "mismatches": 0,
+  "interpretation": "Calibration only; shared vLLM was left running, and this is not an exhaustiveness certificate."
+}

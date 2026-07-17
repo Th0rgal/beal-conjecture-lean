@@ -1,0 +1,10 @@
+{
+  "cuda_differential_result_checked": true,
+  "cyclotomic_higher_valuation_cases_replayed": 860,
+  "finite_field_support_witnesses_replayed": 254,
+  "lte_counterexamples_replayed": 3,
+  "schema_version": 1,
+  "scope": "Artifact consistency and witness replay; does not prove unrestricted claims or replace Lean certification.",
+  "shared_residency_failure_checked": true,
+  "verification": "passed"
+}

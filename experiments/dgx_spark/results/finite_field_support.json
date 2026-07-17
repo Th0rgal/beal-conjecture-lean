@@ -1,0 +1,2987 @@
+{
+  "elapsed_seconds": 0.3167943609878421,
+  "experiment": "finite_field_support_atlas",
+  "interpretation": {
+    "not_proved": "signature impossibility; A=0,B=C=1 modulo q survives every modulus",
+    "proved_per_row": "for the finite field and signature, no all-unit residue solution exists, so any integer solution has q dividing A*B*C"
+  },
+  "parameters": {
+    "kernels": [
+      3,
+      4,
+      5,
+      7,
+      11,
+      13
+    ],
+    "prime_bound": 251
+  },
+  "schema_version": 1,
+  "signature_prime_checks": 11664,
+  "signatures_tested": 216,
+  "signatures_with_support_forcing": 216,
+  "support_forcing": [
+    {
+      "signature": [
+        3,
+        3,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 7
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 13
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        3,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        3,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        3,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        3,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        3,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        4,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        4,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        4,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        4,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        4,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        4,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        5,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        5,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        5,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        5,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        5,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        5,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        7,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        7,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        7,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        7,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        7,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        7,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        11,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        11,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        11,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        11,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        11,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        11,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        13,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        13,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        13,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        13,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        13,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        3,
+        13,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        3,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        3,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        3,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        3,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        3,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        3,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        4,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        4,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 13
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 17
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 41
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        4,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        4,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        4,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        4,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        5,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        5,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        5,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        5,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        5,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        5,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        7,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        7,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        7,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        7,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        7,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        7,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        11,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        11,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        11,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        11,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        11,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        11,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        13,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        13,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        13,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        13,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        13,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        4,
+        13,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        3,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        3,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        3,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        3,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        3,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        3,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        4,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        4,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        4,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        4,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        4,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        4,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        5,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        5,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        5,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 11
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 41
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 71
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 101
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        5,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        5,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        5,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        7,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        7,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        7,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        7,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        7,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        7,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        11,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        11,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        11,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        11,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        11,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        11,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        13,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        13,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        13,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        13,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        13,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        5,
+        13,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        3,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        3,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        3,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        3,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        3,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        3,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        4,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        4,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        4,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        4,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        4,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        4,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        5,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        5,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        5,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        5,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        5,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        5,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        7,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        7,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        7,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        7,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 29
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 71
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 113
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        7,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        7,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        11,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        11,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        11,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        11,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        11,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        11,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        13,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        13,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        13,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        13,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        13,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        7,
+        13,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        3,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        3,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        3,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        3,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        3,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        3,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        4,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        4,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        4,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        4,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        4,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        4,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        5,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        5,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        5,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        5,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        5,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        5,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        7,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        7,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        7,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        7,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        7,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        7,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        11,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        11,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        11,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        11,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        11,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 23
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 89
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        11,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        13,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        13,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        13,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        13,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        13,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        11,
+        13,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        3,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        3,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        3,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        3,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        3,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        3,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        4,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        4,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 3
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 5
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        4,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        4,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        4,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        4,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        5,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        5,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        5,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        5,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        5,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        5,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        7,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        7,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        7,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        7,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        7,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        7,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        11,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        11,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        11,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        11,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        11,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        11,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        13,
+        3
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        13,
+        4
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        13,
+        5
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        13,
+        7
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        13,
+        11
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        }
+      ]
+    },
+    {
+      "signature": [
+        13,
+        13,
+        13
+      ],
+      "support_forcing_primes": [
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 2
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 53
+        },
+        {
+          "conclusion": "q divides A*B*C",
+          "prime": 131
+        }
+      ]
+    }
+  ],
+  "unit_empty_branch_occurrences": 254,
+  "zero_branch_failures": []
+}

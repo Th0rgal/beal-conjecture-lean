@@ -1,0 +1,6909 @@
+{
+  "congruence_failures": [],
+  "distinct_prime_factor_occurrences_tested": 55758,
+  "elapsed_seconds": 475.6782814488979,
+  "ell_exception_factor_occurrences": 3774,
+  "experiment": "odd_plus_cyclotomic_census",
+  "factor_identity_failures": [],
+  "gcd_failures": [],
+  "higher_valuation_cases": [
+    {
+      "cofactor": "343",
+      "ell": 3,
+      "q": 7,
+      "u": 1,
+      "v": 19,
+      "valuation": 3
+    },
+    {
+      "cofactor": "507",
+      "ell": 3,
+      "q": 13,
+      "u": 1,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 1,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 1,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 1,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 1,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "147",
+      "ell": 3,
+      "q": 7,
+      "u": 2,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 2,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 2,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "49",
+      "ell": 3,
+      "q": 7,
+      "u": 3,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 3,
+      "v": 44,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 4,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 4,
+      "v": 75,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 4,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 4,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "49",
+      "ell": 3,
+      "q": 7,
+      "u": 5,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "361",
+      "ell": 3,
+      "q": 19,
+      "u": 5,
+      "v": 21,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 5,
+      "v": 46,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 5,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 5,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 6,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 6,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 6,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "169",
+      "ell": 3,
+      "q": 13,
+      "u": 7,
+      "v": 15,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1369",
+      "ell": 3,
+      "q": 37,
+      "u": 7,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "49",
+      "ell": 3,
+      "q": 7,
+      "u": 8,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "49",
+      "ell": 3,
+      "q": 7,
+      "u": 8,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "169",
+      "ell": 3,
+      "q": 13,
+      "u": 8,
+      "v": 15,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 9,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 9,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3721",
+      "ell": 3,
+      "q": 61,
+      "u": 9,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 9,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 9,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 10,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 10,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "147",
+      "ell": 3,
+      "q": 7,
+      "u": 11,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "961",
+      "ell": 3,
+      "q": 31,
+      "u": 11,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1083",
+      "ell": 3,
+      "q": 19,
+      "u": 11,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 11,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 11,
+      "v": 62,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 11,
+      "v": 84,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 11,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 11,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 12,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "147",
+      "ell": 3,
+      "q": 7,
+      "u": 13,
+      "v": 2,
+      "valuation": 2
+    },
+    {
+      "cofactor": "147",
+      "ell": 3,
+      "q": 7,
+      "u": 13,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1849",
+      "ell": 3,
+      "q": 43,
+      "u": 13,
+      "v": 48,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 13,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2883",
+      "ell": 3,
+      "q": 31,
+      "u": 13,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 13,
+      "v": 60,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8869",
+      "ell": 3,
+      "q": 7,
+      "u": 13,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "169",
+      "ell": 3,
+      "q": 13,
+      "u": 15,
+      "v": 7,
+      "valuation": 2
+    },
+    {
+      "cofactor": "169",
+      "ell": 3,
+      "q": 13,
+      "u": 15,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 15,
+      "v": 73,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 15,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "361",
+      "ell": 3,
+      "q": 19,
+      "u": 16,
+      "v": 21,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2401",
+      "ell": 3,
+      "q": 7,
+      "u": 16,
+      "v": 55,
+      "valuation": 4
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 16,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 17,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1029",
+      "ell": 3,
+      "q": 7,
+      "u": 17,
+      "v": 37,
+      "valuation": 3
+    },
+    {
+      "cofactor": "2197",
+      "ell": 3,
+      "q": 13,
+      "u": 17,
+      "v": 53,
+      "valuation": 3
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 17,
+      "v": 78,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5329",
+      "ell": 3,
+      "q": 73,
+      "u": 17,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 17,
+      "v": 86,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6859",
+      "ell": 3,
+      "q": 19,
+      "u": 17,
+      "v": 90,
+      "valuation": 3
+    },
+    {
+      "cofactor": "343",
+      "ell": 3,
+      "q": 7,
+      "u": 18,
+      "v": 19,
+      "valuation": 3
+    },
+    {
+      "cofactor": "7987",
+      "ell": 3,
+      "q": 7,
+      "u": 18,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "343",
+      "ell": 3,
+      "q": 7,
+      "u": 19,
+      "v": 1,
+      "valuation": 3
+    },
+    {
+      "cofactor": "343",
+      "ell": 3,
+      "q": 7,
+      "u": 19,
+      "v": 18,
+      "valuation": 3
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 19,
+      "v": 50,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 19,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6591",
+      "ell": 3,
+      "q": 13,
+      "u": 19,
+      "v": 89,
+      "valuation": 3
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 19,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 19,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1029",
+      "ell": 3,
+      "q": 7,
+      "u": 20,
+      "v": 37,
+      "valuation": 3
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 20,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 20,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "361",
+      "ell": 3,
+      "q": 19,
+      "u": 21,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "361",
+      "ell": 3,
+      "q": 19,
+      "u": 21,
+      "v": 16,
+      "valuation": 2
+    },
+    {
+      "cofactor": "507",
+      "ell": 3,
+      "q": 13,
+      "u": 22,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 22,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 22,
+      "v": 75,
+      "valuation": 3
+    },
+    {
+      "cofactor": "5547",
+      "ell": 3,
+      "q": 43,
+      "u": 22,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "507",
+      "ell": 3,
+      "q": 13,
+      "u": 23,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "507",
+      "ell": 3,
+      "q": 13,
+      "u": 23,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 23,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 23,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 23,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7203",
+      "ell": 3,
+      "q": 7,
+      "u": 23,
+      "v": 94,
+      "valuation": 4
+    },
+    {
+      "cofactor": "961",
+      "ell": 3,
+      "q": 31,
+      "u": 24,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 25,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 25,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 25,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 25,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1083",
+      "ell": 3,
+      "q": 19,
+      "u": 26,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 26,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 26,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4107",
+      "ell": 3,
+      "q": 37,
+      "u": 26,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 27,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 27,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 27,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 27,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 27,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 29,
+      "v": 12,
+      "valuation": 2
+    },
+    {
+      "cofactor": "637",
+      "ell": 3,
+      "q": 7,
+      "u": 29,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 29,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 29,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 29,
+      "v": 66,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 30,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 30,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 31,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 31,
+      "v": 30,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 31,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 31,
+      "v": 50,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 31,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 31,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7693",
+      "ell": 3,
+      "q": 7,
+      "u": 31,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 32,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 32,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4489",
+      "ell": 3,
+      "q": 67,
+      "u": 32,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1369",
+      "ell": 3,
+      "q": 37,
+      "u": 33,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 33,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 33,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 33,
+      "v": 92,
+      "valuation": 3
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 34,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "931",
+      "ell": 3,
+      "q": 7,
+      "u": 34,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 34,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "961",
+      "ell": 3,
+      "q": 31,
+      "u": 35,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "961",
+      "ell": 3,
+      "q": 31,
+      "u": 35,
+      "v": 24,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1849",
+      "ell": 3,
+      "q": 43,
+      "u": 35,
+      "v": 48,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 36,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2197",
+      "ell": 3,
+      "q": 13,
+      "u": 36,
+      "v": 53,
+      "valuation": 3
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 36,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 37,
+      "v": 6,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1083",
+      "ell": 3,
+      "q": 19,
+      "u": 37,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1029",
+      "ell": 3,
+      "q": 7,
+      "u": 37,
+      "v": 17,
+      "valuation": 3
+    },
+    {
+      "cofactor": "1029",
+      "ell": 3,
+      "q": 7,
+      "u": 37,
+      "v": 20,
+      "valuation": 3
+    },
+    {
+      "cofactor": "1083",
+      "ell": 3,
+      "q": 19,
+      "u": 37,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 37,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 37,
+      "v": 66,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 37,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 37,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 38,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1183",
+      "ell": 3,
+      "q": 13,
+      "u": 38,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 38,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 38,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2401",
+      "ell": 3,
+      "q": 7,
+      "u": 39,
+      "v": 55,
+      "valuation": 4
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 39,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1369",
+      "ell": 3,
+      "q": 37,
+      "u": 40,
+      "v": 7,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1369",
+      "ell": 3,
+      "q": 37,
+      "u": 40,
+      "v": 33,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6241",
+      "ell": 3,
+      "q": 79,
+      "u": 40,
+      "v": 91,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 41,
+      "v": 44,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 41,
+      "v": 46,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 41,
+      "v": 93,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 41,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 41,
+      "v": 98,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 41,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 43,
+      "v": 10,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 43,
+      "v": 33,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 43,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 43,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 43,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 43,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 44,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 44,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 45,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1519",
+      "ell": 3,
+      "q": 7,
+      "u": 45,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 45,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4489",
+      "ell": 3,
+      "q": 67,
+      "u": 45,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 46,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 46,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2883",
+      "ell": 3,
+      "q": 31,
+      "u": 46,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 47,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1813",
+      "ell": 3,
+      "q": 7,
+      "u": 47,
+      "v": 36,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 47,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 47,
+      "v": 60,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 47,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4107",
+      "ell": 3,
+      "q": 37,
+      "u": 47,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 47,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1849",
+      "ell": 3,
+      "q": 43,
+      "u": 48,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1849",
+      "ell": 3,
+      "q": 43,
+      "u": 48,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 48,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 48,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 50,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1911",
+      "ell": 3,
+      "q": 7,
+      "u": 50,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 50,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 51,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 51,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 51,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 51,
+      "v": 62,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6241",
+      "ell": 3,
+      "q": 79,
+      "u": 51,
+      "v": 91,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 52,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 52,
+      "v": 93,
+      "valuation": 3
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 53,
+      "v": 6,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2197",
+      "ell": 3,
+      "q": 13,
+      "u": 53,
+      "v": 17,
+      "valuation": 3
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 53,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2107",
+      "ell": 3,
+      "q": 7,
+      "u": 53,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2197",
+      "ell": 3,
+      "q": 13,
+      "u": 53,
+      "v": 36,
+      "valuation": 3
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 53,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 53,
+      "v": 75,
+      "valuation": 3
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 53,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 54,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 54,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2401",
+      "ell": 3,
+      "q": 7,
+      "u": 55,
+      "v": 16,
+      "valuation": 4
+    },
+    {
+      "cofactor": "2401",
+      "ell": 3,
+      "q": 7,
+      "u": 55,
+      "v": 39,
+      "valuation": 4
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 55,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3721",
+      "ell": 3,
+      "q": 61,
+      "u": 56,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 57,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 57,
+      "v": 52,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 57,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 57,
+      "v": 98,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 58,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2527",
+      "ell": 3,
+      "q": 19,
+      "u": 58,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 58,
+      "v": 73,
+      "valuation": 3
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 58,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 59,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2883",
+      "ell": 3,
+      "q": 31,
+      "u": 59,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 59,
+      "v": 16,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 59,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2883",
+      "ell": 3,
+      "q": 31,
+      "u": 59,
+      "v": 46,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 59,
+      "v": 54,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 59,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 59,
+      "v": 92,
+      "valuation": 3
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 59,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 60,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2989",
+      "ell": 3,
+      "q": 7,
+      "u": 60,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 61,
+      "v": 10,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 61,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2793",
+      "ell": 3,
+      "q": 7,
+      "u": 61,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3211",
+      "ell": 3,
+      "q": 13,
+      "u": 61,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 61,
+      "v": 78,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 61,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5547",
+      "ell": 3,
+      "q": 43,
+      "u": 61,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 62,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 62,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5329",
+      "ell": 3,
+      "q": 73,
+      "u": 63,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 63,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 64,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 64,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 65,
+      "v": 6,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3721",
+      "ell": 3,
+      "q": 61,
+      "u": 65,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3721",
+      "ell": 3,
+      "q": 61,
+      "u": 65,
+      "v": 56,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 65,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 66,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3283",
+      "ell": 3,
+      "q": 7,
+      "u": 66,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 67,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 67,
+      "v": 20,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 67,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 67,
+      "v": 48,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 67,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 67,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 68,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 68,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3549",
+      "ell": 3,
+      "q": 13,
+      "u": 68,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 68,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 68,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7693",
+      "ell": 3,
+      "q": 7,
+      "u": 68,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 69,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 69,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3577",
+      "ell": 3,
+      "q": 7,
+      "u": 69,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 69,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 69,
+      "v": 86,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6591",
+      "ell": 3,
+      "q": 13,
+      "u": 70,
+      "v": 89,
+      "valuation": 3
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 71,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3871",
+      "ell": 3,
+      "q": 7,
+      "u": 71,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 71,
+      "v": 75,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7203",
+      "ell": 3,
+      "q": 7,
+      "u": 71,
+      "v": 94,
+      "valuation": 4
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 73,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 73,
+      "v": 15,
+      "valuation": 3
+    },
+    {
+      "cofactor": "4107",
+      "ell": 3,
+      "q": 37,
+      "u": 73,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4107",
+      "ell": 3,
+      "q": 37,
+      "u": 73,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 73,
+      "v": 58,
+      "valuation": 3
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 73,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 73,
+      "v": 84,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6859",
+      "ell": 3,
+      "q": 19,
+      "u": 73,
+      "v": 90,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 74,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 74,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 75,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 75,
+      "v": 22,
+      "valuation": 3
+    },
+    {
+      "cofactor": "4459",
+      "ell": 3,
+      "q": 7,
+      "u": 75,
+      "v": 53,
+      "valuation": 3
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 75,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 76,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4557",
+      "ell": 3,
+      "q": 7,
+      "u": 76,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4489",
+      "ell": 3,
+      "q": 67,
+      "u": 77,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4489",
+      "ell": 3,
+      "q": 67,
+      "u": 77,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 77,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 78,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 78,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 79,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 79,
+      "v": 36,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4693",
+      "ell": 3,
+      "q": 19,
+      "u": 79,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4753",
+      "ell": 3,
+      "q": 7,
+      "u": 79,
+      "v": 48,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 79,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7987",
+      "ell": 3,
+      "q": 7,
+      "u": 79,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 80,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5329",
+      "ell": 3,
+      "q": 73,
+      "u": 80,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5329",
+      "ell": 3,
+      "q": 73,
+      "u": 80,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 80,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 80,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 80,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 81,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 81,
+      "v": 20,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5341",
+      "ell": 3,
+      "q": 7,
+      "u": 81,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 81,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 81,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 82,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 82,
+      "v": 39,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5047",
+      "ell": 3,
+      "q": 7,
+      "u": 82,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 82,
+      "v": 55,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 83,
+      "v": 2,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 83,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5547",
+      "ell": 3,
+      "q": 43,
+      "u": 83,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 83,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 83,
+      "v": 33,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5239",
+      "ell": 3,
+      "q": 13,
+      "u": 83,
+      "v": 50,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 83,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5547",
+      "ell": 3,
+      "q": 43,
+      "u": 83,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 83,
+      "v": 74,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 83,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 84,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6253",
+      "ell": 3,
+      "q": 13,
+      "u": 84,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 85,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5439",
+      "ell": 3,
+      "q": 7,
+      "u": 85,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 85,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 85,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 85,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 85,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 86,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6223",
+      "ell": 3,
+      "q": 7,
+      "u": 86,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 87,
+      "v": 2,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 87,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8869",
+      "ell": 3,
+      "q": 7,
+      "u": 87,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 89,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 89,
+      "v": 15,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6591",
+      "ell": 3,
+      "q": 13,
+      "u": 89,
+      "v": 19,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 89,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6321",
+      "ell": 3,
+      "q": 7,
+      "u": 89,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6591",
+      "ell": 3,
+      "q": 13,
+      "u": 89,
+      "v": 70,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 89,
+      "v": 74,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 89,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6859",
+      "ell": 3,
+      "q": 19,
+      "u": 90,
+      "v": 17,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6859",
+      "ell": 3,
+      "q": 19,
+      "u": 90,
+      "v": 73,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6241",
+      "ell": 3,
+      "q": 79,
+      "u": 91,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6241",
+      "ell": 3,
+      "q": 79,
+      "u": 91,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 92,
+      "v": 33,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 92,
+      "v": 59,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 93,
+      "v": 41,
+      "valuation": 3
+    },
+    {
+      "cofactor": "6517",
+      "ell": 3,
+      "q": 7,
+      "u": 93,
+      "v": 52,
+      "valuation": 3
+    },
+    {
+      "cofactor": "7203",
+      "ell": 3,
+      "q": 7,
+      "u": 94,
+      "v": 23,
+      "valuation": 4
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 94,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6727",
+      "ell": 3,
+      "q": 31,
+      "u": 94,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7203",
+      "ell": 3,
+      "q": 7,
+      "u": 94,
+      "v": 71,
+      "valuation": 4
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 95,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6811",
+      "ell": 3,
+      "q": 7,
+      "u": 95,
+      "v": 54,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 96,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 96,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 96,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 96,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7987",
+      "ell": 3,
+      "q": 7,
+      "u": 97,
+      "v": 18,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 97,
+      "v": 30,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 97,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 97,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7399",
+      "ell": 3,
+      "q": 7,
+      "u": 97,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7987",
+      "ell": 3,
+      "q": 7,
+      "u": 97,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 98,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7267",
+      "ell": 3,
+      "q": 13,
+      "u": 98,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 99,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 99,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7693",
+      "ell": 3,
+      "q": 7,
+      "u": 99,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7693",
+      "ell": 3,
+      "q": 7,
+      "u": 99,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 7,
+      "u": 99,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8281",
+      "ell": 3,
+      "q": 13,
+      "u": 99,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8869",
+      "ell": 3,
+      "q": 7,
+      "u": 100,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 100,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7581",
+      "ell": 3,
+      "q": 19,
+      "u": 100,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8869",
+      "ell": 3,
+      "q": 7,
+      "u": 100,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2497561",
+      "ell": 5,
+      "q": 11,
+      "u": 1,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "77253055",
+      "ell": 5,
+      "q": 11,
+      "u": 1,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19567031",
+      "ell": 5,
+      "q": 11,
+      "u": 2,
+      "v": 67,
+      "valuation": 3
+    },
+    {
+      "cofactor": "1932571",
+      "ell": 5,
+      "q": 31,
+      "u": 3,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2381401",
+      "ell": 5,
+      "q": 11,
+      "u": 3,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "75660211",
+      "ell": 5,
+      "q": 11,
+      "u": 3,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21901",
+      "ell": 5,
+      "q": 11,
+      "u": 4,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2098261",
+      "ell": 5,
+      "q": 11,
+      "u": 4,
+      "v": 39,
+      "valuation": 2
+    },
+    {
+      "cofactor": "49854541",
+      "ell": 5,
+      "q": 11,
+      "u": 4,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6670301",
+      "ell": 5,
+      "q": 31,
+      "u": 5,
+      "v": 52,
+      "valuation": 2
+    },
+    {
+      "cofactor": "31302821",
+      "ell": 5,
+      "q": 11,
+      "u": 5,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "36631661",
+      "ell": 5,
+      "q": 11,
+      "u": 5,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "18494971",
+      "ell": 5,
+      "q": 11,
+      "u": 6,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1761155",
+      "ell": 5,
+      "q": 11,
+      "u": 7,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6970205",
+      "ell": 5,
+      "q": 11,
+      "u": 7,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10098055",
+      "ell": 5,
+      "q": 11,
+      "u": 7,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "93458101",
+      "ell": 5,
+      "q": 11,
+      "u": 7,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10201",
+      "ell": 5,
+      "q": 101,
+      "u": 8,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4956281",
+      "ell": 5,
+      "q": 11,
+      "u": 8,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "81784505",
+      "ell": 5,
+      "q": 11,
+      "u": 8,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "341155",
+      "ell": 5,
+      "q": 31,
+      "u": 9,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2091001",
+      "ell": 5,
+      "q": 11,
+      "u": 9,
+      "v": 40,
+      "valuation": 3
+    },
+    {
+      "cofactor": "71253391",
+      "ell": 5,
+      "q": 11,
+      "u": 9,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "700711",
+      "ell": 5,
+      "q": 11,
+      "u": 10,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1477531",
+      "ell": 5,
+      "q": 11,
+      "u": 10,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61786351",
+      "ell": 5,
+      "q": 11,
+      "u": 10,
+      "v": 91,
+      "valuation": 3
+    },
+    {
+      "cofactor": "67543531",
+      "ell": 5,
+      "q": 11,
+      "u": 10,
+      "v": 93,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10201",
+      "ell": 5,
+      "q": 101,
+      "u": 11,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "24805",
+      "ell": 5,
+      "q": 11,
+      "u": 12,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "45745381",
+      "ell": 5,
+      "q": 11,
+      "u": 12,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "72318301",
+      "ell": 5,
+      "q": 41,
+      "u": 12,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21901",
+      "ell": 5,
+      "q": 11,
+      "u": 13,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "24805",
+      "ell": 5,
+      "q": 11,
+      "u": 13,
+      "v": 12,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1241581",
+      "ell": 5,
+      "q": 11,
+      "u": 13,
+      "v": 36,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21483341",
+      "ell": 5,
+      "q": 251,
+      "u": 13,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "39029155",
+      "ell": 5,
+      "q": 11,
+      "u": 13,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "264191",
+      "ell": 5,
+      "q": 61,
+      "u": 14,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "33092411",
+      "ell": 5,
+      "q": 11,
+      "u": 14,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "27871261",
+      "ell": 5,
+      "q": 11,
+      "u": 15,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "32742721",
+      "ell": 5,
+      "q": 11,
+      "u": 15,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1050401",
+      "ell": 5,
+      "q": 11,
+      "u": 16,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23304721",
+      "ell": 5,
+      "q": 11,
+      "u": 16,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "266321",
+      "ell": 5,
+      "q": 11,
+      "u": 17,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19334711",
+      "ell": 5,
+      "q": 11,
+      "u": 17,
+      "v": 70,
+      "valuation": 2
+    },
+    {
+      "cofactor": "25809421",
+      "ell": 5,
+      "q": 11,
+      "u": 17,
+      "v": 75,
+      "valuation": 3
+    },
+    {
+      "cofactor": "52693201",
+      "ell": 5,
+      "q": 11,
+      "u": 17,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15906055",
+      "ell": 5,
+      "q": 11,
+      "u": 18,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "903991",
+      "ell": 5,
+      "q": 11,
+      "u": 19,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12966481",
+      "ell": 5,
+      "q": 11,
+      "u": 19,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20074505",
+      "ell": 5,
+      "q": 11,
+      "u": 19,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "59399021",
+      "ell": 5,
+      "q": 11,
+      "u": 19,
+      "v": 92,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10466621",
+      "ell": 5,
+      "q": 11,
+      "u": 20,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "56247941",
+      "ell": 5,
+      "q": 41,
+      "u": 20,
+      "v": 91,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1412191",
+      "ell": 5,
+      "q": 11,
+      "u": 21,
+      "v": 38,
+      "valuation": 3
+    },
+    {
+      "cofactor": "5706481",
+      "ell": 5,
+      "q": 11,
+      "u": 21,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8360011",
+      "ell": 5,
+      "q": 11,
+      "u": 21,
+      "v": 58,
+      "valuation": 4
+    },
+    {
+      "cofactor": "1016521",
+      "ell": 5,
+      "q": 11,
+      "u": 23,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2109655",
+      "ell": 5,
+      "q": 41,
+      "u": 23,
+      "v": 42,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3368305",
+      "ell": 5,
+      "q": 31,
+      "u": 23,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5155205",
+      "ell": 5,
+      "q": 11,
+      "u": 23,
+      "v": 52,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21661541",
+      "ell": 5,
+      "q": 11,
+      "u": 23,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3978601",
+      "ell": 5,
+      "q": 11,
+      "u": 24,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "264191",
+      "ell": 5,
+      "q": 61,
+      "u": 25,
+      "v": 14,
+      "valuation": 2
+    },
+    {
+      "cofactor": "266321",
+      "ell": 5,
+      "q": 11,
+      "u": 25,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "760001",
+      "ell": 5,
+      "q": 11,
+      "u": 25,
+      "v": 32,
+      "valuation": 3
+    },
+    {
+      "cofactor": "3038431",
+      "ell": 5,
+      "q": 11,
+      "u": 25,
+      "v": 46,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4668301",
+      "ell": 5,
+      "q": 11,
+      "u": 25,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "341155",
+      "ell": 5,
+      "q": 31,
+      "u": 26,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "710711",
+      "ell": 5,
+      "q": 61,
+      "u": 26,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2302751",
+      "ell": 5,
+      "q": 11,
+      "u": 26,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1742521",
+      "ell": 5,
+      "q": 11,
+      "u": 27,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "63542281",
+      "ell": 5,
+      "q": 31,
+      "u": 27,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "776941",
+      "ell": 5,
+      "q": 11,
+      "u": 28,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1331605",
+      "ell": 5,
+      "q": 11,
+      "u": 28,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "75016621",
+      "ell": 5,
+      "q": 31,
+      "u": 28,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1046771",
+      "ell": 5,
+      "q": 11,
+      "u": 29,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3287581",
+      "ell": 5,
+      "q": 31,
+      "u": 29,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11766161",
+      "ell": 5,
+      "q": 11,
+      "u": 29,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "18247405",
+      "ell": 5,
+      "q": 11,
+      "u": 29,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "867691",
+      "ell": 5,
+      "q": 11,
+      "u": 30,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1397671",
+      "ell": 5,
+      "q": 11,
+      "u": 30,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "700711",
+      "ell": 5,
+      "q": 11,
+      "u": 31,
+      "v": 10,
+      "valuation": 2
+    },
+    {
+      "cofactor": "710711",
+      "ell": 5,
+      "q": 61,
+      "u": 31,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "776941",
+      "ell": 5,
+      "q": 11,
+      "u": 31,
+      "v": 28,
+      "valuation": 2
+    },
+    {
+      "cofactor": "867691",
+      "ell": 5,
+      "q": 11,
+      "u": 31,
+      "v": 30,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7162741",
+      "ell": 5,
+      "q": 41,
+      "u": 31,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "36615205",
+      "ell": 5,
+      "q": 11,
+      "u": 31,
+      "v": 84,
+      "valuation": 2
+    },
+    {
+      "cofactor": "76554421",
+      "ell": 5,
+      "q": 41,
+      "u": 31,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "760001",
+      "ell": 5,
+      "q": 11,
+      "u": 32,
+      "v": 25,
+      "valuation": 3
+    },
+    {
+      "cofactor": "3901601",
+      "ell": 5,
+      "q": 41,
+      "u": 32,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22491601",
+      "ell": 5,
+      "q": 11,
+      "u": 32,
+      "v": 75,
+      "valuation": 2
+    },
+    {
+      "cofactor": "25140721",
+      "ell": 5,
+      "q": 31,
+      "u": 32,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "38210321",
+      "ell": 5,
+      "q": 31,
+      "u": 32,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "66357505",
+      "ell": 5,
+      "q": 101,
+      "u": 33,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "903991",
+      "ell": 5,
+      "q": 11,
+      "u": 34,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1046771",
+      "ell": 5,
+      "q": 11,
+      "u": 34,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7111291",
+      "ell": 5,
+      "q": 11,
+      "u": 34,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1050401",
+      "ell": 5,
+      "q": 11,
+      "u": 35,
+      "v": 16,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1016521",
+      "ell": 5,
+      "q": 11,
+      "u": 35,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3702721",
+      "ell": 5,
+      "q": 11,
+      "u": 35,
+      "v": 48,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15543781",
+      "ell": 5,
+      "q": 11,
+      "u": 35,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1241581",
+      "ell": 5,
+      "q": 11,
+      "u": 36,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1477531",
+      "ell": 5,
+      "q": 11,
+      "u": 37,
+      "v": 10,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1331605",
+      "ell": 5,
+      "q": 11,
+      "u": 37,
+      "v": 28,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1397671",
+      "ell": 5,
+      "q": 11,
+      "u": 37,
+      "v": 30,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8169461",
+      "ell": 5,
+      "q": 31,
+      "u": 37,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "47041291",
+      "ell": 5,
+      "q": 11,
+      "u": 37,
+      "v": 90,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1932571",
+      "ell": 5,
+      "q": 31,
+      "u": 38,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1761155",
+      "ell": 5,
+      "q": 11,
+      "u": 38,
+      "v": 7,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1412191",
+      "ell": 5,
+      "q": 11,
+      "u": 38,
+      "v": 21,
+      "valuation": 3
+    },
+    {
+      "cofactor": "10610611",
+      "ell": 5,
+      "q": 11,
+      "u": 38,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2098261",
+      "ell": 5,
+      "q": 11,
+      "u": 39,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2497561",
+      "ell": 5,
+      "q": 11,
+      "u": 40,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2381401",
+      "ell": 5,
+      "q": 11,
+      "u": 40,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2091001",
+      "ell": 5,
+      "q": 11,
+      "u": 40,
+      "v": 9,
+      "valuation": 3
+    },
+    {
+      "cofactor": "1742521",
+      "ell": 5,
+      "q": 11,
+      "u": 40,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2970451",
+      "ell": 5,
+      "q": 31,
+      "u": 41,
+      "v": 42,
+      "valuation": 2
+    },
+    {
+      "cofactor": "13573901",
+      "ell": 5,
+      "q": 11,
+      "u": 41,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2109655",
+      "ell": 5,
+      "q": 41,
+      "u": 42,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2970451",
+      "ell": 5,
+      "q": 31,
+      "u": 42,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2302751",
+      "ell": 5,
+      "q": 11,
+      "u": 43,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4668301",
+      "ell": 5,
+      "q": 11,
+      "u": 43,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "62388205",
+      "ell": 5,
+      "q": 11,
+      "u": 43,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "26303101",
+      "ell": 5,
+      "q": 11,
+      "u": 45,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "64501651",
+      "ell": 5,
+      "q": 41,
+      "u": 45,
+      "v": 98,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3038431",
+      "ell": 5,
+      "q": 11,
+      "u": 46,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5680291",
+      "ell": 5,
+      "q": 131,
+      "u": 46,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42889055",
+      "ell": 5,
+      "q": 11,
+      "u": 46,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3368305",
+      "ell": 5,
+      "q": 31,
+      "u": 47,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3287581",
+      "ell": 5,
+      "q": 31,
+      "u": 47,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "9943901",
+      "ell": 5,
+      "q": 11,
+      "u": 47,
+      "v": 61,
+      "valuation": 3
+    },
+    {
+      "cofactor": "10508971",
+      "ell": 5,
+      "q": 11,
+      "u": 47,
+      "v": 62,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12407461",
+      "ell": 5,
+      "q": 11,
+      "u": 47,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12407461",
+      "ell": 5,
+      "q": 41,
+      "u": 47,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3702721",
+      "ell": 5,
+      "q": 11,
+      "u": 48,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4956281",
+      "ell": 5,
+      "q": 11,
+      "u": 49,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3978601",
+      "ell": 5,
+      "q": 11,
+      "u": 49,
+      "v": 24,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3901601",
+      "ell": 5,
+      "q": 41,
+      "u": 49,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4668301",
+      "ell": 5,
+      "q": 11,
+      "u": 49,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "55696421",
+      "ell": 5,
+      "q": 11,
+      "u": 49,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4668301",
+      "ell": 5,
+      "q": 11,
+      "u": 51,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5680291",
+      "ell": 5,
+      "q": 131,
+      "u": 51,
+      "v": 46,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42350605",
+      "ell": 5,
+      "q": 11,
+      "u": 51,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6670301",
+      "ell": 5,
+      "q": 31,
+      "u": 52,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5155205",
+      "ell": 5,
+      "q": 11,
+      "u": 52,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6970205",
+      "ell": 5,
+      "q": 11,
+      "u": 53,
+      "v": 7,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5706481",
+      "ell": 5,
+      "q": 11,
+      "u": 53,
+      "v": 21,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12160621",
+      "ell": 5,
+      "q": 11,
+      "u": 53,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "32038501",
+      "ell": 5,
+      "q": 11,
+      "u": 53,
+      "v": 83,
+      "valuation": 3
+    },
+    {
+      "cofactor": "9495641",
+      "ell": 5,
+      "q": 31,
+      "u": 55,
+      "v": 56,
+      "valuation": 2
+    },
+    {
+      "cofactor": "9495641",
+      "ell": 5,
+      "q": 31,
+      "u": 56,
+      "v": 55,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11925881",
+      "ell": 5,
+      "q": 11,
+      "u": 56,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7162741",
+      "ell": 5,
+      "q": 41,
+      "u": 57,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "7111291",
+      "ell": 5,
+      "q": 11,
+      "u": 57,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "18796261",
+      "ell": 5,
+      "q": 11,
+      "u": 57,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "48271861",
+      "ell": 5,
+      "q": 11,
+      "u": 57,
+      "v": 92,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10098055",
+      "ell": 5,
+      "q": 11,
+      "u": 58,
+      "v": 7,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8360011",
+      "ell": 5,
+      "q": 11,
+      "u": 58,
+      "v": 21,
+      "valuation": 4
+    },
+    {
+      "cofactor": "32591471",
+      "ell": 5,
+      "q": 11,
+      "u": 58,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "8169461",
+      "ell": 5,
+      "q": 31,
+      "u": 59,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12996005",
+      "ell": 5,
+      "q": 11,
+      "u": 59,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15122701",
+      "ell": 5,
+      "q": 11,
+      "u": 59,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22059631",
+      "ell": 5,
+      "q": 11,
+      "u": 59,
+      "v": 74,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10466621",
+      "ell": 5,
+      "q": 11,
+      "u": 61,
+      "v": 20,
+      "valuation": 2
+    },
+    {
+      "cofactor": "9943901",
+      "ell": 5,
+      "q": 11,
+      "u": 61,
+      "v": 47,
+      "valuation": 3
+    },
+    {
+      "cofactor": "11925881",
+      "ell": 5,
+      "q": 11,
+      "u": 61,
+      "v": 56,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12996005",
+      "ell": 5,
+      "q": 11,
+      "u": 61,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10508971",
+      "ell": 5,
+      "q": 11,
+      "u": 62,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "10610611",
+      "ell": 5,
+      "q": 11,
+      "u": 63,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12160621",
+      "ell": 5,
+      "q": 11,
+      "u": 63,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "67438261",
+      "ell": 5,
+      "q": 11,
+      "u": 63,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12966481",
+      "ell": 5,
+      "q": 11,
+      "u": 64,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11766161",
+      "ell": 5,
+      "q": 11,
+      "u": 64,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "40118881",
+      "ell": 5,
+      "q": 11,
+      "u": 64,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "43515041",
+      "ell": 5,
+      "q": 31,
+      "u": 64,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12407461",
+      "ell": 5,
+      "q": 11,
+      "u": 65,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "12407461",
+      "ell": 5,
+      "q": 41,
+      "u": 65,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15122701",
+      "ell": 5,
+      "q": 11,
+      "u": 65,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "31829281",
+      "ell": 5,
+      "q": 31,
+      "u": 65,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19567031",
+      "ell": 5,
+      "q": 11,
+      "u": 67,
+      "v": 2,
+      "valuation": 3
+    },
+    {
+      "cofactor": "18494971",
+      "ell": 5,
+      "q": 11,
+      "u": 67,
+      "v": 6,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15906055",
+      "ell": 5,
+      "q": 11,
+      "u": 67,
+      "v": 18,
+      "valuation": 2
+    },
+    {
+      "cofactor": "13573901",
+      "ell": 5,
+      "q": 11,
+      "u": 67,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15543781",
+      "ell": 5,
+      "q": 11,
+      "u": 69,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "25613401",
+      "ell": 5,
+      "q": 11,
+      "u": 69,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "63492451",
+      "ell": 5,
+      "q": 11,
+      "u": 69,
+      "v": 98,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19334711",
+      "ell": 5,
+      "q": 11,
+      "u": 70,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21483341",
+      "ell": 5,
+      "q": 251,
+      "u": 71,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20074505",
+      "ell": 5,
+      "q": 11,
+      "u": 71,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "18247405",
+      "ell": 5,
+      "q": 11,
+      "u": 71,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "18796261",
+      "ell": 5,
+      "q": 11,
+      "u": 71,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "26925701",
+      "ell": 5,
+      "q": 281,
+      "u": 71,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42964801",
+      "ell": 5,
+      "q": 11,
+      "u": 71,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "62261881",
+      "ell": 5,
+      "q": 11,
+      "u": 72,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23304721",
+      "ell": 5,
+      "q": 11,
+      "u": 73,
+      "v": 16,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21661541",
+      "ell": 5,
+      "q": 11,
+      "u": 73,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "25613401",
+      "ell": 5,
+      "q": 11,
+      "u": 73,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "26925701",
+      "ell": 5,
+      "q": 281,
+      "u": 73,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "34966481",
+      "ell": 5,
+      "q": 41,
+      "u": 73,
+      "v": 80,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42624791",
+      "ell": 5,
+      "q": 11,
+      "u": 73,
+      "v": 86,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22059631",
+      "ell": 5,
+      "q": 11,
+      "u": 74,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "25809421",
+      "ell": 5,
+      "q": 11,
+      "u": 75,
+      "v": 17,
+      "valuation": 3
+    },
+    {
+      "cofactor": "22491601",
+      "ell": 5,
+      "q": 11,
+      "u": 75,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "31302821",
+      "ell": 5,
+      "q": 11,
+      "u": 76,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "27871261",
+      "ell": 5,
+      "q": 11,
+      "u": 76,
+      "v": 15,
+      "valuation": 2
+    },
+    {
+      "cofactor": "25140721",
+      "ell": 5,
+      "q": 31,
+      "u": 77,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61416091",
+      "ell": 5,
+      "q": 11,
+      "u": 78,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "36631661",
+      "ell": 5,
+      "q": 11,
+      "u": 79,
+      "v": 5,
+      "valuation": 2
+    },
+    {
+      "cofactor": "33092411",
+      "ell": 5,
+      "q": 11,
+      "u": 79,
+      "v": 14,
+      "valuation": 2
+    },
+    {
+      "cofactor": "32742721",
+      "ell": 5,
+      "q": 11,
+      "u": 79,
+      "v": 15,
+      "valuation": 2
+    },
+    {
+      "cofactor": "26303101",
+      "ell": 5,
+      "q": 11,
+      "u": 79,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "73056181",
+      "ell": 5,
+      "q": 31,
+      "u": 79,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "34966481",
+      "ell": 5,
+      "q": 41,
+      "u": 80,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "31829281",
+      "ell": 5,
+      "q": 31,
+      "u": 81,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61861855",
+      "ell": 5,
+      "q": 11,
+      "u": 81,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "39029155",
+      "ell": 5,
+      "q": 11,
+      "u": 82,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "48769171",
+      "ell": 5,
+      "q": 11,
+      "u": 82,
+      "v": 85,
+      "valuation": 4
+    },
+    {
+      "cofactor": "32038501",
+      "ell": 5,
+      "q": 11,
+      "u": 83,
+      "v": 53,
+      "valuation": 3
+    },
+    {
+      "cofactor": "32591471",
+      "ell": 5,
+      "q": 11,
+      "u": 83,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "69591005",
+      "ell": 5,
+      "q": 71,
+      "u": 83,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "76169621",
+      "ell": 5,
+      "q": 11,
+      "u": 83,
+      "v": 100,
+      "valuation": 2
+    },
+    {
+      "cofactor": "36615205",
+      "ell": 5,
+      "q": 11,
+      "u": 84,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "49854541",
+      "ell": 5,
+      "q": 11,
+      "u": 85,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "45745381",
+      "ell": 5,
+      "q": 11,
+      "u": 85,
+      "v": 12,
+      "valuation": 2
+    },
+    {
+      "cofactor": "38210321",
+      "ell": 5,
+      "q": 31,
+      "u": 85,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "48769171",
+      "ell": 5,
+      "q": 11,
+      "u": 85,
+      "v": 82,
+      "valuation": 4
+    },
+    {
+      "cofactor": "42624791",
+      "ell": 5,
+      "q": 11,
+      "u": 86,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "40118881",
+      "ell": 5,
+      "q": 11,
+      "u": 87,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42964801",
+      "ell": 5,
+      "q": 11,
+      "u": 87,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "64664941",
+      "ell": 5,
+      "q": 11,
+      "u": 87,
+      "v": 92,
+      "valuation": 2
+    },
+    {
+      "cofactor": "52693201",
+      "ell": 5,
+      "q": 11,
+      "u": 89,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42889055",
+      "ell": 5,
+      "q": 11,
+      "u": 89,
+      "v": 46,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42350605",
+      "ell": 5,
+      "q": 11,
+      "u": 89,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "43515041",
+      "ell": 5,
+      "q": 31,
+      "u": 89,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "74258305",
+      "ell": 5,
+      "q": 11,
+      "u": 89,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "47041291",
+      "ell": 5,
+      "q": 11,
+      "u": 90,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "67100671",
+      "ell": 5,
+      "q": 11,
+      "u": 90,
+      "v": 91,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61786351",
+      "ell": 5,
+      "q": 11,
+      "u": 91,
+      "v": 10,
+      "valuation": 3
+    },
+    {
+      "cofactor": "56247941",
+      "ell": 5,
+      "q": 41,
+      "u": 91,
+      "v": 20,
+      "valuation": 2
+    },
+    {
+      "cofactor": "67100671",
+      "ell": 5,
+      "q": 11,
+      "u": 91,
+      "v": 90,
+      "valuation": 2
+    },
+    {
+      "cofactor": "59399021",
+      "ell": 5,
+      "q": 11,
+      "u": 92,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "48271861",
+      "ell": 5,
+      "q": 11,
+      "u": 92,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "64664941",
+      "ell": 5,
+      "q": 11,
+      "u": 92,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "67543531",
+      "ell": 5,
+      "q": 11,
+      "u": 93,
+      "v": 10,
+      "valuation": 2
+    },
+    {
+      "cofactor": "77253055",
+      "ell": 5,
+      "q": 11,
+      "u": 94,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "75660211",
+      "ell": 5,
+      "q": 11,
+      "u": 94,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "71253391",
+      "ell": 5,
+      "q": 11,
+      "u": 94,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61861855",
+      "ell": 5,
+      "q": 11,
+      "u": 94,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "72318301",
+      "ell": 5,
+      "q": 41,
+      "u": 95,
+      "v": 12,
+      "valuation": 2
+    },
+    {
+      "cofactor": "63542281",
+      "ell": 5,
+      "q": 31,
+      "u": 95,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "55696421",
+      "ell": 5,
+      "q": 11,
+      "u": 95,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61416091",
+      "ell": 5,
+      "q": 11,
+      "u": 95,
+      "v": 78,
+      "valuation": 2
+    },
+    {
+      "cofactor": "85026821",
+      "ell": 5,
+      "q": 11,
+      "u": 95,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "74258305",
+      "ell": 5,
+      "q": 11,
+      "u": 96,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "86741281",
+      "ell": 5,
+      "q": 41,
+      "u": 96,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "81784505",
+      "ell": 5,
+      "q": 11,
+      "u": 97,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "66357505",
+      "ell": 5,
+      "q": 101,
+      "u": 97,
+      "v": 33,
+      "valuation": 2
+    },
+    {
+      "cofactor": "62388205",
+      "ell": 5,
+      "q": 11,
+      "u": 97,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "62261881",
+      "ell": 5,
+      "q": 11,
+      "u": 97,
+      "v": 72,
+      "valuation": 2
+    },
+    {
+      "cofactor": "69591005",
+      "ell": 5,
+      "q": 71,
+      "u": 97,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "85026821",
+      "ell": 5,
+      "q": 11,
+      "u": 97,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "86741281",
+      "ell": 5,
+      "q": 41,
+      "u": 97,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "64501651",
+      "ell": 5,
+      "q": 41,
+      "u": 98,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "63492451",
+      "ell": 5,
+      "q": 11,
+      "u": 98,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "75016621",
+      "ell": 5,
+      "q": 31,
+      "u": 99,
+      "v": 28,
+      "valuation": 2
+    },
+    {
+      "cofactor": "93458101",
+      "ell": 5,
+      "q": 11,
+      "u": 100,
+      "v": 7,
+      "valuation": 2
+    },
+    {
+      "cofactor": "76554421",
+      "ell": 5,
+      "q": 41,
+      "u": 100,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "67438261",
+      "ell": 5,
+      "q": 11,
+      "u": 100,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "73056181",
+      "ell": 5,
+      "q": 31,
+      "u": 100,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "76169621",
+      "ell": 5,
+      "q": 11,
+      "u": 100,
+      "v": 83,
+      "valuation": 2
+    },
+    {
+      "cofactor": "297474451",
+      "ell": 7,
+      "q": 71,
+      "u": 1,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61546572487",
+      "ell": 7,
+      "q": 29,
+      "u": 1,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "175636693051",
+      "ell": 7,
+      "q": 43,
+      "u": 1,
+      "v": 75,
+      "valuation": 2
+    },
+    {
+      "cofactor": "157808834743",
+      "ell": 7,
+      "q": 43,
+      "u": 3,
+      "v": 74,
+      "valuation": 2
+    },
+    {
+      "cofactor": "269138734957",
+      "ell": 7,
+      "q": 29,
+      "u": 4,
+      "v": 81,
+      "valuation": 2
+    },
+    {
+      "cofactor": "113689061767",
+      "ell": 7,
+      "q": 43,
+      "u": 9,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "273940130107",
+      "ell": 7,
+      "q": 29,
+      "u": 9,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "131516881027",
+      "ell": 7,
+      "q": 29,
+      "u": 11,
+      "v": 73,
+      "valuation": 2
+    },
+    {
+      "cofactor": "162270109",
+      "ell": 7,
+      "q": 29,
+      "u": 13,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "17799604369",
+      "ell": 7,
+      "q": 29,
+      "u": 13,
+      "v": 53,
+      "valuation": 3
+    },
+    {
+      "cofactor": "3542903407",
+      "ell": 7,
+      "q": 29,
+      "u": 14,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "73023855913",
+      "ell": 7,
+      "q": 29,
+      "u": 16,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "417280615417",
+      "ell": 7,
+      "q": 113,
+      "u": 17,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4466079199",
+      "ell": 7,
+      "q": 29,
+      "u": 18,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "246830977",
+      "ell": 7,
+      "q": 29,
+      "u": 19,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "246826147807",
+      "ell": 7,
+      "q": 71,
+      "u": 19,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "286504160461",
+      "ell": 7,
+      "q": 29,
+      "u": 19,
+      "v": 84,
+      "valuation": 2
+    },
+    {
+      "cofactor": "182933479",
+      "ell": 7,
+      "q": 29,
+      "u": 22,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15696073303",
+      "ell": 7,
+      "q": 29,
+      "u": 22,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1638945043",
+      "ell": 7,
+      "q": 71,
+      "u": 23,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19562052049",
+      "ell": 7,
+      "q": 43,
+      "u": 23,
+      "v": 55,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19329388681",
+      "ell": 7,
+      "q": 43,
+      "u": 24,
+      "v": 55,
+      "valuation": 2
+    },
+    {
+      "cofactor": "162270109",
+      "ell": 7,
+      "q": 29,
+      "u": 25,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "182933479",
+      "ell": 7,
+      "q": 29,
+      "u": 25,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "277163251",
+      "ell": 7,
+      "q": 43,
+      "u": 25,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23914646449",
+      "ell": 7,
+      "q": 379,
+      "u": 25,
+      "v": 57,
+      "valuation": 2
+    },
+    {
+      "cofactor": "297474451",
+      "ell": 7,
+      "q": 71,
+      "u": 26,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "277163251",
+      "ell": 7,
+      "q": 43,
+      "u": 26,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "246830977",
+      "ell": 7,
+      "q": 29,
+      "u": 27,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "728310817711",
+      "ell": 7,
+      "q": 43,
+      "u": 29,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "74738658667",
+      "ell": 7,
+      "q": 239,
+      "u": 31,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6847884289",
+      "ell": 7,
+      "q": 43,
+      "u": 32,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "156016886299",
+      "ell": 7,
+      "q": 29,
+      "u": 35,
+      "v": 78,
+      "valuation": 2
+    },
+    {
+      "cofactor": "503194563691",
+      "ell": 7,
+      "q": 29,
+      "u": 35,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1638945043",
+      "ell": 7,
+      "q": 71,
+      "u": 37,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3542903407",
+      "ell": 7,
+      "q": 29,
+      "u": 41,
+      "v": 14,
+      "valuation": 2
+    },
+    {
+      "cofactor": "29644695781",
+      "ell": 7,
+      "q": 29,
+      "u": 41,
+      "v": 60,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4466079199",
+      "ell": 7,
+      "q": 29,
+      "u": 43,
+      "v": 18,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20191045057",
+      "ell": 7,
+      "q": 29,
+      "u": 43,
+      "v": 56,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6847884289",
+      "ell": 7,
+      "q": 43,
+      "u": 47,
+      "v": 32,
+      "valuation": 2
+    },
+    {
+      "cofactor": "113565670429",
+      "ell": 7,
+      "q": 29,
+      "u": 47,
+      "v": 75,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21160176031",
+      "ell": 7,
+      "q": 43,
+      "u": 49,
+      "v": 55,
+      "valuation": 2
+    },
+    {
+      "cofactor": "17799604369",
+      "ell": 7,
+      "q": 29,
+      "u": 53,
+      "v": 13,
+      "valuation": 3
+    },
+    {
+      "cofactor": "15696073303",
+      "ell": 7,
+      "q": 29,
+      "u": 53,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "193357468123",
+      "ell": 7,
+      "q": 127,
+      "u": 53,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19562052049",
+      "ell": 7,
+      "q": 43,
+      "u": 55,
+      "v": 23,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19329388681",
+      "ell": 7,
+      "q": 43,
+      "u": 55,
+      "v": 24,
+      "valuation": 2
+    },
+    {
+      "cofactor": "21160176031",
+      "ell": 7,
+      "q": 43,
+      "u": 55,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20191045057",
+      "ell": 7,
+      "q": 29,
+      "u": 56,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23914646449",
+      "ell": 7,
+      "q": 379,
+      "u": 57,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "29644695781",
+      "ell": 7,
+      "q": 29,
+      "u": 60,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "602182985167",
+      "ell": 7,
+      "q": 29,
+      "u": 61,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "61546572487",
+      "ell": 7,
+      "q": 29,
+      "u": 63,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "73023855913",
+      "ell": 7,
+      "q": 29,
+      "u": 67,
+      "v": 16,
+      "valuation": 2
+    },
+    {
+      "cofactor": "153536353279",
+      "ell": 7,
+      "q": 71,
+      "u": 67,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "103425854533",
+      "ell": 7,
+      "q": 29,
+      "u": 68,
+      "v": 69,
+      "valuation": 2
+    },
+    {
+      "cofactor": "176373454453",
+      "ell": 7,
+      "q": 29,
+      "u": 68,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "74738658667",
+      "ell": 7,
+      "q": 239,
+      "u": 69,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "103425854533",
+      "ell": 7,
+      "q": 29,
+      "u": 69,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "292744646419",
+      "ell": 7,
+      "q": 43,
+      "u": 70,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "113689061767",
+      "ell": 7,
+      "q": 43,
+      "u": 71,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "537449097529",
+      "ell": 7,
+      "q": 29,
+      "u": 72,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "131516881027",
+      "ell": 7,
+      "q": 29,
+      "u": 73,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "157808834743",
+      "ell": 7,
+      "q": 43,
+      "u": 74,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "175636693051",
+      "ell": 7,
+      "q": 43,
+      "u": 75,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "113565670429",
+      "ell": 7,
+      "q": 29,
+      "u": 75,
+      "v": 47,
+      "valuation": 2
+    },
+    {
+      "cofactor": "153536353279",
+      "ell": 7,
+      "q": 71,
+      "u": 77,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "156016886299",
+      "ell": 7,
+      "q": 29,
+      "u": 78,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "176373454453",
+      "ell": 7,
+      "q": 29,
+      "u": 79,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "269138734957",
+      "ell": 7,
+      "q": 29,
+      "u": 81,
+      "v": 4,
+      "valuation": 2
+    },
+    {
+      "cofactor": "273940130107",
+      "ell": 7,
+      "q": 29,
+      "u": 82,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "246826147807",
+      "ell": 7,
+      "q": 71,
+      "u": 82,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "193357468123",
+      "ell": 7,
+      "q": 127,
+      "u": 82,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "486277909243",
+      "ell": 7,
+      "q": 29,
+      "u": 82,
+      "v": 93,
+      "valuation": 2
+    },
+    {
+      "cofactor": "286504160461",
+      "ell": 7,
+      "q": 29,
+      "u": 84,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "292744646419",
+      "ell": 7,
+      "q": 43,
+      "u": 87,
+      "v": 70,
+      "valuation": 2
+    },
+    {
+      "cofactor": "417280615417",
+      "ell": 7,
+      "q": 113,
+      "u": 89,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "486277909243",
+      "ell": 7,
+      "q": 29,
+      "u": 93,
+      "v": 82,
+      "valuation": 2
+    },
+    {
+      "cofactor": "503194563691",
+      "ell": 7,
+      "q": 29,
+      "u": 94,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "811638771679",
+      "ell": 7,
+      "q": 29,
+      "u": 95,
+      "v": 98,
+      "valuation": 2
+    },
+    {
+      "cofactor": "537449097529",
+      "ell": 7,
+      "q": 29,
+      "u": 97,
+      "v": 72,
+      "valuation": 2
+    },
+    {
+      "cofactor": "811638771679",
+      "ell": 7,
+      "q": 29,
+      "u": 98,
+      "v": 95,
+      "valuation": 2
+    },
+    {
+      "cofactor": "728310817711",
+      "ell": 7,
+      "q": 43,
+      "u": 99,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "602182985167",
+      "ell": 7,
+      "q": 29,
+      "u": 99,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "285983085085237",
+      "ell": 11,
+      "q": 23,
+      "u": 1,
+      "v": 28,
+      "valuation": 2
+    },
+    {
+      "cofactor": "16682984211871363",
+      "ell": 11,
+      "q": 23,
+      "u": 1,
+      "v": 42,
+      "valuation": 3
+    },
+    {
+      "cofactor": "969540756071137867",
+      "ell": 11,
+      "q": 23,
+      "u": 1,
+      "v": 63,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5547155185727",
+      "ell": 11,
+      "q": 23,
+      "u": 2,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5295011776153",
+      "ell": 11,
+      "q": 23,
+      "u": 3,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "287883176091230017",
+      "ell": 11,
+      "q": 23,
+      "u": 3,
+      "v": 56,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6184753909592857237",
+      "ell": 11,
+      "q": 67,
+      "u": 3,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "338293440869622877",
+      "ell": 11,
+      "q": 23,
+      "u": 4,
+      "v": 57,
+      "valuation": 3
+    },
+    {
+      "cofactor": "2351234953",
+      "ell": 11,
+      "q": 67,
+      "u": 8,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "2351234953",
+      "ell": 11,
+      "q": 67,
+      "u": 9,
+      "v": 8,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5076001736268343",
+      "ell": 11,
+      "q": 23,
+      "u": 9,
+      "v": 38,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11302500017491",
+      "ell": 11,
+      "q": 89,
+      "u": 10,
+      "v": 21,
+      "valuation": 2
+    },
+    {
+      "cofactor": "305019876934411",
+      "ell": 11,
+      "q": 23,
+      "u": 11,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "297591531075037",
+      "ell": 11,
+      "q": 67,
+      "u": 12,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1202135223389",
+      "ell": 11,
+      "q": 23,
+      "u": 13,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "140439965477766449",
+      "ell": 11,
+      "q": 23,
+      "u": 13,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "413094417730178251",
+      "ell": 11,
+      "q": 23,
+      "u": 14,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "16903357989350583311",
+      "ell": 11,
+      "q": 23,
+      "u": 14,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3421659067986919",
+      "ell": 11,
+      "q": 89,
+      "u": 15,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1202135223389",
+      "ell": 11,
+      "q": 23,
+      "u": 17,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "45612451412287869407",
+      "ell": 11,
+      "q": 23,
+      "u": 17,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5547155185727",
+      "ell": 11,
+      "q": 23,
+      "u": 19,
+      "v": 2,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5295011776153",
+      "ell": 11,
+      "q": 23,
+      "u": 19,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "459238254307074661",
+      "ell": 11,
+      "q": 89,
+      "u": 19,
+      "v": 60,
+      "valuation": 2
+    },
+    {
+      "cofactor": "502221115615781",
+      "ell": 11,
+      "q": 23,
+      "u": 20,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11302500017491",
+      "ell": 11,
+      "q": 89,
+      "u": 21,
+      "v": 10,
+      "valuation": 2
+    },
+    {
+      "cofactor": "376952984027979811",
+      "ell": 11,
+      "q": 23,
+      "u": 21,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15787101765789086041",
+      "ell": 11,
+      "q": 23,
+      "u": 21,
+      "v": 85,
+      "valuation": 2
+    },
+    {
+      "cofactor": "55076131927949287",
+      "ell": 11,
+      "q": 23,
+      "u": 22,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19828296218199925699",
+      "ell": 11,
+      "q": 23,
+      "u": 22,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4837603396471550101",
+      "ell": 11,
+      "q": 23,
+      "u": 25,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42546087871242421951",
+      "ell": 11,
+      "q": 67,
+      "u": 25,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "78893947528509751",
+      "ell": 11,
+      "q": 23,
+      "u": 26,
+      "v": 51,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4743700173965068933",
+      "ell": 11,
+      "q": 23,
+      "u": 27,
+      "v": 76,
+      "valuation": 2
+    },
+    {
+      "cofactor": "285983085085237",
+      "ell": 11,
+      "q": 23,
+      "u": 28,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "305019876934411",
+      "ell": 11,
+      "q": 23,
+      "u": 29,
+      "v": 11,
+      "valuation": 2
+    },
+    {
+      "cofactor": "297591531075037",
+      "ell": 11,
+      "q": 67,
+      "u": 29,
+      "v": 12,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1272315973070142947",
+      "ell": 11,
+      "q": 23,
+      "u": 29,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "706937326170571",
+      "ell": 11,
+      "q": 23,
+      "u": 30,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "502221115615781",
+      "ell": 11,
+      "q": 23,
+      "u": 31,
+      "v": 20,
+      "valuation": 2
+    },
+    {
+      "cofactor": "706937326170571",
+      "ell": 11,
+      "q": 23,
+      "u": 31,
+      "v": 30,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20495878659435631",
+      "ell": 11,
+      "q": 23,
+      "u": 31,
+      "v": 45,
+      "valuation": 2
+    },
+    {
+      "cofactor": "195523170876767801",
+      "ell": 11,
+      "q": 67,
+      "u": 31,
+      "v": 56,
+      "valuation": 2
+    },
+    {
+      "cofactor": "48297111647520913",
+      "ell": 11,
+      "q": 23,
+      "u": 33,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "275133913260211699",
+      "ell": 11,
+      "q": 23,
+      "u": 33,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5310475081650751",
+      "ell": 11,
+      "q": 23,
+      "u": 34,
+      "v": 39,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1396536902214207469",
+      "ell": 11,
+      "q": 23,
+      "u": 35,
+      "v": 68,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22381206636486801511",
+      "ell": 11,
+      "q": 23,
+      "u": 35,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "3421659067986919",
+      "ell": 11,
+      "q": 89,
+      "u": 37,
+      "v": 15,
+      "valuation": 2
+    },
+    {
+      "cofactor": "47531845004214517",
+      "ell": 11,
+      "q": 23,
+      "u": 37,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "264890122336263139",
+      "ell": 11,
+      "q": 23,
+      "u": 37,
+      "v": 58,
+      "valuation": 2
+    },
+    {
+      "cofactor": "17431142105542499599",
+      "ell": 11,
+      "q": 23,
+      "u": 37,
+      "v": 87,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5076001736268343",
+      "ell": 11,
+      "q": 23,
+      "u": 38,
+      "v": 9,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5310475081650751",
+      "ell": 11,
+      "q": 23,
+      "u": 39,
+      "v": 34,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11972338663163561",
+      "ell": 11,
+      "q": 23,
+      "u": 40,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4825417322984080769",
+      "ell": 11,
+      "q": 23,
+      "u": 40,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "33845525467424260129",
+      "ell": 11,
+      "q": 23,
+      "u": 40,
+      "v": 93,
+      "valuation": 2
+    },
+    {
+      "cofactor": "11972338663163561",
+      "ell": 11,
+      "q": 23,
+      "u": 41,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "364653808234814341",
+      "ell": 11,
+      "q": 23,
+      "u": 41,
+      "v": 60,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23959208320089437011",
+      "ell": 11,
+      "q": 23,
+      "u": 41,
+      "v": 90,
+      "valuation": 2
+    },
+    {
+      "cofactor": "16682984211871363",
+      "ell": 11,
+      "q": 23,
+      "u": 42,
+      "v": 1,
+      "valuation": 3
+    },
+    {
+      "cofactor": "44458205721773449",
+      "ell": 11,
+      "q": 89,
+      "u": 43,
+      "v": 48,
+      "valuation": 2
+    },
+    {
+      "cofactor": "698282897516910553",
+      "ell": 11,
+      "q": 23,
+      "u": 43,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "45923184167322886777",
+      "ell": 11,
+      "q": 23,
+      "u": 43,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20495878659435631",
+      "ell": 11,
+      "q": 23,
+      "u": 45,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "44458205721773449",
+      "ell": 11,
+      "q": 89,
+      "u": 48,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "55076131927949287",
+      "ell": 11,
+      "q": 23,
+      "u": 49,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "48297111647520913",
+      "ell": 11,
+      "q": 23,
+      "u": 49,
+      "v": 33,
+      "valuation": 2
+    },
+    {
+      "cofactor": "47531845004214517",
+      "ell": 11,
+      "q": 23,
+      "u": 49,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "431124896909262061",
+      "ell": 11,
+      "q": 67,
+      "u": 49,
+      "v": 61,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1086551327185784527",
+      "ell": 11,
+      "q": 7789,
+      "u": 49,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1085580729956991599",
+      "ell": 11,
+      "q": 89,
+      "u": 50,
+      "v": 67,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4480607944008956299",
+      "ell": 11,
+      "q": 67,
+      "u": 50,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "78893947528509751",
+      "ell": 11,
+      "q": 23,
+      "u": 51,
+      "v": 26,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19735389640257739757",
+      "ell": 11,
+      "q": 23,
+      "u": 52,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "140439965477766449",
+      "ell": 11,
+      "q": 23,
+      "u": 53,
+      "v": 13,
+      "valuation": 2
+    },
+    {
+      "cofactor": "34505109581098159103",
+      "ell": 11,
+      "q": 23,
+      "u": 53,
+      "v": 94,
+      "valuation": 2
+    },
+    {
+      "cofactor": "287883176091230017",
+      "ell": 11,
+      "q": 23,
+      "u": 56,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "195523170876767801",
+      "ell": 11,
+      "q": 67,
+      "u": 56,
+      "v": 31,
+      "valuation": 2
+    },
+    {
+      "cofactor": "338293440869622877",
+      "ell": 11,
+      "q": 23,
+      "u": 57,
+      "v": 4,
+      "valuation": 3
+    },
+    {
+      "cofactor": "275133913260211699",
+      "ell": 11,
+      "q": 23,
+      "u": 58,
+      "v": 33,
+      "valuation": 2
+    },
+    {
+      "cofactor": "264890122336263139",
+      "ell": 11,
+      "q": 23,
+      "u": 58,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "413094417730178251",
+      "ell": 11,
+      "q": 23,
+      "u": 59,
+      "v": 14,
+      "valuation": 2
+    },
+    {
+      "cofactor": "376952984027979811",
+      "ell": 11,
+      "q": 23,
+      "u": 59,
+      "v": 21,
+      "valuation": 2
+    },
+    {
+      "cofactor": "948900969232465591",
+      "ell": 11,
+      "q": 23,
+      "u": 59,
+      "v": 65,
+      "valuation": 2
+    },
+    {
+      "cofactor": "459238254307074661",
+      "ell": 11,
+      "q": 89,
+      "u": 60,
+      "v": 19,
+      "valuation": 2
+    },
+    {
+      "cofactor": "364653808234814341",
+      "ell": 11,
+      "q": 23,
+      "u": 60,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4382730671453558029",
+      "ell": 11,
+      "q": 23,
+      "u": 60,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "431124896909262061",
+      "ell": 11,
+      "q": 67,
+      "u": 61,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "969540756071137867",
+      "ell": 11,
+      "q": 23,
+      "u": 63,
+      "v": 1,
+      "valuation": 2
+    },
+    {
+      "cofactor": "698282897516910553",
+      "ell": 11,
+      "q": 23,
+      "u": 64,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5746718788967546401",
+      "ell": 11,
+      "q": 23,
+      "u": 64,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "948900969232465591",
+      "ell": 11,
+      "q": 23,
+      "u": 65,
+      "v": 59,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1272315973070142947",
+      "ell": 11,
+      "q": 23,
+      "u": 67,
+      "v": 29,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1086551327185784527",
+      "ell": 11,
+      "q": 7789,
+      "u": 67,
+      "v": 49,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1085580729956991599",
+      "ell": 11,
+      "q": 89,
+      "u": 67,
+      "v": 50,
+      "valuation": 2
+    },
+    {
+      "cofactor": "1396536902214207469",
+      "ell": 11,
+      "q": 23,
+      "u": 68,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "13594368602285131651",
+      "ell": 11,
+      "q": 23,
+      "u": 71,
+      "v": 86,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23301289919731354301",
+      "ell": 11,
+      "q": 23,
+      "u": 71,
+      "v": 91,
+      "valuation": 3
+    },
+    {
+      "cofactor": "43953192398824438643",
+      "ell": 11,
+      "q": 23,
+      "u": 71,
+      "v": 97,
+      "valuation": 2
+    },
+    {
+      "cofactor": "6184753909592857237",
+      "ell": 11,
+      "q": 67,
+      "u": 76,
+      "v": 3,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4837603396471550101",
+      "ell": 11,
+      "q": 23,
+      "u": 76,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4743700173965068933",
+      "ell": 11,
+      "q": 23,
+      "u": 76,
+      "v": 27,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4825417322984080769",
+      "ell": 11,
+      "q": 23,
+      "u": 77,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4480607944008956299",
+      "ell": 11,
+      "q": 67,
+      "u": 77,
+      "v": 50,
+      "valuation": 2
+    },
+    {
+      "cofactor": "4382730671453558029",
+      "ell": 11,
+      "q": 23,
+      "u": 77,
+      "v": 60,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22169223696342140419",
+      "ell": 11,
+      "q": 23,
+      "u": 77,
+      "v": 90,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20511159213194095183",
+      "ell": 11,
+      "q": 23,
+      "u": 78,
+      "v": 89,
+      "valuation": 2
+    },
+    {
+      "cofactor": "5746718788967546401",
+      "ell": 11,
+      "q": 23,
+      "u": 79,
+      "v": 64,
+      "valuation": 2
+    },
+    {
+      "cofactor": "40745069234548176961",
+      "ell": 11,
+      "q": 23,
+      "u": 79,
+      "v": 96,
+      "valuation": 2
+    },
+    {
+      "cofactor": "16903357989350583311",
+      "ell": 11,
+      "q": 23,
+      "u": 85,
+      "v": 14,
+      "valuation": 2
+    },
+    {
+      "cofactor": "15787101765789086041",
+      "ell": 11,
+      "q": 23,
+      "u": 85,
+      "v": 21,
+      "valuation": 2
+    },
+    {
+      "cofactor": "13594368602285131651",
+      "ell": 11,
+      "q": 23,
+      "u": 86,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19828296218199925699",
+      "ell": 11,
+      "q": 23,
+      "u": 87,
+      "v": 22,
+      "valuation": 2
+    },
+    {
+      "cofactor": "17431142105542499599",
+      "ell": 11,
+      "q": 23,
+      "u": 87,
+      "v": 37,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22381206636486801511",
+      "ell": 11,
+      "q": 23,
+      "u": 89,
+      "v": 35,
+      "valuation": 2
+    },
+    {
+      "cofactor": "19735389640257739757",
+      "ell": 11,
+      "q": 23,
+      "u": 89,
+      "v": 52,
+      "valuation": 2
+    },
+    {
+      "cofactor": "20511159213194095183",
+      "ell": 11,
+      "q": 23,
+      "u": 89,
+      "v": 78,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23959208320089437011",
+      "ell": 11,
+      "q": 23,
+      "u": 90,
+      "v": 41,
+      "valuation": 2
+    },
+    {
+      "cofactor": "22169223696342140419",
+      "ell": 11,
+      "q": 23,
+      "u": 90,
+      "v": 77,
+      "valuation": 2
+    },
+    {
+      "cofactor": "23301289919731354301",
+      "ell": 11,
+      "q": 23,
+      "u": 91,
+      "v": 71,
+      "valuation": 3
+    },
+    {
+      "cofactor": "33845525467424260129",
+      "ell": 11,
+      "q": 23,
+      "u": 93,
+      "v": 40,
+      "valuation": 2
+    },
+    {
+      "cofactor": "45612451412287869407",
+      "ell": 11,
+      "q": 23,
+      "u": 94,
+      "v": 17,
+      "valuation": 2
+    },
+    {
+      "cofactor": "42546087871242421951",
+      "ell": 11,
+      "q": 67,
+      "u": 94,
+      "v": 25,
+      "valuation": 2
+    },
+    {
+      "cofactor": "34505109581098159103",
+      "ell": 11,
+      "q": 23,
+      "u": 94,
+      "v": 53,
+      "valuation": 2
+    },
+    {
+      "cofactor": "45923184167322886777",
+      "ell": 11,
+      "q": 23,
+      "u": 96,
+      "v": 43,
+      "valuation": 2
+    },
+    {
+      "cofactor": "40745069234548176961",
+      "ell": 11,
+      "q": 23,
+      "u": 96,
+      "v": 79,
+      "valuation": 2
+    },
+    {
+      "cofactor": "43953192398824438643",
+      "ell": 11,
+      "q": 23,
+      "u": 97,
+      "v": 71,
+      "valuation": 2
+    },
+    {
+      "cofactor": "86094903807538700383",
+      "ell": 11,
+      "q": 23,
+      "u": 98,
+      "v": 99,
+      "valuation": 2
+    },
+    {
+      "cofactor": "86094903807538700383",
+      "ell": 11,
+      "q": 23,
+      "u": 99,
+      "v": 98,
+      "valuation": 2
+    }
+  ],
+  "higher_valuation_occurrences": 860,
+  "interpretation": {
+    "certified_scope": "finite exhaustive census over the stated ordered coprime base range, with complete PARI factorization",
+    "not_proved": "primitive-divisor existence or the unrestricted Beal conjecture"
+  },
+  "order_failures": [],
+  "pairs_tested": 24348,
+  "parameters": {
+    "base_bound": 100,
+    "ells": [
+      3,
+      5,
+      7,
+      11
+    ],
+    "workers": 2
+  },
+  "schema_version": 1
+}

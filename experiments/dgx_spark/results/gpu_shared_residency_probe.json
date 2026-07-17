@@ -1,0 +1,16 @@
+{
+  "exit_code": 2,
+  "experiment": "cuda_shared_residency_probe",
+  "interpretation": "With resident vLLM active, the calibration could not allocate its CUDA buffers. Exclusive scheduling is required on this host configuration.",
+  "parameters": {
+    "count": 100000,
+    "repeats": 1
+  },
+  "schema_version": 1,
+  "stderr": "CUDA error: out of memory at line 74",
+  "vllm_container_status": "running",
+  "vllm_health": {
+    "current_model": "gemma-4",
+    "status": "ok"
+  }
+}

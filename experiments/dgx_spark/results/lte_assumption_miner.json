@@ -1,0 +1,43 @@
+{
+  "elapsed_seconds": 0.32732042495626956,
+  "experiment": "plus_lte_assumption_miner",
+  "interpretation": {
+    "certified_scope": "finite exhaustive check under stated bounds",
+    "not_proved": "the general LTE theorem; zero bounded violations are only falsification evidence"
+  },
+  "minimal_counterexamples_when_assumption_removed": {
+    "allow_q_two_with_odd_n": null,
+    "remove_odd_n": {
+      "a": 1,
+      "b": 2,
+      "lhs_valuation": 0,
+      "n": 2,
+      "q": 3,
+      "rhs_valuation": 1
+    },
+    "remove_q_coprime_ab": {
+      "a": 3,
+      "b": 3,
+      "lhs_valuation": 3,
+      "n": 3,
+      "q": 3,
+      "rhs_valuation": 2
+    },
+    "remove_q_divides_sum": {
+      "a": 1,
+      "b": 1,
+      "lhs_valuation": 0,
+      "n": 3,
+      "q": 3,
+      "rhs_valuation": 1
+    }
+  },
+  "parameters": {
+    "a_bound": 200,
+    "n_bound": 31,
+    "prime_bound": 97
+  },
+  "schema_version": 1,
+  "valid_hypothesis_cases_tested": 422340,
+  "valid_hypothesis_violations": []
+}
