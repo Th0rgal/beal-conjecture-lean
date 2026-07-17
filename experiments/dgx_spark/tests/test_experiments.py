@@ -172,3 +172,44 @@ def test_verifier_rejects_source_dirty_at_environment_probe(tmp_path):
     environment_path.write_text(json.dumps(environment))
     with pytest.raises(VerificationError):
         check(results, cuda_policy="required", shared_policy="required")
+
+
+def test_verifier_rejects_tree_oid_as_source_commit(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    producer_commit = json.loads((results / "environment.json").read_text())[
+        "provenance"
+    ]["source_commit"]
+    repo = Path(__file__).resolve().parents[3]
+    tree_oid = subprocess.run(
+        ["git", "-C", str(repo), "rev-parse", f"{producer_commit}^{{tree}}"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    for artifact in (
+        "cyclotomic_census.json", "finite_field_support.json",
+        "lte_assumption_miner.json", "independent_reproduction.json",
+        "cuda_modexp_calibration.json", "gpu_shared_residency_probe.json",
+        "environment.json",
+    ):
+        path = results / artifact
+        value = json.loads(path.read_text())
+        value["provenance"]["source_commit"] = tree_oid
+        path.write_text(json.dumps(value))
+    with pytest.raises(VerificationError, match="not a Git commit"):
+        check(results, cuda_policy="required", shared_policy="required")
+
+
+def test_verifier_checks_both_sides_of_dirty_rename(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    environment_path = results / "environment.json"
+    environment = json.loads(environment_path.read_text())
+    environment["git_status_at_probe"] += (
+        "\nR  experiments/dgx_spark/verify_results.py -> "
+        "experiments/dgx_spark/results/renamed.py\n"
+    )
+    environment_path.write_text(json.dumps(environment))
+    with pytest.raises(VerificationError):
+        check(results, cuda_policy="required", shared_policy="required")

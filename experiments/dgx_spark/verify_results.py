@@ -104,6 +104,16 @@ def git_blob(repo_root: Path, commit: str, path: str) -> bytes:
     return process.stdout
 
 
+def require_commit_object(repo_root: Path, commit: str) -> None:
+    process = subprocess.run(
+        ["git", "-C", str(repo_root), "cat-file", "-t", commit],
+        capture_output=True,
+        check=False,
+    )
+    require(process.returncode == 0 and process.stdout.strip() == b"commit",
+            f"source object is not a Git commit: {commit}")
+
+
 def check_provenance(
     named_artifacts: dict[str, dict], environment: dict
 ) -> tuple[str, str, int, int]:
@@ -135,6 +145,7 @@ def check_provenance(
     if not isinstance(source_hashes, dict) or not source_hashes:
         raise VerificationError("environment lacks source_files_sha256")
     repo_root = Path(__file__).resolve().parents[2]
+    require_commit_object(repo_root, commit)
     paths_by_basename: dict[str, list[str]] = {}
     for path, expected_hash in source_hashes.items():
         if not isinstance(path, str) or not path.startswith("experiments/dgx_spark/"):
@@ -164,9 +175,9 @@ def check_provenance(
     for line in status.splitlines():
         parts = line.strip().split(maxsplit=1)
         require(len(parts) == 2, f"invalid git status line: {line!r}")
-        changed_path = parts[1].split(" -> ")[-1]
-        require(changed_path.startswith("experiments/dgx_spark/results/"),
-                f"producer source was dirty at environment probe: {changed_path}")
+        for changed_path in parts[1].split(" -> "):
+            require(changed_path.startswith("experiments/dgx_spark/results/"),
+                    f"producer source was dirty at environment probe: {changed_path}")
 
     return run_id, commit, len(source_hashes), len(provenances)
 
