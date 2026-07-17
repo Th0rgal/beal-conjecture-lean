@@ -264,6 +264,44 @@ def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
     assert verified.returncode == 0, verified.stderr
 
 
+def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path):
+    repo = Path(__file__).resolve().parents[3]
+    branch = subprocess.run(
+        ["git", "-C", str(repo), "branch", "--show-current"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    shallow = tmp_path / "detached-shallow"
+    subprocess.run(
+        ["git", "clone", "--depth", "1", "--branch", branch, "--single-branch",
+         f"file://{repo}", str(shallow)],
+        check=True,
+    )
+    subprocess.run(["git", "-C", str(shallow), "checkout", "--detach"], check=True)
+    producer_commit = json.loads(
+        (shallow / "experiments/dgx_spark/results/environment.json").read_text()
+    )["provenance"]["source_commit"]
+    bootstrap = Path(__file__).resolve().parents[1] / "bootstrap_provenance_history.py"
+    subprocess.run(
+        [sys.executable, str(bootstrap), "--repo", str(shallow),
+         "--results", str(shallow / "experiments/dgx_spark/results")],
+        text=True, capture_output=True, check=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(shallow), "merge-base", "--is-ancestor", producer_commit, "HEAD"],
+        check=True,
+    )
+
+
+def test_committed_checksum_receipt_covers_the_current_verifier():
+    repo = Path(__file__).resolve().parents[3]
+    receipt = repo / "experiments/dgx_spark/results/SHA256SUMS"
+    checked = subprocess.run(
+        ["sha256sum", "--strict", "--status", "-c", str(receipt)],
+        cwd=repo, text=True, capture_output=True, check=False,
+    )
+    assert checked.returncode == 0, checked.stderr
+
+
 def test_bootstrap_rejects_a_foreign_producer_commit(tmp_path):
     repo = Path(__file__).resolve().parents[3]
     isolated = tmp_path / "isolated"

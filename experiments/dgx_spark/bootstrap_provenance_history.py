@@ -44,6 +44,33 @@ def is_ancestor(repo: Path, commit: str) -> bool:
     return git(repo, "merge-base", "--is-ancestor", commit, "HEAD").returncode == 0
 
 
+def branch_for_head(repo: Path) -> str:
+    """Return the one branch that names HEAD without guessing a fetch ref."""
+    branch = git(repo, "symbolic-ref", "--quiet", "--short", "HEAD")
+    if branch.returncode == 0 and branch.stdout.strip():
+        return branch.stdout.strip()
+
+    remote_refs = git(
+        repo,
+        "for-each-ref",
+        "--format=%(refname:short)",
+        "--points-at",
+        "HEAD",
+        "refs/remotes/origin",
+    )
+    candidates = [
+        ref.removeprefix("origin/")
+        for ref in remote_refs.stdout.splitlines()
+        if ref.startswith("origin/") and ref != "origin/HEAD"
+    ]
+    if remote_refs.returncode != 0 or len(candidates) != 1:
+        raise BootstrapError(
+            "a named local branch or one origin branch pointing at HEAD is required "
+            "to deepen shallow history"
+        )
+    return candidates[0]
+
+
 def bootstrap(repo: Path, results: Path) -> str:
     if git(repo, "rev-parse", "--git-dir").returncode != 0:
         raise BootstrapError(f"not a Git repository: {repo}")
@@ -53,12 +80,10 @@ def bootstrap(repo: Path, results: Path) -> str:
     shallow = git(repo, "rev-parse", "--is-shallow-repository")
     if shallow.returncode != 0 or shallow.stdout.strip() != "true":
         raise BootstrapError(f"producer commit is not an ancestor of HEAD: {commit}")
-    branch = git(repo, "symbolic-ref", "--quiet", "--short", "HEAD")
-    if branch.returncode != 0 or not branch.stdout.strip():
-        raise BootstrapError("a named local branch is required to deepen shallow history")
+    branch = branch_for_head(repo)
 
     for _ in range(MAX_INCREMENTAL_DEEPENS):
-        fetched = git(repo, "fetch", "--no-tags", "--deepen=1", "origin", branch.stdout.strip())
+        fetched = git(repo, "fetch", "--no-tags", "--deepen=1", "origin", branch)
         if fetched.returncode != 0:
             detail = fetched.stderr.strip() or fetched.stdout.strip()
             raise BootstrapError(f"bounded producer-history fetch failed: {detail}")
