@@ -11,6 +11,19 @@ from finite_field_support import unit_solution_count
 from lte_assumption_miner import lte_holds, valuation
 
 
+def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    if n % 2 == 0:
+        return n == 2
+    divisor = 3
+    while divisor * divisor <= n:
+        if n % divisor == 0:
+            return False
+        divisor += 2
+    return True
+
+
 def cyclotomic_plus_cofactor(u: int, v: int, ell: int) -> int:
     numerator = pow(u, ell) + pow(v, ell)
     denominator = u + v
@@ -28,6 +41,7 @@ def check(results: Path) -> dict:
         x, y, z = row["signature"]
         for witness in row["support_forcing_primes"]:
             q = witness["prime"]
+            assert is_prime(q)
             assert unit_solution_count(q, x, y, z) == 0
             assert (pow(0, x, q) + pow(1, y, q) - pow(1, z, q)) % q == 0
             finite_rows += 1
@@ -49,6 +63,7 @@ def check(results: Path) -> dict:
     assert len(higher_cases) == cyclo["higher_valuation_occurrences"]
     for case in higher_cases:
         ell, u, v, q, exponent = (case[k] for k in ("ell", "u", "v", "q", "valuation"))
+        assert is_prime(ell) and is_prime(q)
         cofactor = cyclotomic_plus_cofactor(u, v, ell)
         assert str(cofactor) == case["cofactor"]
         assert math.gcd(u, v) == 1
@@ -86,6 +101,7 @@ def check(results: Path) -> dict:
         "finite_field_support_witnesses_replayed": finite_rows,
         "lte_counterexamples_replayed": lte_counterexamples,
         "cyclotomic_higher_valuation_cases_replayed": len(higher_cases),
+        "primality_checks": finite_rows + 2 * len(higher_cases),
         "cuda_differential_result_checked": cuda_checked,
         "shared_residency_failure_checked": shared_checked,
         "scope": "Artifact consistency and witness replay; does not prove unrestricted claims or replace Lean certification.",

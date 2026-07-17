@@ -7,6 +7,7 @@ from cyclotomic_census import (
 )
 from finite_field_support import power_subgroup, unit_solution_count
 from lte_assumption_miner import lte_holds
+from verify_results import is_prime
 
 
 def test_cyclotomic_plus_cofactor_exact_identity():
@@ -38,7 +39,12 @@ def test_finite_field_unit_branch_and_zero_branch_trap():
 def test_lte_valid_and_missing_assumption_counterexamples():
     assert lte_holds(3, 1, 2, 3)
     assert lte_holds(5, 2, 3, 5)
-    # Removing odd n, q | a+b, or q ∤ ab produces failures.
+    # Removing odd n, q | a+b, or the base/unit coprimality conditions produces failures.
     assert not lte_holds(3, 1, 2, 2)
     assert not lte_holds(3, 1, 1, 3)
     assert not lte_holds(3, 3, 3, 3)
+
+
+def test_verifier_primality_check():
+    assert is_prime(2) and is_prime(7789)
+    assert not is_prime(1) and not is_prime(7 * 11)

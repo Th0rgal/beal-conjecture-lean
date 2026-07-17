@@ -85,7 +85,7 @@ hypotheses were removed:
 |---|---|---|
 | `n` odd | `q=3, a=1, b=2, n=2` | `0 / 1` |
 | `q | a+b` | `q=3, a=1, b=1, n=3` | `0 / 1` |
-| `q` coprime to `ab` | `q=3, a=3, b=3, n=3` | `3 / 2` |
+| base/unit coprimality (`gcd(a,b)=1`, hence `q ∤ ab`) | `q=3, a=3, b=3, n=3` | `3 / 2` |
 
 No failure was found for `q=2` with odd `n` in this bounded search. That is an
 observation only; it is not promoted to a general theorem here.
@@ -187,6 +187,7 @@ continue beside the model service under the existing two-thread quota.
 
 - 254 finite-field support witnesses replayed;
 - 860 higher-valuation cyclotomic witnesses replayed;
+- primality of every replayed finite-field and cyclotomic witness checked;
 - three LTE counterexamples replayed;
 - CUDA result checked with zero mismatches;
 - shared-residency failure checked;
