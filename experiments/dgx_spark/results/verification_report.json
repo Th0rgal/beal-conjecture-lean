@@ -1,11 +1,24 @@
 {
-  "cuda_differential_result_checked": true,
+  "cuda_all_repeats_differentially_checked": true,
   "cyclotomic_higher_valuation_cases_replayed": 860,
   "finite_field_support_witnesses_replayed": 254,
+  "independent_complete_domain_reproduction_checked": true,
   "lte_counterexamples_replayed": 3,
   "primality_checks": 1974,
-  "schema_version": 1,
-  "scope": "Artifact consistency and witness replay; does not prove unrestricted claims or replace Lean certification.",
+  "provenance": {
+    "produced_at_utc": "2026-07-17T14:18:55.712610+00:00",
+    "producer": "verify_results.py",
+    "producer_sha256": "fab9c056706c3ff407ef7b0001d8d3f2d59c8f7336ac9a363d6b91080b8759fc",
+    "run_id": "beal-dgx-20260717-4795b06",
+    "run_started_at_utc": "2026-07-17T09:40:40Z",
+    "source_branch": "exact-run-4795b06",
+    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "source_tree_clean": true
+  },
+  "run_id": "beal-dgx-20260717-4795b06",
+  "schema_version": 2,
+  "scope": "Artifact consistency plus a separately implemented complete-domain reproduction; not Lean certification or an unrestricted proof.",
   "shared_residency_failure_checked": true,
+  "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
   "verification": "passed"
 }

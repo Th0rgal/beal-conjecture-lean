@@ -52,8 +52,11 @@ changing the conjecture's status:
 
 The checkpoint tested 24,348 ordered coprime cyclotomic pairs, 422,340 LTE
 instances, 11,664 finite-field signature/prime combinations, and a four-million
-input CPU/GPU differential calibration. It added no Lean theorem and does not
-advance the single open Beal core by itself.
+input CPU/GPU differential calibration. A separately implemented SymPy path
+reconstructed all three complete CPU domains, while every one of five CUDA
+repetitions matched the independent CPU digest. Every artifact carries one exact
+clean producer commit and run ID. This stronger bounded assurance added no Lean
+theorem and does not advance the single open Beal core by itself.
 
 ## The 3 prioritized paths
 

@@ -61,7 +61,7 @@ def test_verifier_primality_check():
 def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     results = Path(__file__).resolve().parents[1] / "results"
     report = check(results, cuda_policy="ignore", shared_policy="ignore")
-    assert report["cuda_differential_result_checked"] is False
+    assert report["cuda_all_repeats_differentially_checked"] is False
     assert report["shared_residency_failure_checked"] is False
 
 

@@ -8,9 +8,11 @@ intentional `sorry` in `BealUnified/BealConjecture.lean`, and does not prove a
 primitive-divisor existence theorem.
 
 The producer scripts and machine-readable results are under
-`experiments/dgx_spark/`. A separate checker replayed every finite-field support
-witness, all recorded high-valuation cyclotomic cases, the LTE
-assumption-removal counterexamples, and the CUDA differential metadata.
+`experiments/dgx_spark/`. Assurance has two distinct executable layers: a
+separately implemented SymPy program reconstructs all three complete CPU
+domains without importing producer code, while an artifact checker replays
+recorded witnesses, validates provenance and optional-artifact policies, and
+checks every CUDA repetition. Neither layer is a Lean proof.
 
 ## Environment
 
@@ -19,7 +21,9 @@ assumption-removal counterexamples, and the CUDA differential metadata.
 - GPU: NVIDIA GB10, compute capability 12.1
 - CUDA: 13.0, native compilation with `-arch=sm_121`
 - PARI/GP: 2.15.4, pthread build; Python binding `cypari2` 2.1.4
-- Repository baseline: `d83704e0904c504ef314bc9cabe08ffd7f67c8a8`
+- SymPy: 1.14.0 for the separately implemented complete-domain reproduction
+- Producer commit: `4795b061133f7a24e6c522a2d9f64ad823259895`
+- Run ID: `beal-dgx-20260717-4795b06`
 - Resident model: `gemma-4` through `vllm-backend`
 
 The CPU experiments ran while vLLM remained available. CUDA could not allocate
@@ -162,39 +166,63 @@ is not a substitute.
 ## Experiment 4 — CUDA fixed-width modular exponentiation
 
 A native CUDA 13 kernel computed `base^65537 mod 2147483647` for 4,000,000
-inputs, repeated five times, and was differentially compared against a two-thread
-CPU implementation.
+inputs, repeated five times. Every repetition was copied back, digested, and
+differentially compared against a separately coded two-thread CPU implementation
+using `unsigned __int128` modular multiplication.
 
 - GPU: GB10 / `sm_121`
-- mismatches: **0**
-- two-thread CPU time for one batch: 0.110142 s
-- GPU kernel time per repeated batch: 0.000688 s
-- GPU kernel throughput: approximately 5.82 billion candidates/s
-- CPU throughput: approximately 36.3 million candidates/s
+- mismatches by repetition: **`[0,0,0,0,0]`**
+- CPU and all five GPU output digests: **`b03df39b05355ebb`**
+- two-thread independent CPU reference time: 0.332481 s
+- GPU kernel time per repeated batch: 0.000825 s
+- GPU kernel throughput: approximately 4.85 billion candidates/s
+- GPU end-to-end time per repetition, including every verification transfer:
+  0.015864 s, or approximately 252 million candidates/s
+- CPU throughput: approximately 12.0 million candidates/s
 
-The roughly 160x kernel-only ratio is a calibration for this one common-modulus,
-31-bit workload. It is not a general bigint benchmark: inputs were reused across
-repetitions, transfers were amortized, and the workload had no divergence.
+The approximately 403x kernel-only and 21x measured end-to-end ratios are
+calibrations for this one common-modulus, 31-bit workload. They are not general
+bigint benchmarks: inputs were reused across repetitions and the workload had
+no divergence. The end-to-end number includes each device-to-host verification
+transfer and comparison; setup and compilation remain outside the timing.
 
 With `vllm-backend` resident, even the 100,000-input smoke failed at `cudaMalloc`
 with `CUDA error: out of memory`. On this host configuration, Beal CUDA work must
 therefore use an exclusive, operator-controlled GPU window. CPU exact work can
 continue beside the model service under the existing two-thread quota.
 
-## Independent artifact verification
+## Complete-domain reproduction and artifact verification
 
-`verify_results.py` reported:
+`independent_reproduce.py`, using SymPy and no producer/checker imports, rebuilt
+the complete bounded domains and matched:
+
+- 11,664 finite-field signature-prime checks and all 254 empty-unit witnesses;
+- 422,340 valid-hypothesis LTE cases with zero violations;
+- 24,348 cyclotomic cases, 55,758 distinct-prime-factor occurrences, 3,774
+  exceptional occurrences, and all 860 higher-valuation witnesses.
+
+`verify_results.py` then reported:
 
 - 254 finite-field support witnesses replayed;
 - 860 higher-valuation cyclotomic witnesses replayed;
 - primality of every replayed finite-field and cyclotomic witness checked;
 - three LTE counterexamples replayed;
-- CUDA result checked with zero mismatches;
+- all five CUDA outputs checked against the independent CPU digest with zero
+  mismatches;
 - shared-residency failure checked;
+- one common run ID and exact clean producer commit checked for every artifact;
 - overall status: `passed`.
 
-SHA-256 checksums for every JSON artifact are stored in
+The checker raises explicit exceptions rather than using Python `assert`; a
+regression test confirms malformed artifacts still fail under `python -O`.
+SHA-256 checksums for every accepted JSON artifact and the corresponding
+producer/checker sources are stored in
 `experiments/dgx_spark/results/SHA256SUMS`.
+
+The final environment record was generated after the exclusive window:
+`spark-arbiter` was active, `vllm-backend` was running, and the health endpoint
+reported `gemma-4`. The resident-service probe itself recorded a running vLLM
+before and after the expected `cudaMalloc` out-of-memory failure.
 
 ## Roadmap consequences
 

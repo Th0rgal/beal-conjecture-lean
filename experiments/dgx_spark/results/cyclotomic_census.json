@@ -1,7 +1,7 @@
 {
   "congruence_failures": [],
   "distinct_prime_factor_occurrences_tested": 55758,
-  "elapsed_seconds": 475.6782814488979,
+  "elapsed_seconds": 480.257400454022,
   "ell_exception_factor_occurrences": 3774,
   "experiment": "odd_plus_cyclotomic_census",
   "factor_identity_failures": [],
@@ -6890,7 +6890,7 @@
   ],
   "higher_valuation_occurrences": 860,
   "interpretation": {
-    "certified_scope": "finite exhaustive census over the stated ordered coprime base range, with complete PARI factorization",
+    "bounded_scope": "producer census over the stated ordered coprime base range, with PARI factorization; independently reproduced by independent_reproduce.py",
     "not_proved": "primitive-divisor existence or the unrestricted Beal conjecture"
   },
   "order_failures": [],
@@ -6904,6 +6904,16 @@
       11
     ],
     "workers": 2
+  },
+  "provenance": {
+    "produced_at_utc": "2026-07-17T09:48:51.689836+00:00",
+    "producer": "cyclotomic_census.py",
+    "producer_sha256": "ce68c212306388261c91493362f36aee698176989d865c34f6c129223b4126ba",
+    "run_id": "beal-dgx-20260717-4795b06",
+    "run_started_at_utc": "2026-07-17T09:40:40Z",
+    "source_branch": "exact-run-4795b06",
+    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "source_tree_clean": true
   },
   "schema_version": 1
 }

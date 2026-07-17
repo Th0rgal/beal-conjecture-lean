@@ -1,5 +1,5 @@
 {
-  "elapsed_seconds": 0.33835055807139724,
+  "elapsed_seconds": 0.32538200495764613,
   "experiment": "plus_lte_assumption_miner",
   "interpretation": {
     "certified_scope": "finite exhaustive check under stated bounds",
@@ -36,6 +36,16 @@
     "a_bound": 200,
     "n_bound": 31,
     "prime_bound": 97
+  },
+  "provenance": {
+    "produced_at_utc": "2026-07-17T09:40:51.406497+00:00",
+    "producer": "lte_assumption_miner.py",
+    "producer_sha256": "3f85d2dc554450f21059cf92630fd35b9fcff348932f381d81de8af29290cf31",
+    "run_id": "beal-dgx-20260717-4795b06",
+    "run_started_at_utc": "2026-07-17T09:40:40Z",
+    "source_branch": "exact-run-4795b06",
+    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "source_tree_clean": true
   },
   "schema_version": 1,
   "valid_hypothesis_cases_tested": 422340,

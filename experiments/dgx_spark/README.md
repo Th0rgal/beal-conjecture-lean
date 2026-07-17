@@ -3,62 +3,99 @@
 Reproducible, bounded exact-arithmetic experiments supporting the Beal research
 roadmap. They are **not** a proof of the unrestricted Beal conjecture.
 
-## Experiments
+## Experiments and assurance layers
 
 - `finite_field_support.py`: exhaustive all-unit power-subgroup equations over
   finite prime fields. Empty unit branches imply only the support condition
-  `q | A*B*C`; the permanent `A=0, B=C=1` residue branch is explicitly checked.
+  `q | A*B*C`; the permanent `A=0, B=C=1` branch is checked explicitly.
 - `lte_assumption_miner.py`: bounded falsification of the odd-prime plus-sign LTE
-  formula and minimal counterexamples when assumptions are removed.
-- `cyclotomic_census.py`: factors odd plus-cyclotomic cofactors with PARI and
-  checks the gcd, exact-order, congruence, and valuation patterns.
-- `cuda_modexp_bench.cu`: CPU/GPU differential calibration for batched fixed-width
-  modular exponentiation on the GB10. It is a performance probe, not a search
+  formula and counterexamples when assumptions are removed.
+- `cyclotomic_census.py`: complete PARI factorization of odd plus-cyclotomic
+  cofactors, with gcd, exact-order, congruence, and valuation checks. `ell` inputs
+  must be distinct odd primes.
+- `independent_reproduce.py`: reconstructs all three complete CPU domains with
+  SymPy without importing producer or checker implementations, and compares the
+  complete counts and witness sets.
+- `cuda_modexp_bench.cu`: CPU/GPU differential calibration on GB10. Every timed
+  repetition is copied back, digested, and compared against a separately coded
+  `unsigned __int128` CPU reference. This is a performance probe, not a search
   certificate.
-- `verify_results.py`: separate witness replay for support-forcing rows, LTE
-  counterexamples, higher cyclotomic valuations, and CUDA differential metadata.
+- `gpu_residency_probe.py`: machine-generated record of the allocation attempt
+  while resident vLLM is running.
+- `verify_results.py`: explicit artifact-consistency and witness-replay checker.
+  It uses exceptions rather than Python `assert`, so `python -O` cannot disable
+  verification.
+- `provenance.py` and `environment_probe.py`: attach one run ID, exact producer
+  commit, clean-source flag, producer hash, timestamps, source-file hashes, and
+  measured host/service state.
 
 ## DGX prerequisites
 
 Ubuntu 24.04 ARM64 packages:
 
 ```bash
-sudo apt-get install pari-gp python3-cypari2 python3-pytest
+sudo apt-get install pari-gp python3-cypari2 python3-pytest python3-sympy
 ```
 
-CUDA 13 is expected at `/usr/local/cuda`. The CUDA file is compiled specifically
-for the Spark using `-arch=sm_121`.
+CUDA 13 is expected at `/usr/local/cuda`; the benchmark is compiled specifically
+for the Spark with `-arch=sm_121`.
 
-## Run
+## Reproduce
 
-CPU experiments, while the resident model service remains available. CPU-only
-runs explicitly ignore pre-existing optional GPU JSON during verification and
-omit it from the generated `SHA256SUMS`:
+Canonical artifacts must start from a committed checkout whose source files are
+clean. Use one run ID and start timestamp across all phases:
 
 ```bash
-SOURCE_COMMIT=$(git rev-parse HEAD) \
-SOURCE_BRANCH=$(git branch --show-current) \
-./experiments/dgx_spark/run_suite.sh
+export RUN_ID="dgx-$(date -u +%Y%m%dT%H%M%SZ)-$(git rev-parse --short=12 HEAD)"
+export RUN_STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ```
 
-CUDA calibration requires an operator-approved exclusive GPU window. On the
-measured Spark, resident vLLM prevented even a small CUDA allocation. Stop the
-model service through the host's normal operator/arbiter procedure, then run:
+### 1. CPU domains, independent reproduction, and resident-vLLM probe
+
+The model service remains available. The probe records whether a small CUDA
+allocation can coexist with it:
 
 ```bash
-RUN_CPU=0 RUN_CUDA=1 GPU_WINDOW=exclusive-vllm-stopped-restored-healthy \
+GPU_WINDOW=resident-vllm-cpu-and-allocation-probe \
+RUN_CPU=1 RUN_CUDA=0 RUN_SHARED_PROBE=1 RUN_TESTS=0 \
   ./experiments/dgx_spark/run_suite.sh
 ```
 
-Restore the model service and verify its health immediately afterward. The suite
-itself deliberately does not control host services. CPU work uses two workers or
-threads and all modes write canonical JSON plus SHA-256 checksums under `results/`.
-`verify_results.py` exposes `--cuda-policy` and `--shared-policy` with
-`required`, `ignore`, and `auto` modes. The committed checkpoint uses `auto`;
-`run_suite.sh` uses `required` only for a CUDA phase it actually executed.
+### 2. CUDA calibration
+
+This requires an operator-approved exclusive GPU window. Stop the model service
+through the host's normal operator/arbiter procedure, retaining the same
+`RUN_ID` and `RUN_STARTED_AT_UTC`, then run:
+
+```bash
+GPU_WINDOW=exclusive-vllm-stopped \
+RUN_CPU=0 RUN_CUDA=1 RUN_SHARED_PROBE=0 RUN_TESTS=1 \
+  ./experiments/dgx_spark/run_suite.sh
+```
+
+The suite deliberately does not control host services. Restore vLLM and the
+arbiter even if the benchmark or tests fail. After restoration, rerun
+`environment_probe.py`, then `verify_results.py` with both optional artifacts
+`required`, and regenerate `results/SHA256SUMS`; this makes the canonical
+environment record prove the post-window service state rather than the stopped
+state.
+
+CPU work uses two workers/threads. Optional CUDA and shared-residency artifacts
+are never silently mixed into a new run: `verify_results.py` requires one run ID,
+one exact source commit, clean producer source, and a producer SHA-256 for every
+artifact it accepts. `--cuda-policy` and `--shared-policy` support `required`,
+`ignore`, and `auto`.
 
 ## Assurance boundary
 
-PARI, Python, CUDA, and the GPU are treated as untrusted producers. The scripts
-emit exact parameters and explicit failure lists. Any promoted theorem still
-needs either a symbolic Lean proof or a small theorem-backed certificate checker.
+The committed checkpoint has four executable layers:
+
+1. producer enumeration with explicit failure lists;
+2. complete-domain reconstruction through a separately implemented SymPy path;
+3. artifact consistency, primality, witness, per-repeat CUDA, provenance, and
+   policy checks that remain active under `python -O`;
+4. SHA-256 over both result artifacts and the producer/checker sources.
+
+This is stronger bounded computational evidence, not Lean certification. Any
+promoted theorem still needs a symbolic Lean proof or a small theorem-backed
+certificate checker.

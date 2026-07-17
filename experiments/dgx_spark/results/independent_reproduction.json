@@ -1,0 +1,26 @@
+{
+  "cyclotomic_cases_reproduced": 24348,
+  "cyclotomic_exceptional_occurrences_reproduced": 3774,
+  "cyclotomic_factor_occurrences_reproduced": 55758,
+  "cyclotomic_higher_valuation_occurrences_reproduced": 860,
+  "elapsed_seconds": 10.655034391093068,
+  "experiment": "independent_complete_domain_reproduction",
+  "finite_field_checks_reproduced": 11664,
+  "finite_field_empty_witnesses_reproduced": 254,
+  "lte_cases_reproduced": 422340,
+  "lte_violations_reproduced": 0,
+  "provenance": {
+    "produced_at_utc": "2026-07-17T09:49:02.604798+00:00",
+    "producer": "independent_reproduce.py",
+    "producer_sha256": "1f7c52362b83bf4dda82abd30c2e9c5c9a105eaaa199d7160450e9b75a42a8d8",
+    "run_id": "beal-dgx-20260717-4795b06",
+    "run_started_at_utc": "2026-07-17T09:40:40Z",
+    "source_branch": "exact-run-4795b06",
+    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "source_tree_clean": true
+  },
+  "schema_version": 1,
+  "scope": "Independent bounded reproduction using SymPy; not Lean certification or an unrestricted theorem.",
+  "sympy_version": "1.14.0",
+  "verification": "passed"
+}

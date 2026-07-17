@@ -1,16 +1,30 @@
 {
-  "exit_code": 2,
-  "experiment": "cuda_shared_residency_probe",
-  "interpretation": "With resident vLLM active, the calibration could not allocate its CUDA buffers. Exclusive scheduling is required on this host configuration.",
-  "parameters": {
-    "count": 100000,
-    "repeats": 1
+  "benchmark_binary_sha256": "fc22a09c4ba35eeb88b1a7dc4efea0f506c8467d530e954c49a057c1871f4744",
+  "benchmark_exit_code": 2,
+  "benchmark_stderr": "CUDA error: out of memory at line 122",
+  "benchmark_stderr_sha256": "4ba41b0497b133b88378648c689315b82fdebffe59bf840021d24baf8ac1f661",
+  "benchmark_stdout": "",
+  "benchmark_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "experiment": "gpu_shared_residency_probe",
+  "finished_at_utc": "2026-07-17T09:49:04.090565+00:00",
+  "probe_count": 100000,
+  "provenance": {
+    "produced_at_utc": "2026-07-17T09:49:04.125536+00:00",
+    "producer": "gpu_residency_probe.py",
+    "producer_sha256": "92f15ede84b05957cbc33372f2f9f291ea05c7718e9728f1e27e59cf8b4f550c",
+    "run_id": "beal-dgx-20260717-4795b06",
+    "run_started_at_utc": "2026-07-17T09:40:40Z",
+    "source_branch": "exact-run-4795b06",
+    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "source_tree_clean": true
   },
-  "schema_version": 1,
-  "stderr": "CUDA error: out of memory at line 74",
-  "vllm_container_status": "running",
-  "vllm_health": {
-    "current_model": "gemma-4",
-    "status": "ok"
-  }
+  "schema_version": 2,
+  "scope": "Platform co-residency observation; not a CUDA arithmetic certificate.",
+  "spark_arbiter_status_after": "active",
+  "spark_arbiter_status_before": "active",
+  "started_at_utc": "2026-07-17T09:49:03.995106+00:00",
+  "vllm_container_status_after": "running",
+  "vllm_container_status_before": "running",
+  "vllm_health_after": "{\"status\": \"ok\", \"current_model\": \"gemma-4\"}",
+  "vllm_health_before": "{\"status\": \"ok\", \"current_model\": \"gemma-4\"}"
 }
