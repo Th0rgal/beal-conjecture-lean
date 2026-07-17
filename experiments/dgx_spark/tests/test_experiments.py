@@ -1,5 +1,10 @@
 import math
+import os
 from pathlib import Path
+import shutil
+import stat
+import subprocess
+import sys
 
 from cyclotomic_census import (
     cyclotomic_plus_cofactor,
@@ -56,3 +61,83 @@ def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     report = check(results, cuda_policy="ignore", shared_policy="ignore")
     assert report["cuda_differential_result_checked"] is False
     assert report["shared_residency_failure_checked"] is False
+
+
+def test_run_suite_manifest_scopes_cpu_and_cuda_artifacts(tmp_path):
+    source = Path(__file__).resolve().parents[1]
+    suite = tmp_path / "suite"
+    suite.mkdir()
+    shutil.copy2(source / "run_suite.sh", suite / "run_suite.sh")
+    results = suite / "results"
+    results.mkdir()
+    for name in (
+        "cyclotomic_census.json",
+        "finite_field_support.json",
+        "lte_assumption_miner.json",
+        "cuda_modexp_calibration.json",
+        "gpu_shared_residency_probe.json",
+    ):
+        (results / name).write_text('{"stale": true}\n')
+
+    mock_python = tmp_path / "python3"
+    mock_python.write_text(
+        f"#!{sys.executable}\n"
+        "import os\n"
+        "import pathlib\n"
+        "import sys\n"
+        "args = sys.argv[1:]\n"
+        "if args[:2] == ['-m', 'json.tool']:\n"
+        "    print(pathlib.Path(args[2]).read_text(), end='')\n"
+        "elif args[:2] != ['-m', 'pytest']:\n"
+        "    name = pathlib.Path(args[0]).name\n"
+        "    if name in {'finite_field_support.py', 'lte_assumption_miner.py', 'cyclotomic_census.py'}:\n"
+        "        pathlib.Path(os.environ['MOCK_CALLS']).open('a').write(name + '\\n')\n"
+        "    if name == 'environment_probe.py':\n"
+        "        output = pathlib.Path(os.environ['OUTPUT'])\n"
+        "    else:\n"
+        "        output = pathlib.Path(args[args.index('--output') + 1])\n"
+        "    output.write_text('{\\\"generated\\\": true}\\n')\n"
+    )
+    mock_python.chmod(mock_python.stat().st_mode | stat.S_IXUSR)
+
+    mock_nvcc = tmp_path / "nvcc"
+    mock_nvcc.write_text(
+        f"#!{sys.executable}\n"
+        "import pathlib\n"
+        "import stat\n"
+        "import sys\n"
+        "output = pathlib.Path(sys.argv[sys.argv.index('-o') + 1])\n"
+        "output.write_text('#!/bin/sh\\nprintf \\\'{\\\"mismatches\\\": 0}\\\\n\\\'\\n')\n"
+        "output.chmod(output.stat().st_mode | stat.S_IXUSR)\n"
+    )
+    mock_nvcc.chmod(mock_nvcc.stat().st_mode | stat.S_IXUSR)
+
+    def run(cpu: str, cuda: str) -> set[str]:
+        calls = tmp_path / f"calls-{cpu}-{cuda}.log"
+        env = os.environ | {
+            "PATH": f"{tmp_path}:{os.environ['PATH']}",
+            "RUN_CPU": cpu,
+            "RUN_CUDA": cuda,
+            "NVCC": str(mock_nvcc),
+            "MOCK_CALLS": str(calls),
+        }
+        subprocess.run(["bash", str(suite / "run_suite.sh")], check=True, env=env)
+        manifest = (results / "SHA256SUMS").read_text().splitlines()
+        return {line.split("  ", 1)[1] for line in manifest}
+
+    cuda_only = run("0", "1")
+    assert cuda_only == {
+        "results/cuda_modexp_calibration.json",
+        "results/environment.json",
+        "results/verification_report.json",
+    }
+    assert not (tmp_path / "calls-0-1.log").exists()
+
+    cpu_only = run("1", "0")
+    assert cpu_only == {
+        "results/cyclotomic_census.json",
+        "results/environment.json",
+        "results/finite_field_support.json",
+        "results/lte_assumption_miner.json",
+        "results/verification_report.json",
+    }

@@ -13,6 +13,7 @@ export SOURCE_COMMIT="${SOURCE_COMMIT:-unknown}"
 export SOURCE_BRANCH="${SOURCE_BRANCH:-research/dgx-computational-experiments-20260717}"
 RUN_CPU="${RUN_CPU:-1}"
 RUN_CUDA="${RUN_CUDA:-0}"
+NVCC="${NVCC:-/usr/local/cuda/bin/nvcc}"
 
 python3 -m pytest -q "$ROOT/tests" | tee "$LOGS/pytest.log"
 if [[ "$RUN_CPU" == "1" ]]; then
@@ -28,7 +29,7 @@ if [[ "$RUN_CPU" == "1" ]]; then
 fi
 
 if [[ "$RUN_CUDA" == "1" ]]; then
-  /usr/local/cuda/bin/nvcc -O3 -arch=sm_121 -Xcompiler=-fopenmp \
+  "$NVCC" -O3 -arch=sm_121 -Xcompiler=-fopenmp \
     "$ROOT/cuda_modexp_bench.cu" -o "$BUILD/cuda_modexp_bench"
   "$BUILD/cuda_modexp_bench" --count 4000000 --repeats 5 \
     > "$RESULTS/cuda_modexp_calibration.json"
@@ -47,12 +48,16 @@ python3 "$ROOT/verify_results.py" --results "$RESULTS" \
 (
   cd "$ROOT"
   manifest=(
-    results/cyclotomic_census.json
     results/environment.json
-    results/finite_field_support.json
-    results/lte_assumption_miner.json
     results/verification_report.json
   )
+  if [[ "$RUN_CPU" == "1" ]]; then
+    manifest+=(
+      results/cyclotomic_census.json
+      results/finite_field_support.json
+      results/lte_assumption_miner.json
+    )
+  fi
   if [[ "$RUN_CUDA" == "1" ]]; then
     manifest+=(results/cuda_modexp_calibration.json)
   fi
