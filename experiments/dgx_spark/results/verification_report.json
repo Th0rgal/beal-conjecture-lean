@@ -1,4 +1,5 @@
 {
+  "artifact_producer_hashes_checked": 7,
   "cuda_all_repeats_differentially_checked": true,
   "cyclotomic_higher_valuation_cases_replayed": 860,
   "finite_field_support_witnesses_replayed": 254,
@@ -6,13 +7,13 @@
   "lte_counterexamples_replayed": 3,
   "primality_checks": 1974,
   "provenance": {
-    "produced_at_utc": "2026-07-17T14:18:55.712610+00:00",
+    "produced_at_utc": "2026-07-17T14:37:49.908947+00:00",
     "producer": "verify_results.py",
-    "producer_sha256": "fab9c056706c3ff407ef7b0001d8d3f2d59c8f7336ac9a363d6b91080b8759fc",
-    "run_id": "beal-dgx-20260717-4795b06",
-    "run_started_at_utc": "2026-07-17T09:40:40Z",
-    "source_branch": "exact-run-4795b06",
-    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "producer_sha256": "d80d94172d478c95443e5c22d839f58ee3854a1002b4063916bf323df6bf1572",
+    "run_id": "beal-dgx-verification-b038d1a",
+    "run_started_at_utc": "2026-07-17T14:37:33Z",
+    "source_branch": "research/dgx-computational-experiments-20260717",
+    "source_commit": "b038d1a9d3befd7eee96dfa83593d61288b99aa3",
     "source_tree_clean": true
   },
   "run_id": "beal-dgx-20260717-4795b06",
@@ -20,5 +21,6 @@
   "scope": "Artifact consistency plus a separately implemented complete-domain reproduction; not Lean certification or an unrestricted proof.",
   "shared_residency_failure_checked": true,
   "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+  "source_files_checked_against_git_commit": 12,
   "verification": "passed"
 }

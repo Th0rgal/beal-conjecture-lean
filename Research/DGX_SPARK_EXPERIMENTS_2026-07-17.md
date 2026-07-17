@@ -23,6 +23,7 @@ checks every CUDA repetition. Neither layer is a Lean proof.
 - PARI/GP: 2.15.4, pthread build; Python binding `cypari2` 2.1.4
 - SymPy: 1.14.0 for the separately implemented complete-domain reproduction
 - Producer commit: `4795b061133f7a24e6c522a2d9f64ad823259895`
+- Verification-checker commit: `b038d1a9d3befd7eee96dfa83593d61288b99aa3`
 - Run ID: `beal-dgx-20260717-4795b06`
 - Resident model: `gemma-4` through `vllm-backend`
 
@@ -212,7 +213,13 @@ the complete bounded domains and matched:
 - all five CUDA outputs checked against the independent CPU digest with zero
   mismatches;
 - shared-residency failure checked;
-- one common run ID and exact clean producer commit checked for every artifact;
+- all independent aggregate outputs cross-checked: 254 empty finite-field
+  witnesses, zero LTE violations, 55,758 cyclotomic factor occurrences, 3,774
+  exceptional occurrences, and 860 higher-valuation occurrences, in addition to
+  the three complete-domain sizes;
+- all 12 recorded source hashes recomputed from the named Git producer commit;
+- all seven accepted artifacts mapped to the expected producer name and exact
+  producer hash, with the recorded Git status limited to result paths;
 - overall status: `passed`.
 
 The checker raises explicit exceptions rather than using Python `assert`; a
