@@ -114,6 +114,15 @@ def require_commit_object(repo_root: Path, commit: str) -> None:
             f"source object is not a Git commit: {commit}")
 
 
+def require_commit_ancestor(repo_root: Path, commit: str) -> None:
+    process = subprocess.run(
+        ["git", "-C", str(repo_root), "merge-base", "--is-ancestor", commit, "HEAD"],
+        capture_output=True,
+        check=False,
+    )
+    require(process.returncode == 0, f"source commit is not an ancestor of HEAD: {commit}")
+
+
 def check_provenance(
     named_artifacts: dict[str, dict], environment: dict
 ) -> tuple[str, str, int, int]:
@@ -146,6 +155,7 @@ def check_provenance(
         raise VerificationError("environment lacks source_files_sha256")
     repo_root = Path(__file__).resolve().parents[2]
     require_commit_object(repo_root, commit)
+    require_commit_ancestor(repo_root, commit)
     paths_by_basename: dict[str, list[str]] = {}
     for path, expected_hash in source_hashes.items():
         if not isinstance(path, str) or not path.startswith("experiments/dgx_spark/"):

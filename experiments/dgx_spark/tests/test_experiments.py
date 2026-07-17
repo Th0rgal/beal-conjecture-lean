@@ -1,5 +1,6 @@
 import math
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -213,3 +214,76 @@ def test_verifier_checks_both_sides_of_dirty_rename(tmp_path):
     environment_path.write_text(json.dumps(environment))
     with pytest.raises(VerificationError):
         check(results, cuda_policy="required", shared_policy="required")
+
+
+def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
+    repo = Path(__file__).resolve().parents[3]
+    branch = subprocess.run(
+        ["git", "-C", str(repo), "branch", "--show-current"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    shallow = tmp_path / "shallow"
+    subprocess.run(
+        ["git", "clone", "--depth", "1", "--branch", branch, "--single-branch",
+         f"file://{repo}", str(shallow)],
+        check=True,
+    )
+    producer_commit = json.loads(
+        (shallow / "experiments/dgx_spark/results/environment.json").read_text()
+    )["provenance"]["source_commit"]
+    assert subprocess.run(
+        ["git", "-C", str(shallow), "cat-file", "-e", f"{producer_commit}^{{commit}}"],
+        check=False,
+    ).returncode != 0
+
+    bootstrap = Path(__file__).resolve().parents[1] / "bootstrap_provenance_history.py"
+    subprocess.run(
+        [sys.executable, str(bootstrap), "--repo", str(shallow),
+         "--results", str(shallow / "experiments/dgx_spark/results")],
+        text=True, capture_output=True, check=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(shallow), "merge-base", "--is-ancestor", producer_commit, "HEAD"],
+        check=True,
+    )
+
+    verifier = shallow / "experiments/dgx_spark/verify_results.py"
+    env = {**os.environ,
+           "SOURCE_TREE_CLEAN": "true", "SOURCE_COMMIT": subprocess.run(
+               ["git", "-C", str(shallow), "rev-parse", "HEAD"], text=True,
+               capture_output=True, check=True,
+           ).stdout.strip(), "SOURCE_BRANCH": branch, "RUN_ID": "shallow-bootstrap-test",
+           "RUN_STARTED_AT_UTC": "2026-07-17T00:00:00Z",
+           "PYTHONPATH": str(shallow / "experiments/dgx_spark")}
+    verified = subprocess.run(
+        [sys.executable, str(verifier), "--results",
+         str(shallow / "experiments/dgx_spark/results"), "--cuda-policy", "required",
+         "--shared-policy", "required", "--output", str(tmp_path / "receipt.json")],
+        text=True, capture_output=True, check=False, env=env,
+    )
+    assert verified.returncode == 0, verified.stderr
+
+
+def test_bootstrap_rejects_a_foreign_producer_commit(tmp_path):
+    repo = Path(__file__).resolve().parents[3]
+    isolated = tmp_path / "isolated"
+    subprocess.run(["git", "clone", str(repo), str(isolated)], check=True)
+    tree = subprocess.run(
+        ["git", "-C", str(isolated), "write-tree"], text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    foreign_commit = subprocess.run(
+        ["git", "-C", str(isolated), "commit-tree", tree, "-m", "foreign producer"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    results = tmp_path / "results"
+    results.mkdir()
+    (results / "environment.json").write_text(
+        json.dumps({"provenance": {"source_commit": foreign_commit}})
+    )
+    bootstrap = Path(__file__).resolve().parents[1] / "bootstrap_provenance_history.py"
+    rejected = subprocess.run(
+        [sys.executable, str(bootstrap), "--repo", str(isolated), "--results", str(results)],
+        text=True, capture_output=True, check=False,
+    )
+    assert rejected.returncode != 0
+    assert "not an ancestor" in rejected.stderr

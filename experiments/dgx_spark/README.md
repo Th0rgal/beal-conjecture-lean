@@ -105,6 +105,31 @@ one exact source commit, clean producer source, and a producer SHA-256 for every
 artifact it accepts. `--cuda-policy` and `--shared-policy` support `required`,
 `ignore`, and `auto`.
 
+## Verify the committed checkpoint from a shallow clone
+
+The committed artifacts name their producer commit and the verifier reads the
+producer files from that exact commit. Before verifying from a fresh
+`--depth 1 --single-branch` clone, bootstrap only the bounded ancestry required
+for that commit. The bootstrap fetches one additional history layer at a time,
+up to 16 layers, and fails if the named commit cannot be proven an ancestor of
+`HEAD`; it does not accept a disconnected object fetch.
+
+```bash
+RESULTS=experiments/dgx_spark/results
+python3 experiments/dgx_spark/bootstrap_provenance_history.py --results "$RESULTS"
+SOURCE_TREE_CLEAN=true \
+SOURCE_COMMIT="$(git rev-parse HEAD)" \
+SOURCE_BRANCH="$(git branch --show-current)" \
+RUN_ID=committed-checkpoint-verification \
+RUN_STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+PYTHONPATH="$(pwd)/experiments/dgx_spark" \
+  python3 experiments/dgx_spark/verify_results.py --results "$RESULTS" \
+    --cuda-policy required --shared-policy required --output /dev/null
+```
+
+The verifier prints the receipt to standard output. `--output /dev/null` avoids
+rewriting the committed report or checksum manifest during verification.
+
 ## Assurance boundary
 
 The committed checkpoint has four executable layers:
