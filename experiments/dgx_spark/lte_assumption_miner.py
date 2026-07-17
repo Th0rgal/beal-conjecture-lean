@@ -8,6 +8,8 @@ import math
 import time
 from pathlib import Path
 
+from provenance import artifact_provenance
+
 
 def valuation(n: int, p: int) -> int:
     if n <= 0 or p <= 1:
@@ -107,6 +109,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     result = run(args.a_bound, args.prime_bound, args.n_bound)
+    result["provenance"] = artifact_provenance(__file__)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(json.dumps({

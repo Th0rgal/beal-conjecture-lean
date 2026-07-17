@@ -13,6 +13,8 @@ import multiprocessing as mp
 import time
 from pathlib import Path
 
+from provenance import artifact_provenance
+
 
 def valuation(n: int, p: int) -> int:
     if n <= 0 or p <= 1:
@@ -22,6 +24,27 @@ def valuation(n: int, p: int) -> int:
         n //= p
         v += 1
     return v
+
+
+def _is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    if n % 2 == 0:
+        return n == 2
+    divisor = 3
+    while divisor * divisor <= n:
+        if n % divisor == 0:
+            return False
+        divisor += 2
+    return True
+
+
+def validate_ells(ells: list[int]) -> list[int]:
+    if len(ells) != len(set(ells)):
+        raise ValueError("ells must be unique")
+    if not ells or any(ell < 3 or ell % 2 == 0 or not _is_prime(ell) for ell in ells):
+        raise ValueError("ells must be distinct odd primes")
+    return ells
 
 
 def cyclotomic_plus_cofactor(u: int, v: int, ell: int) -> int:
@@ -127,6 +150,9 @@ def _chunk(args: tuple[int, int, int, int]) -> dict:
 
 
 def run(ells: list[int], bound: int, workers: int) -> dict:
+    ells = validate_ells(ells)
+    if bound < 1 or workers < 1:
+        raise ValueError("bound and workers must be positive")
     chunks: list[tuple[int, int, int, int]] = []
     width = max(1, math.ceil(bound / workers))
     for ell in ells:
@@ -158,7 +184,7 @@ def run(ells: list[int], bound: int, workers: int) -> dict:
         key=lambda x: (x["ell"], x["u"], x["v"], x["q"]),
     )
     merged["interpretation"] = {
-        "certified_scope": "finite exhaustive census over the stated ordered coprime base range, with complete PARI factorization",
+        "bounded_scope": "producer census over the stated ordered coprime base range, with PARI factorization; independently reproduced by independent_reproduce.py",
         "not_proved": "primitive-divisor existence or the unrestricted Beal conjecture",
     }
     return merged
@@ -171,8 +197,9 @@ def main() -> None:
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    ells = [int(x) for x in args.ells.split(",") if x]
+    ells = validate_ells([int(x) for x in args.ells.split(",") if x])
     result = run(ells, args.bound, args.workers)
+    result["provenance"] = artifact_provenance(__file__)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(json.dumps({k: result[k] for k in (

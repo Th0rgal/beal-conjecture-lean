@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Record non-secret DGX execution environment metadata."""
+"""Record non-secret DGX environment and exact source provenance."""
 from __future__ import annotations
 
 import json
 import os
 import platform
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
+
+from provenance import ProvenanceError, artifact_provenance, sha256_file
 
 
 def command(args: list[str]) -> str:
@@ -16,23 +19,47 @@ def command(args: list[str]) -> str:
 
 def main() -> None:
     output = Path(os.environ.get("OUTPUT", "results/environment.json"))
+    script_root = Path(__file__).resolve().parent
+    repo_root = script_root.parents[1]
+    declared_commit = os.environ.get("SOURCE_COMMIT", "")
+    actual_commit = command(["git", "-C", str(repo_root), "rev-parse", "HEAD"])
+    if not actual_commit or actual_commit != declared_commit:
+        raise ProvenanceError(
+            f"declared source commit {declared_commit!r} differs from checkout {actual_commit!r}"
+        )
+    source_paths = sorted(
+        path for path in script_root.rglob("*")
+        if path.is_file()
+        and not any(part in {"results", "logs", "build", "smoke", "__pycache__", ".pytest_cache"}
+                    for part in path.relative_to(script_root).parts)
+    )
+    source_hashes = {
+        str(path.relative_to(repo_root)): sha256_file(path)
+        for path in source_paths
+    }
     data = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "experiment": "dgx_environment_manifest",
+        "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
         "hostname": platform.node(),
         "architecture": platform.machine(),
         "platform": platform.platform(),
         "python": platform.python_version(),
         "cpu_count": os.cpu_count(),
-        "source_commit": os.environ.get("SOURCE_COMMIT", "unknown"),
-        "source_branch": os.environ.get("SOURCE_BRANCH", "unknown"),
         "pari_gp": command(["gp", "--version"]).splitlines()[0],
         "cypari2_package": command(["dpkg-query", "-W", "-f=${Version}", "python3-cypari2"]),
+        "sympy": command(["python3", "-c", "import sympy; print(sympy.__version__)"]),
         "cuda_nvcc": command(["/usr/local/cuda/bin/nvcc", "--version"]).splitlines()[-1],
         "gpu": command(["nvidia-smi", "--query-gpu=name,compute_cap,pstate,temperature.gpu,power.draw", "--format=csv,noheader"]),
-        "vllm_container_state": command(["docker", "ps", "--filter", "name=vllm-backend", "--format", "{{.Names}}|{{.Status}}"]),
+        "spark_arbiter_state": command(["systemctl", "is-active", "spark-arbiter.service"]),
+        "vllm_container_state": command(["docker", "inspect", "-f", "{{.State.Status}}", "vllm-backend"]),
+        "vllm_health": command(["curl", "-fsS", "http://127.0.0.1:8000/health"]),
         "gpu_window": os.environ.get("GPU_WINDOW", "not recorded"),
-        "cpu_policy": "OMP_NUM_THREADS=2 for the CUDA CPU baseline; cyclotomic census workers=2",
-        "notes": "CPU experiments ran beside resident vLLM. CUDA calibration used an exclusive GPU window. Results are bounded computational evidence, not a proof of Beal.",
+        "cpu_policy": "cyclotomic workers=2; CUDA CPU reference OMP_NUM_THREADS=2",
+        "git_status_at_probe": command(["git", "-C", str(repo_root), "status", "--short"]),
+        "source_files_sha256": source_hashes,
+        "provenance": artifact_provenance(__file__),
+        "scope": "Measured execution metadata; bounded computational evidence, not a proof of Beal.",
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
