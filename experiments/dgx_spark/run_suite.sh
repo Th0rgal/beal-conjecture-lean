@@ -36,11 +36,27 @@ if [[ "$RUN_CUDA" == "1" ]]; then
 fi
 
 OUTPUT="$RESULTS/environment.json" python3 "$ROOT/environment_probe.py"
+if [[ "$RUN_CUDA" == "1" ]]; then
+  CUDA_POLICY=required
+else
+  CUDA_POLICY=ignore
+fi
 python3 "$ROOT/verify_results.py" --results "$RESULTS" \
+  --cuda-policy "$CUDA_POLICY" --shared-policy ignore \
   --output "$RESULTS/verification_report.json" | tee "$LOGS/verification.log"
 (
   cd "$ROOT"
-  sha256sum results/*.json > results/SHA256SUMS
+  manifest=(
+    results/cyclotomic_census.json
+    results/environment.json
+    results/finite_field_support.json
+    results/lte_assumption_miner.json
+    results/verification_report.json
+  )
+  if [[ "$RUN_CUDA" == "1" ]]; then
+    manifest+=(results/cuda_modexp_calibration.json)
+  fi
+  sha256sum "${manifest[@]}" > results/SHA256SUMS
+  sha256sum -c results/SHA256SUMS
 )
-
 printf 'RESULTS_DIR=%s\n' "$RESULTS"

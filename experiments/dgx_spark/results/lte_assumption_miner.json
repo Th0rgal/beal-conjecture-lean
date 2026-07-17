@@ -1,5 +1,5 @@
 {
-  "elapsed_seconds": 0.32732042495626956,
+  "elapsed_seconds": 0.33835055807139724,
   "experiment": "plus_lte_assumption_miner",
   "interpretation": {
     "certified_scope": "finite exhaustive check under stated bounds",
@@ -7,6 +7,14 @@
   },
   "minimal_counterexamples_when_assumption_removed": {
     "allow_q_two_with_odd_n": null,
+    "remove_base_coprimality": {
+      "a": 3,
+      "b": 3,
+      "lhs_valuation": 3,
+      "n": 3,
+      "q": 3,
+      "rhs_valuation": 2
+    },
     "remove_odd_n": {
       "a": 1,
       "b": 2,
@@ -14,14 +22,6 @@
       "n": 2,
       "q": 3,
       "rhs_valuation": 1
-    },
-    "remove_q_coprime_ab": {
-      "a": 3,
-      "b": 3,
-      "lhs_valuation": 3,
-      "n": 3,
-      "q": 3,
-      "rhs_valuation": 2
     },
     "remove_q_divides_sum": {
       "a": 1,

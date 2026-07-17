@@ -74,7 +74,7 @@ def run(a_bound: int, prime_bound: int, n_bound: int) -> dict:
             lambda q, a, b, n: math.gcd(a, b) == 1 and (a + b) % q != 0 and (a * b) % q != 0,
             odd_primes, a_bound, odd_ns,
         ),
-        "remove_q_coprime_ab": _first_counterexample(
+        "remove_base_coprimality": _first_counterexample(
             lambda q, a, b, n: (a + b) % q == 0 and (a * b) % q == 0,
             odd_primes, a_bound, odd_ns,
         ),

@@ -31,7 +31,7 @@ def cyclotomic_plus_cofactor(u: int, v: int, ell: int) -> int:
     return numerator // denominator
 
 
-def check(results: Path) -> dict:
+def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto") -> dict:
     finite = json.loads((results / "finite_field_support.json").read_text())
     lte = json.loads((results / "lte_assumption_miner.json").read_text())
     cyclo = json.loads((results / "cyclotomic_census.json").read_text())
@@ -79,7 +79,9 @@ def check(results: Path) -> dict:
 
     cuda_checked = False
     cuda_path = results / "cuda_modexp_calibration.json"
-    if cuda_path.exists():
+    if cuda_policy == "required":
+        assert cuda_path.exists()
+    if cuda_policy != "ignore" and cuda_path.exists():
         cuda = json.loads(cuda_path.read_text())
         assert cuda["mismatches"] == 0
         assert cuda["compute_capability"] == "12.1"
@@ -88,7 +90,9 @@ def check(results: Path) -> dict:
 
     shared_checked = False
     shared_path = results / "gpu_shared_residency_probe.json"
-    if shared_path.exists():
+    if shared_policy == "required":
+        assert shared_path.exists()
+    if shared_policy != "ignore" and shared_path.exists():
         shared = json.loads(shared_path.read_text())
         assert shared["exit_code"] != 0
         assert "out of memory" in shared["stderr"].lower()
@@ -112,8 +116,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--results", type=Path, default=Path("results"))
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--cuda-policy", choices=("auto", "required", "ignore"), default="auto")
+    parser.add_argument("--shared-policy", choices=("auto", "required", "ignore"), default="auto")
     args = parser.parse_args()
-    report = check(args.results)
+    report = check(args.results, cuda_policy=args.cuda_policy, shared_policy=args.shared_policy)
     output = args.output or args.results / "verification_report.json"
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(json.dumps(report, sort_keys=True))

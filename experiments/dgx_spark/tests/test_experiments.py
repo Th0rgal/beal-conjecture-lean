@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 
 from cyclotomic_census import (
     cyclotomic_plus_cofactor,
@@ -7,7 +8,7 @@ from cyclotomic_census import (
 )
 from finite_field_support import power_subgroup, unit_solution_count
 from lte_assumption_miner import lte_holds
-from verify_results import is_prime
+from verify_results import check, is_prime
 
 
 def test_cyclotomic_plus_cofactor_exact_identity():
@@ -48,3 +49,10 @@ def test_lte_valid_and_missing_assumption_counterexamples():
 def test_verifier_primality_check():
     assert is_prime(2) and is_prime(7789)
     assert not is_prime(1) and not is_prime(7 * 11)
+
+
+def test_verifier_can_ignore_stale_optional_gpu_artifacts():
+    results = Path(__file__).resolve().parents[1] / "results"
+    report = check(results, cuda_policy="ignore", shared_policy="ignore")
+    assert report["cuda_differential_result_checked"] is False
+    assert report["shared_residency_failure_checked"] is False

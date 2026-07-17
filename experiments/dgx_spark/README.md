@@ -31,7 +31,9 @@ for the Spark using `-arch=sm_121`.
 
 ## Run
 
-CPU experiments, while the resident model service remains available:
+CPU experiments, while the resident model service remains available. CPU-only
+runs explicitly ignore pre-existing optional GPU JSON during verification and
+omit it from the generated `SHA256SUMS`:
 
 ```bash
 SOURCE_COMMIT=$(git rev-parse HEAD) \
@@ -51,6 +53,9 @@ RUN_CPU=0 RUN_CUDA=1 GPU_WINDOW=exclusive-vllm-stopped-restored-healthy \
 Restore the model service and verify its health immediately afterward. The suite
 itself deliberately does not control host services. CPU work uses two workers or
 threads and all modes write canonical JSON plus SHA-256 checksums under `results/`.
+`verify_results.py` exposes `--cuda-policy` and `--shared-policy` with
+`required`, `ignore`, and `auto` modes. The committed checkpoint uses `auto`;
+`run_suite.sh` uses `required` only for a CUDA phase it actually executed.
 
 ## Assurance boundary
 
