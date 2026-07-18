@@ -54,6 +54,40 @@ def test_lte_valid_and_missing_assumption_counterexamples():
     assert not lte_holds(3, 3, 3, 3)
 
 
+def test_verifier_accepts_committed_lte_counterexamples():
+    results = Path(__file__).resolve().parents[1] / "results"
+    check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+def test_verifier_rejects_lte_counterexample_under_wrong_removed_assumption(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    lte_path = results / "lte_assumption_miner.json"
+    lte = json.loads(lte_path.read_text())
+    cases = lte["minimal_counterexamples_when_assumption_removed"]
+    cases["remove_odd_n"] = cases["remove_q_divides_sum"]
+    lte_path.write_text(json.dumps(lte))
+
+    with pytest.raises(VerificationError, match="does not match removed assumption"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+def test_verifier_rejects_wrong_lte_predicted_rhs_valuation(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    lte_path = results / "lte_assumption_miner.json"
+    lte = json.loads(lte_path.read_text())
+    for case in lte["minimal_counterexamples_when_assumption_removed"].values():
+        if case is not None:
+            case["rhs_valuation"] = 999
+    lte_path.write_text(json.dumps(lte))
+
+    with pytest.raises(VerificationError, match="RHS valuation mismatch"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
 def test_verifier_primality_check():
     assert is_prime(2) and is_prime(7789)
     assert not is_prime(1) and not is_prime(7 * 11)

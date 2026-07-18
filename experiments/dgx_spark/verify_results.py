@@ -74,6 +74,33 @@ def lte_holds(q: int, a: int, b: int, n: int) -> bool:
     return valuation(a**n + b**n, q) == valuation(a + b, q) + valuation(n, q)
 
 
+def is_lte_counterexample_for_removed_assumption(
+    key: str, q: int, a: int, b: int, n: int
+) -> bool:
+    """Check the precise hypothesis omitted by an LTE miner counterexample."""
+    if key == "remove_odd_n":
+        return (
+            is_prime(q) and q != 2 and n % 2 == 0 and math.gcd(a, b) == 1
+            and (a + b) % q == 0 and (a * b) % q != 0
+        )
+    if key == "remove_q_divides_sum":
+        return (
+            is_prime(q) and q != 2 and n % 2 == 1 and math.gcd(a, b) == 1
+            and (a + b) % q != 0 and (a * b) % q != 0
+        )
+    if key == "remove_base_coprimality":
+        return (
+            is_prime(q) and q != 2 and n % 2 == 1
+            and (a + b) % q == 0 and (a * b) % q == 0
+        )
+    if key == "allow_q_two_with_odd_n":
+        return (
+            q == 2 and n % 2 == 1 and math.gcd(a, b) == 1
+            and (a + b) % q == 0 and (a * b) % q != 0
+        )
+    return False
+
+
 def power_values(q: int, exponent: int) -> set[int]:
     return {pow(a, exponent, q) for a in range(1, q)}
 
@@ -259,13 +286,17 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
 
     require(not lte.get("valid_hypothesis_violations"), "LTE violations recorded")
     lte_counterexamples = 0
-    for case in lte.get("minimal_counterexamples_when_assumption_removed", {}).values():
+    for key, case in lte.get("minimal_counterexamples_when_assumption_removed", {}).items():
         if case is None:
             continue
         q, a, b, n = (case[key] for key in ("q", "a", "b", "n"))
+        require(is_lte_counterexample_for_removed_assumption(key, q, a, b, n),
+                f"LTE counterexample does not match removed assumption {key}: {case}")
         require(not lte_holds(q, a, b, n), f"invalid LTE counterexample: {case}")
         require(valuation(a**n + b**n, q) == case.get("lhs_valuation"),
                 "LTE counterexample valuation mismatch")
+        require(valuation(a + b, q) + valuation(n, q) == case.get("rhs_valuation"),
+                "LTE counterexample RHS valuation mismatch")
         lte_counterexamples += 1
 
     for key in ("factor_identity_failures", "gcd_failures", "order_failures", "congruence_failures"):
