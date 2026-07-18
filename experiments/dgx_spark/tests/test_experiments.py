@@ -59,6 +59,34 @@ def test_verifier_primality_check():
     assert not is_prime(1) and not is_prime(7 * 11)
 
 
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (("support_forcing", 491), "exceeds declared prime_bound"),
+        (("prime_bound", 2), "exceeds declared prime_bound"),
+        (("kernels", [4, 5, 7, 11, 13]), "outside declared finite-field kernels"),
+    ],
+)
+def test_verifier_rejects_finite_field_witnesses_outside_declared_domain(
+    tmp_path, mutation, message
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    finite_path = results / "finite_field_support.json"
+    finite = json.loads(finite_path.read_text())
+    field, value = mutation
+    if field == "support_forcing":
+        row = next(row for row in finite[field] if row["signature"] == [7, 7, 7])
+        row["support_forcing_primes"][0]["prime"] = value
+    else:
+        finite["parameters"][field] = value
+    finite_path.write_text(json.dumps(finite))
+
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
 def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     results = Path(__file__).resolve().parents[1] / "results"
     report = check(results, cuda_policy="ignore", shared_policy="ignore")
@@ -334,6 +362,14 @@ def test_committed_checksum_receipt_covers_the_current_verifier():
         cwd=repo, text=True, capture_output=True, check=False,
     )
     assert checked.returncode == 0, checked.stderr
+
+
+def test_run_suite_refreshes_checksum_receipt_before_running_checksum_test():
+    script = (Path(__file__).resolve().parents[1] / "run_suite.sh").read_text()
+    receipt_covered_rewrite = script.index('python3 "$ROOT/verify_results.py"')
+    receipt_refresh = script.index('sha256sum "${manifest[@]}" > experiments/dgx_spark/results/SHA256SUMS')
+    strict_checksum_test = script.index('python3 -m pytest -q "$ROOT/tests"')
+    assert receipt_covered_rewrite < receipt_refresh < strict_checksum_test
 
 
 def test_bootstrap_rejects_a_foreign_producer_commit(tmp_path):

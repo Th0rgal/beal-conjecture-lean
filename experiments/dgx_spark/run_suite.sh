@@ -82,10 +82,6 @@ python3 "$ROOT/verify_results.py" --results "$RESULTS" \
   --cuda-policy "$CUDA_POLICY" --shared-policy "$SHARED_POLICY" \
   --output "$RESULTS/verification_report.json" | tee "$LOGS/verification.log"
 
-if [[ "$RUN_TESTS" == "1" ]]; then
-  python3 -m pytest -q "$ROOT/tests" | tee "$LOGS/pytest.log"
-fi
-
 (
   cd "$REPO_ROOT"
   manifest=(
@@ -115,4 +111,9 @@ fi
   sha256sum "${manifest[@]}" > experiments/dgx_spark/results/SHA256SUMS
   sha256sum -c experiments/dgx_spark/results/SHA256SUMS
 )
+
+if [[ "$RUN_TESTS" == "1" ]]; then
+  python3 -m pytest -q "$ROOT/tests" | tee "$LOGS/pytest.log"
+fi
+
 printf 'RUN_ID=%s\nSOURCE_COMMIT=%s\nRESULTS_DIR=%s\n' "$RUN_ID" "$SOURCE_COMMIT" "$RESULTS"

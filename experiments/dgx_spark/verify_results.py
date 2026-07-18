@@ -226,13 +226,28 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     }
 
     finite_rows = 0
+    finite_parameters = finite.get("parameters")
+    require(isinstance(finite_parameters, dict), "finite-field parameters missing")
+    prime_bound = finite_parameters.get("prime_bound")
+    kernels = finite_parameters.get("kernels")
+    require(isinstance(prime_bound, int) and prime_bound >= 2,
+            "invalid finite-field prime_bound")
+    require(isinstance(kernels, list) and kernels and
+            all(isinstance(kernel, int) and kernel > 0 for kernel in kernels),
+            "invalid finite-field kernels")
+    kernel_set = set(kernels)
     for row in finite.get("support_forcing", []):
         signature = row.get("signature")
         require(isinstance(signature, list) and len(signature) == 3, "invalid signature row")
         x, y, z = signature
+        require(all(isinstance(exponent, int) and exponent in kernel_set
+                    for exponent in signature),
+                f"signature outside declared finite-field kernels: {signature}")
         for witness in row.get("support_forcing_primes", []):
             q = witness.get("prime")
             require(isinstance(q, int) and is_prime(q), "nonprime finite-field witness")
+            require(q <= prime_bound,
+                    f"finite-field witness q={q} exceeds declared prime_bound={prime_bound}")
             require(unit_solution_count(q, x, y, z) == 0,
                     f"nonempty recorded support witness q={q}, signature={signature}")
             require((pow(0, x, q) + pow(1, y, q) - pow(1, z, q)) % q == 0,
