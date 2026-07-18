@@ -42,6 +42,13 @@ CUDA_CALIBRATION_MODULUS = 2_147_483_647
 # FNV-1a over the little-endian uint32 outputs for the fixed workload above.
 CUDA_CALIBRATION_OUTPUT_DIGEST = "b03df39b05355ebb"
 
+# The residency probe must invoke the calibrated binary with this fixed probe
+# size.  These are verifier-owned expectations, not artifact-owned claims.
+GPU_RESIDENCY_PROBE_COUNT = 100_000
+GPU_RESIDENCY_BENCHMARK_SHA256 = (
+    "fc22a09c4ba35eeb88b1a7dc4efea0f506c8467d530e954c49a057c1871f4744"
+)
+
 
 def require(condition: object, message: str) -> None:
     if not condition:
@@ -263,10 +270,16 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
             all(isinstance(kernel, int) and kernel > 0 for kernel in kernels),
             "invalid finite-field kernels")
     kernel_set = set(kernels)
+    finite_signatures: set[tuple[int, int, int]] = set()
+    finite_witnesses: set[tuple[tuple[int, int, int], int]] = set()
     for row in finite.get("support_forcing", []):
         signature = row.get("signature")
         require(isinstance(signature, list) and len(signature) == 3, "invalid signature row")
         x, y, z = signature
+        signature_key = (x, y, z)
+        require(signature_key not in finite_signatures,
+                f"duplicate finite-field signature: {signature}")
+        finite_signatures.add(signature_key)
         require(all(isinstance(exponent, int) and exponent in kernel_set
                     for exponent in signature),
                 f"signature outside declared finite-field kernels: {signature}")
@@ -275,6 +288,10 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
             require(isinstance(q, int) and is_prime(q), "nonprime finite-field witness")
             require(q <= prime_bound,
                     f"finite-field witness q={q} exceeds declared prime_bound={prime_bound}")
+            witness_key = (signature_key, q)
+            require(witness_key not in finite_witnesses,
+                    f"duplicate finite-field witness: signature={signature}, q={q}")
+            finite_witnesses.add(witness_key)
             require(unit_solution_count(q, x, y, z) == 0,
                     f"nonempty recorded support witness q={q}, signature={signature}")
             require((pow(0, x, q) + pow(1, y, q) - pow(1, z, q)) % q == 0,
@@ -316,8 +333,13 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         raise VerificationError("missing higher-valuation witness list")
     require(len(higher_cases) == cyclo.get("higher_valuation_occurrences"),
             "higher-valuation count mismatch")
+    cyclotomic_witnesses: set[tuple[int, int, int, int]] = set()
     for case in higher_cases:
         ell, u, v, q, exponent = (case[key] for key in ("ell", "u", "v", "q", "valuation"))
+        witness_key = (ell, u, v, q)
+        require(witness_key not in cyclotomic_witnesses,
+                f"duplicate cyclotomic witness: {witness_key}")
+        cyclotomic_witnesses.add(witness_key)
         require(ell in ells, f"cyclotomic witness ell={ell} outside declared ells")
         require(1 <= u <= base_bound and 1 <= v <= base_bound,
                 f"cyclotomic witness outside declared base_bound={base_bound}")
@@ -371,6 +393,10 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     if shared_policy != "ignore" and shared_path.exists():
         shared = load_json(shared_path)
         artifacts["gpu_shared_residency_probe.json"] = shared
+        require(shared.get("benchmark_binary_sha256") == GPU_RESIDENCY_BENCHMARK_SHA256,
+                "shared-residency probe used an unexpected benchmark binary")
+        require(shared.get("probe_count") == GPU_RESIDENCY_PROBE_COUNT,
+                "shared-residency probe used an unexpected probe count")
         require(shared.get("benchmark_exit_code") != 0, "resident-service CUDA probe unexpectedly succeeded")
         require("out of memory" in str(shared.get("benchmark_stderr", "")).lower(),
                 "shared-residency probe did not record CUDA OOM")

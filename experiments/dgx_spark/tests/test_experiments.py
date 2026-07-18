@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from bootstrap_provenance_history import branch_for_head
 from cyclotomic_census import (
     cyclotomic_plus_cofactor,
     multiplicative_order,
@@ -17,6 +18,15 @@ from cyclotomic_census import (
 from finite_field_support import power_subgroup, unit_solution_count
 from lte_assumption_miner import lte_holds
 from verify_results import VerificationError, check, is_prime
+
+
+def shallow_clone_source(repo: Path, tmp_path: Path) -> tuple[Path, str]:
+    """Expose the detached source HEAD under one branch without mutating it."""
+    branch = branch_for_head(repo)
+    source = tmp_path / "source.git"
+    subprocess.run(["git", "clone", "--bare", f"file://{repo}", str(source)], check=True)
+    subprocess.run(["git", "-C", str(source), "branch", "--force", branch, "HEAD"], check=True)
+    return source, branch
 
 
 def test_cyclotomic_plus_cofactor_exact_identity():
@@ -121,6 +131,23 @@ def test_verifier_rejects_finite_field_witnesses_outside_declared_domain(
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
+def test_verifier_rejects_duplicate_finite_field_witness(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    finite_path = results / "finite_field_support.json"
+    finite = json.loads(finite_path.read_text())
+    witnesses = next(
+        row["support_forcing_primes"] for row in finite["support_forcing"]
+        if len(row["support_forcing_primes"]) >= 2
+    )
+    witnesses[-1] = dict(witnesses[0])
+    finite_path.write_text(json.dumps(finite))
+
+    with pytest.raises(VerificationError, match="duplicate finite-field witness"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
 @pytest.mark.parametrize(
     "field",
     ("factor_identity_failures", "gcd_failures", "order_failures", "congruence_failures"),
@@ -174,6 +201,19 @@ def test_verifier_rejects_cyclotomic_witnesses_outside_declared_domain(
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
+def test_verifier_rejects_duplicate_cyclotomic_witness(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    cyclo_path = results / "cyclotomic_census.json"
+    cyclo = json.loads(cyclo_path.read_text())
+    cyclo["higher_valuation_cases"][-1] = dict(cyclo["higher_valuation_cases"][0])
+    cyclo_path.write_text(json.dumps(cyclo))
+
+    with pytest.raises(VerificationError, match="duplicate cyclotomic witness"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
 def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     results = Path(__file__).resolve().parents[1] / "results"
     report = check(results, cuda_policy="ignore", shared_policy="ignore")
@@ -192,6 +232,8 @@ def test_verifier_can_ignore_stale_optional_gpu_artifacts():
             "output_digest_per_repeat": ["0000000000000000"] * 5,
         }]),
         ("gpu_shared_residency_probe.json", [
+            {"benchmark_binary_sha256": "0" * 64},
+            {"probe_count": 1},
             {"vllm_health_before": "unhealthy"},
             {"vllm_health_before": "not-json"},
             {"vllm_container_status_after": "exited"},
@@ -367,14 +409,11 @@ def test_verifier_checks_both_sides_of_dirty_rename(tmp_path):
 
 def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
     repo = Path(__file__).resolve().parents[3]
-    branch = subprocess.run(
-        ["git", "-C", str(repo), "branch", "--show-current"],
-        text=True, capture_output=True, check=True,
-    ).stdout.strip()
+    source, branch = shallow_clone_source(repo, tmp_path)
     shallow = tmp_path / "shallow"
     subprocess.run(
         ["git", "clone", "--depth", "1", "--branch", branch, "--single-branch",
-         f"file://{repo}", str(shallow)],
+         f"file://{source}", str(shallow)],
         check=True,
     )
     producer_commit = json.loads(
@@ -415,14 +454,11 @@ def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
 
 def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path):
     repo = Path(__file__).resolve().parents[3]
-    branch = subprocess.run(
-        ["git", "-C", str(repo), "branch", "--show-current"],
-        text=True, capture_output=True, check=True,
-    ).stdout.strip()
+    source, branch = shallow_clone_source(repo, tmp_path)
     shallow = tmp_path / "detached-shallow"
     subprocess.run(
         ["git", "clone", "--depth", "1", "--branch", branch, "--single-branch",
-         f"file://{repo}", str(shallow)],
+         f"file://{source}", str(shallow)],
         check=True,
     )
     subprocess.run(["git", "-C", str(shallow), "checkout", "--detach"], check=True)
