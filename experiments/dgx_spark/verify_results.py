@@ -269,7 +269,17 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         lte_counterexamples += 1
 
     for key in ("factor_identity_failures", "gcd_failures", "order_failures", "congruence_failures"):
-        require(not cyclo.get(key), f"cyclotomic producer recorded {key}")
+        failures = cyclo.get(key)
+        require(isinstance(failures, list), f"missing or invalid cyclotomic {key} list")
+        require(not failures, f"cyclotomic producer recorded {key}")
+    cyclo_parameters = cyclo.get("parameters")
+    require(isinstance(cyclo_parameters, dict), "cyclotomic parameters missing")
+    base_bound = cyclo_parameters.get("base_bound")
+    ells = cyclo_parameters.get("ells")
+    require(isinstance(base_bound, int) and base_bound >= 1,
+            "invalid cyclotomic base_bound")
+    require(isinstance(ells, list) and ells and all(isinstance(ell, int) for ell in ells),
+            "invalid cyclotomic ells")
     higher_cases = cyclo.get("higher_valuation_cases")
     if not isinstance(higher_cases, list):
         raise VerificationError("missing higher-valuation witness list")
@@ -277,6 +287,9 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
             "higher-valuation count mismatch")
     for case in higher_cases:
         ell, u, v, q, exponent = (case[key] for key in ("ell", "u", "v", "q", "valuation"))
+        require(ell in ells, f"cyclotomic witness ell={ell} outside declared ells")
+        require(1 <= u <= base_bound and 1 <= v <= base_bound,
+                f"cyclotomic witness outside declared base_bound={base_bound}")
         require(is_prime(ell) and is_prime(q), "nonprime cyclotomic witness")
         cofactor = cyclotomic_plus_cofactor(u, v, ell)
         require(str(cofactor) == case.get("cofactor"), "cofactor witness mismatch")

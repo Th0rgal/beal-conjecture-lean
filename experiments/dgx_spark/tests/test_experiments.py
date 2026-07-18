@@ -87,6 +87,59 @@ def test_verifier_rejects_finite_field_witnesses_outside_declared_domain(
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
+@pytest.mark.parametrize(
+    "field",
+    ("factor_identity_failures", "gcd_failures", "order_failures", "congruence_failures"),
+)
+def test_verifier_rejects_missing_nonlist_or_nonempty_cyclotomic_failure_lists(tmp_path, field):
+    source = Path(__file__).resolve().parents[1] / "results"
+    for suffix, value in (("missing", None), ("nonlist", {}), ("nonempty", [{"failure": True}])):
+        results = tmp_path / f"results-{field}-{suffix}"
+        shutil.copytree(source, results)
+        cyclo_path = results / "cyclotomic_census.json"
+        cyclo = json.loads(cyclo_path.read_text())
+        if suffix == "missing":
+            del cyclo[field]
+        else:
+            cyclo[field] = value
+        cyclo_path.write_text(json.dumps(cyclo))
+
+        with pytest.raises(VerificationError, match=field):
+            check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (("base_bound", 100), "outside declared base_bound"),
+        (("ells", [5, 7, 11]), "outside declared ells"),
+    ],
+)
+def test_verifier_rejects_cyclotomic_witnesses_outside_declared_domain(
+    tmp_path, mutation, message
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    cyclo_path = results / "cyclotomic_census.json"
+    cyclo = json.loads(cyclo_path.read_text())
+    field, value = mutation
+    cyclo["parameters"][field] = value
+    if field == "base_bound":
+        cyclo["higher_valuation_cases"].append({
+            "ell": 3, "u": 101, "v": 8, "q": 7, "valuation": 2, "cofactor": "9457",
+        })
+        cyclo["higher_valuation_occurrences"] += 1
+        independent_path = results / "independent_reproduction.json"
+        independent = json.loads(independent_path.read_text())
+        independent["cyclotomic_higher_valuation_occurrences_reproduced"] += 1
+        independent_path.write_text(json.dumps(independent))
+    cyclo_path.write_text(json.dumps(cyclo))
+
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
 def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     results = Path(__file__).resolve().parents[1] / "results"
     report = check(results, cuda_policy="ignore", shared_policy="ignore")
