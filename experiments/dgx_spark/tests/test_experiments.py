@@ -67,28 +67,37 @@ def test_verifier_can_ignore_stale_optional_gpu_artifacts():
 
 
 @pytest.mark.parametrize(
-    ("artifact", "field", "bad_value"),
+    ("artifact", "mutations"),
     [
-        ("cuda_modexp_calibration.json", "count", 4_000_001),
-        ("cuda_modexp_calibration.json", "exponent", 65_539),
-        ("cuda_modexp_calibration.json", "modulus", 2_147_483_629),
-        ("gpu_shared_residency_probe.json", "vllm_container_status_after", "exited"),
-        ("gpu_shared_residency_probe.json", "vllm_health_after", "unhealthy"),
+        ("cuda_modexp_calibration.json", [{"count": 4_000_001}]),
+        ("cuda_modexp_calibration.json", [{"exponent": 65_539}]),
+        ("cuda_modexp_calibration.json", [{"modulus": 2_147_483_629}]),
+        ("cuda_modexp_calibration.json", [{
+            "cpu_output_digest": "0000000000000000",
+            "output_digest_per_repeat": ["0000000000000000"] * 5,
+        }]),
+        ("gpu_shared_residency_probe.json", [
+            {"vllm_health_before": "unhealthy"},
+            {"vllm_health_before": "not-json"},
+            {"vllm_container_status_after": "exited"},
+            {"vllm_health_after": "unhealthy"},
+        ]),
     ],
 )
 def test_verifier_rejects_mutated_required_gpu_calibration_or_post_probe_state(
-    tmp_path, artifact, field, bad_value
+    tmp_path, artifact, mutations
 ):
     source = Path(__file__).resolve().parents[1] / "results"
-    results = tmp_path / "results"
-    shutil.copytree(source, results)
-    artifact_path = results / artifact
-    value = json.loads(artifact_path.read_text())
-    value[field] = bad_value
-    artifact_path.write_text(json.dumps(value))
+    for number, mutation in enumerate(mutations):
+        results = tmp_path / f"results-{number}"
+        shutil.copytree(source, results)
+        artifact_path = results / artifact
+        value = json.loads(artifact_path.read_text())
+        value.update(mutation)
+        artifact_path.write_text(json.dumps(value))
 
-    with pytest.raises(VerificationError):
-        check(results, cuda_policy="required", shared_policy="required")
+        with pytest.raises(VerificationError):
+            check(results, cuda_policy="required", shared_policy="required")
 
 
 def test_cyclotomic_ell_validation_requires_distinct_odd_primes():

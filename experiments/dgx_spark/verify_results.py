@@ -39,6 +39,8 @@ HEX_64 = re.compile(r"[0-9a-f]{64}")
 CUDA_CALIBRATION_COUNT = 4_000_000
 CUDA_CALIBRATION_EXPONENT = 65_537
 CUDA_CALIBRATION_MODULUS = 2_147_483_647
+# FNV-1a over the little-endian uint32 outputs for the fixed workload above.
+CUDA_CALIBRATION_OUTPUT_DIGEST = "b03df39b05355ebb"
 
 
 def require(condition: object, message: str) -> None:
@@ -290,8 +292,10 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         require(cuda.get("mismatches_total") == 0, "CUDA total mismatch detected")
         if not isinstance(repeat_digests, list) or len(repeat_digests) != repeats:
             raise VerificationError("CUDA digest vector missing")
-        require(all(value == cuda.get("cpu_output_digest") for value in repeat_digests),
-                "CUDA repeat digest differs from CPU reference")
+        require(cuda.get("cpu_output_digest") == CUDA_CALIBRATION_OUTPUT_DIGEST,
+                "CUDA CPU digest differs from fixed workload digest")
+        require(all(value == CUDA_CALIBRATION_OUTPUT_DIGEST for value in repeat_digests),
+                "CUDA repeat digest differs from fixed workload digest")
         require(cuda.get("count") == CUDA_CALIBRATION_COUNT,
                 "unexpected CUDA calibration count")
         require(cuda.get("exponent") == CUDA_CALIBRATION_EXPONENT,
@@ -313,6 +317,8 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
                 "shared-residency probe did not record CUDA OOM")
         require(shared.get("vllm_container_status_before") == "running",
                 "shared-residency probe did not observe running vLLM")
+        require(vllm_health_is_ok(shared.get("vllm_health_before")),
+                "shared-residency probe did not observe healthy vLLM")
         require(shared.get("vllm_container_status_after") == "running",
                 "shared-residency probe did not leave vLLM running")
         require(vllm_health_is_ok(shared.get("vllm_health_after")),
