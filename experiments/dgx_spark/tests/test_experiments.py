@@ -942,6 +942,33 @@ def test_strict_checksum_accepts_the_promoted_checkpoint_receipt():
     assert "verify_results.py: OK" in checked.stdout
 
 
+def test_strict_checksum_receipt_covers_and_rejects_mutated_cuda_calibration(tmp_path):
+    repo = Path(__file__).resolve().parents[3]
+    relative = Path("experiments/dgx_spark/results/cuda_modexp_calibration.json")
+    receipt = repo / "experiments/dgx_spark/results/SHA256SUMS"
+    entries = {
+        Path(line.split("  ", 1)[1]): line.split("  ", 1)[0]
+        for line in receipt.read_text().splitlines()
+    }
+    assert relative in entries
+
+    copied = tmp_path / relative
+    copied.parent.mkdir(parents=True)
+    shutil.copyfile(repo / relative, copied)
+    mutation = json.loads(copied.read_text())
+    mutation["cpu_seconds"] += 1
+    copied.write_text(json.dumps(mutation))
+    mutation_receipt = tmp_path / "SHA256SUMS"
+    mutation_receipt.write_text(f"{entries[relative]}  {relative}\n")
+
+    checked = subprocess.run(
+        ["sha256sum", "--strict", "-c", str(mutation_receipt)],
+        cwd=tmp_path, text=True, capture_output=True, check=False,
+    )
+    assert checked.returncode != 0
+    assert f"{relative}: FAILED" in checked.stdout
+
+
 def test_strict_checksum_rejects_mutated_receipt_covered_source(tmp_path):
     repo = Path(__file__).resolve().parents[3]
     relative = Path("experiments/dgx_spark/run_suite.sh")
@@ -967,6 +994,12 @@ def test_run_suite_tests_checkpoint_before_rewriting_results():
     receipt_covered_rewrite = script.index('python3 "$ROOT/verify_results.py"')
     receipt_refresh = script.index('sha256sum "${manifest[@]}" > experiments/dgx_spark/results/SHA256SUMS')
     assert test_phase < receipt_covered_rewrite < receipt_refresh
+
+
+def test_run_suite_receipt_includes_an_existing_cuda_calibration():
+    script = (Path(__file__).resolve().parents[1] / "run_suite.sh").read_text()
+    assert 'if [[ -f experiments/dgx_spark/results/cuda_modexp_calibration.json ]]; then' in script
+    assert 'manifest+=(experiments/dgx_spark/results/cuda_modexp_calibration.json)' in script
 
 
 def test_run_suite_override_contract_is_explicit_and_fail_closed():

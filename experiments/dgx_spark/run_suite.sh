@@ -141,7 +141,7 @@ python3 "$ROOT/verify_results.py" --results "$RESULTS" \
     experiments/dgx_spark/run_suite.sh
     experiments/dgx_spark/verify_results.py
   )
-  if [[ "$CUDA_POLICY" == "required" ]]; then
+  if [[ -f experiments/dgx_spark/results/cuda_modexp_calibration.json ]]; then
     manifest+=(experiments/dgx_spark/results/cuda_modexp_calibration.json)
   fi
   if [[ "$SHARED_POLICY" != "ignore" && -f experiments/dgx_spark/results/gpu_shared_residency_probe.json ]]; then
