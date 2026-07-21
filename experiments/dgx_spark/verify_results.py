@@ -53,6 +53,11 @@ LTE_REMOVED_ASSUMPTIONS = {
     "remove_base_coprimality",
     "allow_q_two_with_odd_n",
 }
+LTE_REQUIRED_COUNTEREXAMPLES = {
+    "remove_odd_n",
+    "remove_q_divides_sum",
+    "remove_base_coprimality",
+}
 LTE_COUNTEREXAMPLE_FIELDS = {"q", "a", "b", "n", "lhs_valuation", "rhs_valuation"}
 
 
@@ -400,6 +405,8 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     lte_counterexamples = 0
     for key, case in removed_assumption_cases.items():
         if case is None:
+            require(key not in LTE_REQUIRED_COUNTEREXAMPLES,
+                    f"LTE counterexample is required for removed assumption {key}")
             continue
         require(isinstance(case, dict) and set(case) == LTE_COUNTEREXAMPLE_FIELDS,
                 f"LTE counterexample has invalid fields for {key}")

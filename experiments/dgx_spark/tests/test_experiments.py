@@ -221,6 +221,19 @@ def test_verifier_rejects_lte_counterexample_under_wrong_removed_assumption(tmp_
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
+def test_verifier_rejects_null_required_lte_counterexample(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    lte_path = results / "lte_assumption_miner.json"
+    lte = json.loads(lte_path.read_text())
+    lte["minimal_counterexamples_when_assumption_removed"]["remove_odd_n"] = None
+    lte_path.write_text(json.dumps(lte))
+
+    with pytest.raises(VerificationError, match="required for removed assumption remove_odd_n"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
 def test_verifier_rejects_wrong_lte_predicted_rhs_valuation(tmp_path):
     source = Path(__file__).resolve().parents[1] / "results"
     results = tmp_path / "results"
