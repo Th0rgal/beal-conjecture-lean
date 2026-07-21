@@ -23,6 +23,18 @@ from verify_results import VerificationError, check, is_prime
 
 def install_shared_fixture(results: Path, outcome: str) -> None:
     """Upgrade only a copied historical fixture into a schema-v3 probe."""
+    for artifact_name in (
+        "cyclotomic_census.json", "finite_field_support.json", "lte_assumption_miner.json",
+        "independent_reproduction.json", "cuda_modexp_calibration.json",
+        "gpu_shared_residency_probe.json", "environment.json",
+    ):
+        artifact_path = results / artifact_name
+        artifact = json.loads(artifact_path.read_text())
+        artifact["provenance"].update({
+            "run_started_at_utc": "2026-07-21T08:42:18Z",
+            "source_branch": "research/dgx-computational-experiments-20260717",
+        })
+        artifact_path.write_text(json.dumps(artifact))
     shared_path = results / "gpu_shared_residency_probe.json"
     shared = json.loads(shared_path.read_text())
     source_hash = json.loads((results / "environment.json").read_text())["source_files_sha256"][
@@ -32,6 +44,12 @@ def install_shared_fixture(results: Path, outcome: str) -> None:
               "http_status": 200, "stdout": '{"ok":true}', "stderr": ""}
     health["stdout_sha256"] = hashlib.sha256(health["stdout"].encode()).hexdigest()
     health["stderr_sha256"] = hashlib.sha256(b"").hexdigest()
+    environment_path = results / "environment.json"
+    environment = json.loads(environment_path.read_text())
+    environment["model_service"] = {
+        "label": "llama-router", "health_url": health["url"], "required": "true",
+    }
+    environment_path.write_text(json.dumps(environment))
     shared.update({
         "schema_version": 3,
         "benchmark_binary_sha256": "a" * 64,
@@ -343,7 +361,9 @@ def test_verifier_accepts_each_shared_residency_outcome(tmp_path, outcome):
     ("outcome", "mutate", "message"),
     [
         ("success", lambda shared: shared["service_identity"].update(label="other-service"),
-         "did not positively observe service health"),
+         "service identity differs from environment manifest"),
+        ("success", lambda shared: None,
+         "shared-residency service identity differs from environment manifest"),
         ("cuda_oom", lambda shared: shared["service_health_after"].update(http_status=503),
          "did not positively observe service health after"),
         ("success", lambda shared: shared.update(benchmark_exit_class="cuda_oom"),
@@ -370,6 +390,11 @@ def test_verifier_rejects_shared_residency_contract_mutants(tmp_path, outcome, m
     shared = json.loads(path.read_text())
     mutate(shared)
     path.write_text(json.dumps(shared))
+    if message == "shared-residency service identity differs from environment manifest":
+        environment_path = results / "environment.json"
+        environment = json.loads(environment_path.read_text())
+        environment["model_service"]["label"] = "other-service"
+        environment_path.write_text(json.dumps(environment))
     with pytest.raises(VerificationError, match=message):
         check(results, cuda_policy="required", shared_policy="required")
 
@@ -548,6 +573,43 @@ def test_verifier_rejects_false_producer_provenance(
         check(results, cuda_policy="required", shared_policy="ignore")
 
 
+@pytest.mark.parametrize(
+    ("artifact", "field", "bad_value", "message"),
+    [
+        ("cuda_modexp_calibration.json", "run_started_at_utc", "other-time", "mixed run start times"),
+        ("cuda_modexp_calibration.json", "source_branch", "other-branch", "mixed source branches"),
+    ],
+)
+def test_verifier_rejects_mixed_required_run_provenance(tmp_path, artifact, field, bad_value, message):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
+    path = results / artifact
+    value = json.loads(path.read_text())
+    value["provenance"][field] = bad_value
+    path.write_text(json.dumps(value))
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="required", shared_policy="required")
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda source_hashes: source_hashes.pop("experiments/dgx_spark/README.md"),
+    lambda source_hashes: source_hashes.update({"experiments/dgx_spark/stale.py": "0" * 64}),
+])
+def test_verifier_rejects_incomplete_or_stale_source_manifest(tmp_path, mutate):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
+    path = results / "environment.json"
+    environment = json.loads(path.read_text())
+    mutate(environment["source_files_sha256"])
+    path.write_text(json.dumps(environment))
+    with pytest.raises(VerificationError, match="source manifest is incomplete or contains stale paths"):
+        check(results, cuda_policy="required", shared_policy="required")
+
+
 def test_verifier_rejects_source_dirty_at_environment_probe(tmp_path):
     source = Path(__file__).resolve().parents[1] / "results"
     results = tmp_path / "results"
@@ -716,6 +778,20 @@ def test_run_suite_refreshes_checksum_receipt_before_running_checksum_test():
     receipt_refresh = script.index('sha256sum "${manifest[@]}" > experiments/dgx_spark/results/SHA256SUMS')
     strict_checksum_test = script.index('python3 -m pytest -q "$ROOT/tests"')
     assert receipt_covered_rewrite < receipt_refresh < strict_checksum_test
+
+
+def test_run_suite_override_contract_is_explicit_and_fail_closed():
+    script = (Path(__file__).resolve().parents[1] / "run_suite.sh").read_text()
+    # Caller-supplied source provenance is overwritten from the checkout.
+    assert 'SOURCE_COMMIT=$(git -C "$REPO_ROOT" rev-parse HEAD)' in script
+    assert 'SOURCE_BRANCH=$(git -C "$REPO_ROOT" branch --show-current)' in script
+    # Execution-mode switches and the service-required switch reject unknown values,
+    # rather than treating a typo as an omitted verification phase.
+    assert 'for flag in RUN_CPU RUN_CUDA RUN_SHARED_PROBE RUN_TESTS; do' in script
+    assert '"${!flag}" != "0" && "${!flag}" != "1"' in script
+    assert 'MODEL_SERVICE_REQUIRED must be true or false' in script
+    # A requested shared phase cannot run without an explicit service identity.
+    assert 'MODEL_SERVICE_LABEL and MODEL_SERVICE_HEALTH_URL are required for shared probe' in script
 
 
 def test_bootstrap_rejects_a_foreign_producer_commit(tmp_path):

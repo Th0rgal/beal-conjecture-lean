@@ -46,6 +46,17 @@ MODEL_SERVICE_LABEL="${MODEL_SERVICE_LABEL:-}"
 MODEL_SERVICE_HEALTH_URL="${MODEL_SERVICE_HEALTH_URL:-}"
 MODEL_SERVICE_REQUIRED="${MODEL_SERVICE_REQUIRED:-true}"
 
+for flag in RUN_CPU RUN_CUDA RUN_SHARED_PROBE RUN_TESTS; do
+  if [[ "${!flag}" != "0" && "${!flag}" != "1" ]]; then
+    echo "$flag must be 0 or 1" >&2
+    exit 2
+  fi
+done
+if [[ "$MODEL_SERVICE_REQUIRED" != "true" && "$MODEL_SERVICE_REQUIRED" != "false" ]]; then
+  echo "MODEL_SERVICE_REQUIRED must be true or false" >&2
+  exit 2
+fi
+
 if [[ "$RUN_CPU" == "1" ]]; then
   python3 "$ROOT/finite_field_support.py" \
     --kernels 3,4,5,7,11,13 --prime-bound 251 \

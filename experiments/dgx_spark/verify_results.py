@@ -198,6 +198,21 @@ def git_blob(repo_root: Path, commit: str, path: str) -> bytes:
     return process.stdout
 
 
+def committed_source_paths(repo_root: Path, commit: str) -> set[str]:
+    process = subprocess.run(
+        ["git", "-C", str(repo_root), "ls-tree", "-r", "--name-only", commit,
+         "--", "experiments/dgx_spark"],
+        text=True, capture_output=True, check=False,
+    )
+    if process.returncode:
+        raise VerificationError(f"cannot list DGX sources from source commit {commit}")
+    excluded_parts = {"results", "logs", "build", "smoke", "__pycache__", ".pytest_cache"}
+    return {
+        path for path in process.stdout.splitlines()
+        if path and not (set(Path(path).parts) & excluded_parts)
+    }
+
+
 def require_commit_object(repo_root: Path, commit: str) -> None:
     process = subprocess.run(
         ["git", "-C", str(repo_root), "cat-file", "-t", commit],
@@ -222,6 +237,8 @@ def check_provenance(
 ) -> tuple[str, str, int, int]:
     run_ids: set[str] = set()
     commits: set[str] = set()
+    run_started_at: set[str] = set()
+    branches: set[str] = set()
     provenances: dict[str, dict] = {}
     for name, artifact in named_artifacts.items():
         provenance = artifact.get("provenance")
@@ -229,19 +246,29 @@ def check_provenance(
             raise VerificationError(f"{name} lacks provenance")
         run_id = provenance.get("run_id")
         commit = provenance.get("source_commit")
+        started = provenance.get("run_started_at_utc")
+        branch = provenance.get("source_branch")
         if not isinstance(run_id, str) or not run_id:
             raise VerificationError(f"{name} has invalid run_id")
         if not isinstance(commit, str) or HEX_40.fullmatch(commit) is None:
             raise VerificationError(f"{name} has invalid source_commit")
+        if not isinstance(started, str) or not started:
+            raise VerificationError(f"{name} has invalid run_started_at_utc")
+        if not isinstance(branch, str) or not branch:
+            raise VerificationError(f"{name} has invalid source_branch")
         require(provenance.get("source_tree_clean") is True, f"{name} was not produced from clean source")
         producer_hash = provenance.get("producer_sha256")
         if not isinstance(producer_hash, str) or HEX_64.fullmatch(producer_hash) is None:
             raise VerificationError(f"{name} has invalid producer_sha256")
         run_ids.add(run_id)
         commits.add(commit)
+        run_started_at.add(started)
+        branches.add(branch)
         provenances[name] = provenance
     require(len(run_ids) == 1, f"mixed run IDs: {sorted(run_ids)}")
     require(len(commits) == 1, f"mixed source commits: {sorted(commits)}")
+    require(len(run_started_at) == 1, f"mixed run start times: {sorted(run_started_at)}")
+    require(len(branches) == 1, f"mixed source branches: {sorted(branches)}")
     run_id, commit = next(iter(run_ids)), next(iter(commits))
 
     source_hashes = environment.get("source_files_sha256")
@@ -250,6 +277,9 @@ def check_provenance(
     repo_root = Path(__file__).resolve().parents[2]
     require_commit_object(repo_root, commit)
     require_commit_ancestor(repo_root, commit)
+    expected_paths = committed_source_paths(repo_root, commit)
+    require(set(source_hashes) == expected_paths,
+            "environment source manifest is incomplete or contains stale paths")
     paths_by_basename: dict[str, list[str]] = {}
     for path, expected_hash in source_hashes.items():
         if not isinstance(path, str) or not path.startswith("experiments/dgx_spark/"):
@@ -477,6 +507,12 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
                 identity["label"] and isinstance(identity.get("health_url"), str) and
                 identity["health_url"] and isinstance(identity.get("required"), bool),
                 "shared-residency probe has invalid service identity")
+        environment_service = environment.get("model_service")
+        require(isinstance(environment_service, dict) and
+                environment_service.get("label") == identity["label"] and
+                environment_service.get("health_url") == identity["health_url"] and
+                environment_service.get("required") == str(identity["required"]).lower(),
+                "shared-residency service identity differs from environment manifest")
         if identity["required"]:
             require(service_health_is_positive(shared.get("service_health_before"), identity),
                     "shared-residency probe did not positively observe service health before")
