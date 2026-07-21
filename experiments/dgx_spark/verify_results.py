@@ -47,6 +47,9 @@ CUDA_CALIBRATION_OUTPUT_DIGEST = "b03df39b05355ebb"
 # size.  These are verifier-owned expectations, not artifact-owned claims.
 GPU_RESIDENCY_PROBE_COUNT = 100_000
 GPU_RESIDENCY_SCHEMA_VERSION = 3
+# FNV-1a over the little-endian uint32 outputs for the fixed residency workload.
+# This verifier-owned value prevents coordinated mutation of both digest fields.
+GPU_RESIDENCY_PROBE_OUTPUT_DIGEST = "50acfa71f6907f64"
 LTE_REMOVED_ASSUMPTIONS = {
     "remove_odd_n",
     "remove_q_divides_sum",
@@ -183,10 +186,21 @@ def require_shared_success_payload(shared: dict, source_commit: str, producer_ha
             "shared-residency success stdout has unexpected calibration schema")
     require(payload.get("count") == GPU_RESIDENCY_PROBE_COUNT,
             "shared-residency success stdout has unexpected probe count")
+    require(payload.get("repeats") == 1,
+            "shared-residency success stdout has unexpected repeat count")
+    require(payload.get("exponent") == CUDA_CALIBRATION_EXPONENT,
+            "shared-residency success stdout has unexpected exponent")
+    require(payload.get("modulus") == CUDA_CALIBRATION_MODULUS,
+            "shared-residency success stdout has unexpected modulus")
     require(payload.get("mismatches_total") == 0,
             "shared-residency success calibration has mismatches")
     require(payload.get("mismatches_per_repeat") == [0],
             "shared-residency success calibration repeats have mismatches")
+    require(payload.get("cpu_output_digest") == GPU_RESIDENCY_PROBE_OUTPUT_DIGEST,
+            "shared-residency success CPU output digest differs from fixed workload")
+    require(payload.get("output_digest_per_repeat") ==
+            [GPU_RESIDENCY_PROBE_OUTPUT_DIGEST],
+            "shared-residency success output digest differs from fixed workload")
     provenance = payload.get("provenance")
     require(isinstance(provenance, dict), "shared-residency success stdout lacks provenance")
     require(provenance.get("run_id") == shared["provenance"]["run_id"],

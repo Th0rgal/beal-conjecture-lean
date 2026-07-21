@@ -116,7 +116,7 @@ fi
 
 OUTPUT="$RESULTS/environment.json" python3 "$ROOT/environment_probe.py"
 if [[ "$RUN_CUDA" == "1" ]]; then CUDA_POLICY=required; else CUDA_POLICY=ignore; fi
-if [[ "$RUN_SHARED_PROBE" == "1" ]]; then SHARED_POLICY=required; else SHARED_POLICY=auto; fi
+if [[ "$RUN_SHARED_PROBE" == "1" ]]; then SHARED_POLICY=required; else SHARED_POLICY=ignore; fi
 python3 "$ROOT/verify_results.py" --results "$RESULTS" \
   --cuda-policy "$CUDA_POLICY" --shared-policy "$SHARED_POLICY" \
   --output "$RESULTS/verification_report.json" | tee "$LOGS/verification.log"

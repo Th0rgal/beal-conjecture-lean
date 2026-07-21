@@ -66,7 +66,9 @@ def install_shared_fixture(results: Path, outcome: str) -> None:
     if outcome == "success":
         payload = json.loads((results / "cuda_modexp_calibration.json").read_text())
         payload.update({"count": 100_000, "repeats": 1, "mismatches_total": 0,
-                        "mismatches_per_repeat": [0], "output_digest_per_repeat": [payload["cpu_output_digest"]]})
+                        "mismatches_per_repeat": [0],
+                        "cpu_output_digest": "50acfa71f6907f64",
+                        "output_digest_per_repeat": ["50acfa71f6907f64"]})
         payload["provenance"] = {**payload["provenance"], "run_id": shared["provenance"]["run_id"]}
         shared.update({"benchmark_exit_code": 0, "benchmark_exit_class": "success",
                        "benchmark_stdout": json.dumps(payload), "benchmark_stderr": ""})
@@ -96,6 +98,11 @@ def mutate_shared_success_payload(shared: dict, field: str, value: object) -> No
     shared["benchmark_stdout_sha256"] = hashlib.sha256(
         shared["benchmark_stdout"].encode()
     ).hexdigest()
+
+
+def mutate_shared_success_digests(shared: dict, digest: str) -> None:
+    mutate_shared_success_payload(shared, "cpu_output_digest", digest)
+    mutate_shared_success_payload(shared, "output_digest_per_repeat", [digest])
 
 
 def shallow_clone_source(repo: Path, tmp_path: Path) -> tuple[Path, str]:
@@ -538,6 +545,15 @@ def test_verifier_accepts_each_shared_residency_outcome(tmp_path, outcome):
          "stdout run ID differs"),
         ("success", lambda shared: mutate_shared_success_payload(shared, "producer_sha256", "0" * 64),
          "stdout producer provenance differs"),
+        ("success", lambda shared: mutate_shared_success_payload(shared, "repeats", 2),
+         "unexpected repeat count"),
+        ("success", lambda shared: mutate_shared_success_payload(shared, "exponent", 3),
+         "unexpected exponent"),
+        ("success", lambda shared: mutate_shared_success_payload(shared, "modulus", 17),
+         "unexpected modulus"),
+        ("success", lambda shared: mutate_shared_success_digests(
+            shared, "0000000000000000"),
+         "CPU output digest differs from fixed workload"),
         ("success", lambda shared: shared.update(probe_count=1), "unexpected probe count"),
         ("success", lambda shared: shared.update(benchmark_exit_class="unexpected_error"),
          "unexpected benchmark exit class"),
@@ -1000,6 +1016,11 @@ def test_run_suite_receipt_includes_an_existing_cuda_calibration():
     script = (Path(__file__).resolve().parents[1] / "run_suite.sh").read_text()
     assert 'if [[ -f experiments/dgx_spark/results/cuda_modexp_calibration.json ]]; then' in script
     assert 'manifest+=(experiments/dgx_spark/results/cuda_modexp_calibration.json)' in script
+
+
+def test_run_suite_ignores_unrequested_stale_shared_probe():
+    script = (Path(__file__).resolve().parents[1] / "run_suite.sh").read_text()
+    assert 'if [[ "$RUN_SHARED_PROBE" == "1" ]]; then SHARED_POLICY=required; else SHARED_POLICY=ignore; fi' in script
 
 
 def test_run_suite_override_contract_is_explicit_and_fail_closed():

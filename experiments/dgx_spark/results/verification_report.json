@@ -7,9 +7,9 @@
   "lte_counterexamples_replayed": 3,
   "primality_checks": 1974,
   "provenance": {
-    "produced_at_utc": "2026-07-21T11:24:37.117556+00:00",
+    "produced_at_utc": "2026-07-21T13:07:03.820259+00:00",
     "producer": "verify_results.py",
-    "producer_sha256": "74362628616c9724f2d30bce0571c32c6c0fdb8a4d0e7400cf1f713d97aca471",
+    "producer_sha256": "fde4506483a6301253613063e3042286b3098439f3b78505fbab4dc52f53b238",
     "run_id": "dgx-20260721T103359Z-139511b6377a",
     "run_started_at_utc": "2026-07-21T10:33:59Z",
     "source_branch": "research/dgx-computational-experiments-20260717",
