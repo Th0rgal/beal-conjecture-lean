@@ -797,13 +797,27 @@ def test_run_suite_override_contract_is_explicit_and_fail_closed():
 def test_bootstrap_rejects_a_foreign_producer_commit(tmp_path):
     repo = Path(__file__).resolve().parents[3]
     isolated = tmp_path / "isolated"
-    subprocess.run(["git", "clone", str(repo), str(isolated)], check=True)
+    # Keep this synthetic commit independent of the developer/CI Git config.
+    # `commit-tree` needs an identity even though no working-tree commit is made.
+    empty_home = tmp_path / "empty-home"
+    empty_home.mkdir()
+    git_env = {
+        **os.environ,
+        "HOME": str(empty_home),
+        "XDG_CONFIG_HOME": str(empty_home / "xdg-config"),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_AUTHOR_NAME": "DGX test author",
+        "GIT_AUTHOR_EMAIL": "dgx-test-author@example.invalid",
+        "GIT_COMMITTER_NAME": "DGX test committer",
+        "GIT_COMMITTER_EMAIL": "dgx-test-committer@example.invalid",
+    }
+    subprocess.run(["git", "clone", str(repo), str(isolated)], check=True, env=git_env)
     tree = subprocess.run(
         ["git", "-C", str(isolated), "write-tree"], text=True, capture_output=True, check=True,
     ).stdout.strip()
     foreign_commit = subprocess.run(
         ["git", "-C", str(isolated), "commit-tree", tree, "-m", "foreign producer"],
-        text=True, capture_output=True, check=True,
+        text=True, capture_output=True, check=True, env=git_env,
     ).stdout.strip()
     results = tmp_path / "results"
     results.mkdir()
