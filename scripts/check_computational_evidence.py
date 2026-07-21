@@ -15,6 +15,17 @@ SOURCE = """import BealUnified.Computational
 #print axioms BealUnified.noCounterexampleUpTo_8_8
 """
 
+# This audit runs before the full project build in the trust-gate workflow.
+# Build its one opt-in target explicitly so a clean checkout has the olean that
+# the temporary import probe requires.  Keeping this here makes direct local
+# invocation and CI use the same deterministic dependency order.
+build = subprocess.run(["lake", "build", "BealUnified.Computational"], cwd=ROOT,
+                       text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                       check=False)
+if build.returncode:
+    print(build.stdout, file=sys.stderr)
+    raise SystemExit(build.returncode)
+
 with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
     probe.write(SOURCE)
     probe_path = pathlib.Path(probe.name)
