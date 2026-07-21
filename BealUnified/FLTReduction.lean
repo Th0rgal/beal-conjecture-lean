@@ -32,6 +32,26 @@ theorem beal_case_pow_four {A B C : ℕ} (sol : Solution A B C 4 4 4) : False :=
   equalExponent_counterexample_contradicts_flt fermatLastTheoremFour
     sol.posA sol.posB sol.posC sol.eqn
 
+/-- No Beal solution whose three exponents are divisible by `3`, by FLT-3. -/
+theorem beal_case_all_exponents_divisible_by_three
+    {A B C x y z : ℕ}
+    (sol : Solution A B C x y z)
+    (hx3 : 3 ∣ x) (hy3 : 3 ∣ y) (hz3 : 3 ∣ z) :
+    False := by
+  obtain ⟨k, rfl⟩ := hx3
+  obtain ⟨m, rfl⟩ := hy3
+  obtain ⟨n, rfl⟩ := hz3
+  obtain heq : BealEquation A B C (3 * k) (3 * m) (3 * n) := sol.eqn
+  change A ^ (3 * k) + B ^ (3 * m) = C ^ (3 * n) at heq
+  apply fermatLastTheoremThree (A ^ k) (B ^ m) (C ^ n)
+  · exact pow_ne_zero k (Nat.ne_of_gt sol.posA)
+  · exact pow_ne_zero m (Nat.ne_of_gt sol.posB)
+  · exact pow_ne_zero n (Nat.ne_of_gt sol.posC)
+  · have hcube : (A ^ k) ^ 3 + (B ^ m) ^ 3 = (C ^ n) ^ 3 := by
+      rw [← pow_mul, ← pow_mul, ← pow_mul]
+      simpa only [Nat.mul_comm] using heq
+    exact hcube
+
 /-- Any common-exponent Beal case follows from FLT for that exponent. -/
 theorem beal_case_pow_of_flt
     {n : ℕ} (hn : FermatLastTheoremFor n)
