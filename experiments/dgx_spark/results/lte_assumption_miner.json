@@ -1,0 +1,53 @@
+{
+  "elapsed_seconds": 0.32428541290573776,
+  "experiment": "plus_lte_assumption_miner",
+  "interpretation": {
+    "certified_scope": "finite exhaustive check under stated bounds",
+    "not_proved": "the general LTE theorem; zero bounded violations are only falsification evidence"
+  },
+  "minimal_counterexamples_when_assumption_removed": {
+    "allow_q_two_with_odd_n": null,
+    "remove_base_coprimality": {
+      "a": 3,
+      "b": 3,
+      "lhs_valuation": 3,
+      "n": 3,
+      "q": 3,
+      "rhs_valuation": 2
+    },
+    "remove_odd_n": {
+      "a": 1,
+      "b": 2,
+      "lhs_valuation": 0,
+      "n": 2,
+      "q": 3,
+      "rhs_valuation": 1
+    },
+    "remove_q_divides_sum": {
+      "a": 1,
+      "b": 1,
+      "lhs_valuation": 0,
+      "n": 3,
+      "q": 3,
+      "rhs_valuation": 1
+    }
+  },
+  "parameters": {
+    "a_bound": 200,
+    "n_bound": 31,
+    "prime_bound": 97
+  },
+  "provenance": {
+    "produced_at_utc": "2026-07-21T10:34:01.317963+00:00",
+    "producer": "lte_assumption_miner.py",
+    "producer_sha256": "3f85d2dc554450f21059cf92630fd35b9fcff348932f381d81de8af29290cf31",
+    "run_id": "dgx-20260721T103359Z-139511b6377a",
+    "run_started_at_utc": "2026-07-21T10:33:59Z",
+    "source_branch": "research/dgx-computational-experiments-20260717",
+    "source_commit": "139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a",
+    "source_tree_clean": true
+  },
+  "schema_version": 1,
+  "valid_hypothesis_cases_tested": 422340,
+  "valid_hypothesis_violations": []
+}

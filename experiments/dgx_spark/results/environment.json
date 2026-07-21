@@ -1,0 +1,50 @@
+{
+  "architecture": "aarch64",
+  "cpu_count": 20,
+  "cpu_policy": "cyclotomic workers=2; CUDA CPU reference OMP_NUM_THREADS=2",
+  "cuda_nvcc": "Build cuda_13.0.r13.0/compiler.36424714_0",
+  "cypari2_package": "2.1.4-1build2",
+  "experiment": "dgx_environment_manifest",
+  "git_status_at_probe": "M experiments/dgx_spark/results/SHA256SUMS\n M experiments/dgx_spark/results/cuda_modexp_calibration.json\n M experiments/dgx_spark/results/cyclotomic_census.json\n M experiments/dgx_spark/results/environment.json\n M experiments/dgx_spark/results/finite_field_support.json\n M experiments/dgx_spark/results/gpu_shared_residency_probe.json\n M experiments/dgx_spark/results/independent_reproduction.json\n M experiments/dgx_spark/results/lte_assumption_miner.json\n M experiments/dgx_spark/results/verification_report.json",
+  "gpu": "NVIDIA GB10, 12.1, P0, 44, 13.85 W",
+  "gpu_window": "not recorded",
+  "hostname": "spark-de79",
+  "model_service": {
+    "health_url": "http://127.0.0.1:8000/health",
+    "label": "dgx-router-leanstral-1.5",
+    "required": "true"
+  },
+  "pari_gp": "GP/PARI CALCULATOR Version 2.15.4 (released)",
+  "platform": "Linux-6.14.0-1015-nvidia-aarch64-with-glibc2.39",
+  "provenance": {
+    "produced_at_utc": "2026-07-21T11:24:37.071424+00:00",
+    "producer": "environment_probe.py",
+    "producer_sha256": "219e2e021431fe4ee5577ce54ea933528da472c8b7f6449082ce5847df149ba3",
+    "run_id": "dgx-20260721T103359Z-139511b6377a",
+    "run_started_at_utc": "2026-07-21T10:33:59Z",
+    "source_branch": "research/dgx-computational-experiments-20260717",
+    "source_commit": "139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a",
+    "source_tree_clean": true
+  },
+  "python": "3.12.3",
+  "recorded_at_utc": "2026-07-21T11:24:36.883920+00:00",
+  "schema_version": 2,
+  "scope": "Measured execution metadata; bounded computational evidence, not a proof of Beal.",
+  "source_files_sha256": {
+    "experiments/dgx_spark/README.md": "9954f782e98047a0dc70dca1e898f81ce81962b4055e3b8ebcb8e328640e4934",
+    "experiments/dgx_spark/bootstrap_provenance_history.py": "69a8144c7db7090b3f1d81029607c9b123c2be7e6f136eb1b634ad3dda919f6f",
+    "experiments/dgx_spark/cuda_modexp_bench.cu": "f709259ff5e037d647b30fd7beed6c1c89ac44be5d158505d9e7193e9ac636a2",
+    "experiments/dgx_spark/cyclotomic_census.py": "ce68c212306388261c91493362f36aee698176989d865c34f6c129223b4126ba",
+    "experiments/dgx_spark/environment_probe.py": "219e2e021431fe4ee5577ce54ea933528da472c8b7f6449082ce5847df149ba3",
+    "experiments/dgx_spark/finite_field_support.py": "929a9402bbdd7e3b4c08c2c0b4425d79f911eb444abfb59456506785c70ece67",
+    "experiments/dgx_spark/gpu_residency_probe.py": "a9c2706ad6c87a711f439f8729a7d7a0977791a47c4016868a80d3282ea97e1a",
+    "experiments/dgx_spark/independent_reproduce.py": "27db76a41fcf462c6d0c148a644fc263e03ac8ad443f2b9081b19e0fe36de2d0",
+    "experiments/dgx_spark/lte_assumption_miner.py": "3f85d2dc554450f21059cf92630fd35b9fcff348932f381d81de8af29290cf31",
+    "experiments/dgx_spark/provenance.py": "8a2530903eea88fa03a57d4eaf663de00b4af1721c9f48287f8325c8dd8d68c4",
+    "experiments/dgx_spark/run_suite.sh": "5c349f98b7ca2e5d8c984165deeefff58598895791785ee45e4a55c82c95c05d",
+    "experiments/dgx_spark/tests/conftest.py": "bc1dd0bf9a45315cff2adf014b50493cf8a0390faf8238590ad972fe981f3f1d",
+    "experiments/dgx_spark/tests/test_experiments.py": "18c001c16ed6c8bbc9fa423a52825dfb673560f5b457a2ea396b23b7c3e8589f",
+    "experiments/dgx_spark/verify_results.py": "74362628616c9724f2d30bce0571c32c6c0fdb8a4d0e7400cf1f713d97aca471"
+  },
+  "sympy": "1.14.0"
+}
