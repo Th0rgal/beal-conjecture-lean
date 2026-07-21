@@ -23,10 +23,27 @@ SOLVED_STATUSES = {"solved", "reduction-solved"}
 STATUSES = SOLVED_STATUSES | {"open_source_audit_pending"}
 STRING_FIELDS = REQUIRED - {"formal_declaration"}
 DATE = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
+DECLARATION = re.compile(
+    r"\A[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*\Z"
+)
 
 
 def fail(message: str) -> None:
     raise ValueError(message)
+
+
+def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            fail(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def load_json(path: pathlib.Path) -> object:
+    return json.loads(path.read_text(encoding="utf-8"),
+                      object_pairs_hook=reject_duplicate_keys)
 
 
 def require_string(entry: dict, field: str) -> str:
@@ -55,6 +72,8 @@ def build_public_root() -> None:
 
 def audit_trusted_declaration(declaration: str) -> None:
     """Ask Lean whether declaration is loaded and allowed by Trusted's environment."""
+    if not DECLARATION.fullmatch(declaration):
+        fail(f"formal_declaration must be one qualified Lean identifier: {declaration!r}")
     auditor = AXIOM_AUDITOR.read_text(encoding="utf-8")
     suffix = "#audit_trusted_axioms\n"
     if not auditor.endswith(suffix):
@@ -75,7 +94,7 @@ def audit_trusted_declaration(declaration: str) -> None:
 
 def validate(registry: pathlib.Path) -> int:
     try:
-        data = json.loads(registry.read_text(encoding="utf-8"))
+        data = load_json(registry)
     except (OSError, json.JSONDecodeError) as exc:
         fail(str(exc))
     if (not isinstance(data, dict) or set(data) != {"schema_version", "entries"}
@@ -129,16 +148,17 @@ def self_test() -> None:
         fixture_path.unlink(missing_ok=True)
     print("registry negative fixture rejected an on-disk declaration outside Trusted")
 
-    for field, malformed in {
-        "id": 7,
-        "signature": ["(3,3,3)"],
-        "status": {"solved": True},
-        "formal_declaration": 3,
-        "assumptions": None,
-        "literature_source": False,
-        "certificate_dependency": {"kind": "none"},
-        "last_audit": 20260721,
-    }.items():
+    for field, malformed in [
+        ("id", 7),
+        ("signature", ["(3,3,3)"]),
+        ("status", {"solved": True}),
+        ("formal_declaration", 3),
+        ("formal_declaration", "BealUnified.beal_case_pow_three\n#check True"),
+        ("assumptions", None),
+        ("literature_source", False),
+        ("certificate_dependency", {"kind": "none"}),
+        ("last_audit", 20260721),
+    ]:
         fixture_data = json.loads(REGISTRY.read_text(encoding="utf-8"))
         fixture_data["entries"][0][field] = malformed
         with tempfile.NamedTemporaryFile("w", suffix=".json", dir=ROOT, delete=False) as fixture:
@@ -170,6 +190,23 @@ def self_test() -> None:
         finally:
             fixture_path.unlink(missing_ok=True)
     print("registry negative fixtures rejected every malformed field type and audit date")
+
+    duplicate_key = REGISTRY.read_text(encoding="utf-8").replace(
+        '"schema_version": 1,', '"schema_version": 1,\n  "schema_version": 1,', 1)
+    with tempfile.NamedTemporaryFile("w", suffix=".json", dir=ROOT, delete=False) as fixture:
+        fixture.write(duplicate_key)
+        fixture_path = pathlib.Path(fixture.name)
+    try:
+        try:
+            validate(fixture_path)
+        except ValueError as exc:
+            if "duplicate JSON key" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("registry accepted a duplicate JSON key")
+    finally:
+        fixture_path.unlink(missing_ok=True)
+    print("registry negative fixture rejected duplicate JSON keys")
 
 
 try:
