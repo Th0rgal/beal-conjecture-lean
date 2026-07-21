@@ -24,9 +24,57 @@ def shallow_clone_source(repo: Path, tmp_path: Path) -> tuple[Path, str]:
     """Expose the detached source HEAD under one branch without mutating it."""
     branch = branch_for_head(repo)
     source = tmp_path / "source.git"
-    subprocess.run(["git", "clone", "--bare", f"file://{repo}", str(source)], check=True)
+    cloned = subprocess.run(
+        ["git", "clone", "--bare", f"file://{repo}", str(source)],
+        text=True, capture_output=True, check=False,
+    )
+    if cloned.returncode:
+        promisor = subprocess.run(
+            ["git", "-C", str(repo), "config", "--bool", "remote.origin.promisor"],
+            text=True, capture_output=True, check=False,
+        )
+        if promisor.stdout.strip() == "true" and "lazy fetching disabled" in cloned.stderr:
+            pytest.skip(
+                "partial clone cannot serve a local bare source while lazy fetching is disabled"
+            )
+        cloned.check_returncode()
     subprocess.run(["git", "-C", str(source), "branch", "--force", branch, "HEAD"], check=True)
     return source, branch
+
+
+def test_partial_clone_source_failure_is_explicitly_skipped(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    source = tmp_path / "source.git"
+    failed_clone = subprocess.CompletedProcess(
+        ["git", "clone"], 128, "", "fatal: lazy fetching disabled"
+    )
+    promisor = subprocess.CompletedProcess(
+        ["git", "config"], 0, "true\n", ""
+    )
+
+    monkeypatch.setattr("test_experiments.branch_for_head", lambda _repo: "main")
+    monkeypatch.setattr("test_experiments.subprocess.run", lambda args, **_kwargs:
+                        failed_clone if args[1] == "clone" else promisor)
+
+    with pytest.raises(pytest.skip.Exception, match="partial clone cannot serve"):
+        shallow_clone_source(repo, tmp_path)
+    assert not source.exists()
+
+
+def test_non_partial_clone_source_failure_is_not_skipped(tmp_path, monkeypatch):
+    failed_clone = subprocess.CompletedProcess(
+        ["git", "clone"], 128, "", "fatal: unrelated clone failure"
+    )
+    non_promisor = subprocess.CompletedProcess(
+        ["git", "config"], 0, "false\n", ""
+    )
+
+    monkeypatch.setattr("test_experiments.branch_for_head", lambda _repo: "main")
+    monkeypatch.setattr("test_experiments.subprocess.run", lambda args, **_kwargs:
+                        failed_clone if args[1] == "clone" else non_promisor)
+
+    with pytest.raises(subprocess.CalledProcessError):
+        shallow_clone_source(tmp_path / "repo", tmp_path)
 
 
 def test_cyclotomic_plus_cofactor_exact_identity():
