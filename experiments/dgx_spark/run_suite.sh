@@ -42,6 +42,9 @@ RUN_CPU="${RUN_CPU:-1}"
 RUN_CUDA="${RUN_CUDA:-0}"
 RUN_SHARED_PROBE="${RUN_SHARED_PROBE:-0}"
 RUN_TESTS="${RUN_TESTS:-1}"
+MODEL_SERVICE_LABEL="${MODEL_SERVICE_LABEL:-}"
+MODEL_SERVICE_HEALTH_URL="${MODEL_SERVICE_HEALTH_URL:-}"
+MODEL_SERVICE_REQUIRED="${MODEL_SERVICE_REQUIRED:-true}"
 
 if [[ "$RUN_CPU" == "1" ]]; then
   python3 "$ROOT/finite_field_support.py" \
@@ -63,8 +66,15 @@ if [[ "$RUN_CUDA" == "1" || "$RUN_SHARED_PROBE" == "1" ]]; then
 fi
 CUDA_SOURCE_SHA=$(sha256sum "$ROOT/cuda_modexp_bench.cu" | cut -d' ' -f1)
 if [[ "$RUN_SHARED_PROBE" == "1" ]]; then
+  if [[ -z "$MODEL_SERVICE_LABEL" || -z "$MODEL_SERVICE_HEALTH_URL" ]]; then
+    echo "MODEL_SERVICE_LABEL and MODEL_SERVICE_HEALTH_URL are required for shared probe" >&2
+    exit 2
+  fi
   python3 "$ROOT/gpu_residency_probe.py" \
     --benchmark "$BUILD/cuda_modexp_bench" --count 100000 \
+    --service-label "$MODEL_SERVICE_LABEL" \
+    --service-health-url "$MODEL_SERVICE_HEALTH_URL" \
+    --service-required "$MODEL_SERVICE_REQUIRED" \
     --output "$RESULTS/gpu_shared_residency_probe.json" | tee "$LOGS/gpu_shared_residency_probe.log"
 fi
 if [[ "$RUN_CUDA" == "1" ]]; then
@@ -73,6 +83,17 @@ if [[ "$RUN_CUDA" == "1" ]]; then
     --source-tree-clean "$SOURCE_TREE_CLEAN" --producer-sha256 "$CUDA_SOURCE_SHA" \
     > "$RESULTS/cuda_modexp_calibration.json"
   python3 -m json.tool "$RESULTS/cuda_modexp_calibration.json" >/dev/null
+  python3 - "$RESULTS/cuda_modexp_calibration.json" "$BUILD/cuda_modexp_bench" <<'PY'
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+artifact, binary = map(Path, sys.argv[1:])
+data = json.loads(artifact.read_text())
+data["benchmark_binary_sha256"] = hashlib.sha256(binary.read_bytes()).hexdigest()
+artifact.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+PY
 fi
 
 OUTPUT="$RESULTS/environment.json" python3 "$ROOT/environment_probe.py"

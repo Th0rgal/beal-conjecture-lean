@@ -45,9 +45,7 @@ CUDA_CALIBRATION_OUTPUT_DIGEST = "b03df39b05355ebb"
 # The residency probe must invoke the calibrated binary with this fixed probe
 # size.  These are verifier-owned expectations, not artifact-owned claims.
 GPU_RESIDENCY_PROBE_COUNT = 100_000
-GPU_RESIDENCY_BENCHMARK_SHA256 = (
-    "fc22a09c4ba35eeb88b1a7dc4efea0f506c8467d530e954c49a057c1871f4744"
-)
+GPU_RESIDENCY_SCHEMA_VERSION = 3
 
 
 def require(condition: object, message: str) -> None:
@@ -146,15 +144,47 @@ def require_independent_domain_snapshot(
             f"independent {family} domain snapshot differs from declared parameters")
 
 
-def vllm_health_is_ok(value: object) -> bool:
-    """Accept only the recorded successful JSON response from vLLM's health API."""
-    if not isinstance(value, str):
-        return False
+def service_health_is_positive(value: object, identity: dict) -> bool:
+    """Require a successful HTTP observation of the configured model service."""
+    return (
+        isinstance(value, dict)
+        and value.get("service_label") == identity.get("label")
+        and value.get("url") == identity.get("health_url")
+        and value.get("exit_code") == 0
+        and isinstance(value.get("http_status"), int)
+        and 200 <= value["http_status"] < 300
+        and isinstance(value.get("stdout"), str)
+        and isinstance(value.get("stderr"), str)
+        and value.get("stdout_sha256") == hashlib.sha256(value["stdout"].encode()).hexdigest()
+        and value.get("stderr_sha256") == hashlib.sha256(value["stderr"].encode()).hexdigest()
+    )
+
+
+def require_shared_success_payload(shared: dict, source_commit: str, producer_hash: str) -> None:
     try:
-        health = json.loads(value)
-    except json.JSONDecodeError:
-        return False
-    return isinstance(health, dict) and health.get("status") == "ok"
+        payload = json.loads(shared["benchmark_stdout"])
+    except (KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise VerificationError("shared-residency success stdout is not calibration JSON") from exc
+    require(isinstance(payload, dict), "shared-residency success stdout is not a JSON object")
+    require(payload.get("experiment") == "cuda_modexp_calibration",
+            "shared-residency success stdout has unexpected calibration schema")
+    require(payload.get("count") == GPU_RESIDENCY_PROBE_COUNT,
+            "shared-residency success stdout has unexpected probe count")
+    require(payload.get("mismatches_total") == 0,
+            "shared-residency success calibration has mismatches")
+    require(payload.get("mismatches_per_repeat") == [0],
+            "shared-residency success calibration repeats have mismatches")
+    provenance = payload.get("provenance")
+    require(isinstance(provenance, dict), "shared-residency success stdout lacks provenance")
+    require(provenance.get("run_id") == shared["provenance"]["run_id"],
+            "shared-residency success stdout run ID differs from probe")
+    require(provenance.get("source_commit") == source_commit,
+            "shared-residency success stdout source commit differs from probe")
+    require(provenance.get("source_tree_clean") is True,
+            "shared-residency success stdout was not produced from clean source")
+    require(provenance.get("producer") == "cuda_modexp_bench.cu" and
+            provenance.get("producer_sha256") == producer_hash,
+            "shared-residency success stdout producer provenance differs from probe source")
 
 
 def git_blob(repo_root: Path, commit: str, path: str) -> bytes:
@@ -375,6 +405,7 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         require((q - 1) % (2 * ell) == 0, "cyclotomic congruence witness failed")
 
     cuda_checked = False
+    cuda: dict | None = None
     cuda_path = results / "cuda_modexp_calibration.json"
     if cuda_policy == "required":
         require(cuda_path.exists(), "required CUDA artifact missing")
@@ -412,21 +443,59 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     if shared_policy != "ignore" and shared_path.exists():
         shared = load_json(shared_path)
         artifacts["gpu_shared_residency_probe.json"] = shared
-        require(shared.get("benchmark_binary_sha256") == GPU_RESIDENCY_BENCHMARK_SHA256,
-                "shared-residency probe used an unexpected benchmark binary")
+        require(shared.get("schema_version") == GPU_RESIDENCY_SCHEMA_VERSION,
+                "shared-residency artifact schema is obsolete; rerun the physical DGX probe")
+        binary_hash = shared.get("benchmark_binary_sha256")
+        require(isinstance(binary_hash, str) and HEX_64.fullmatch(binary_hash),
+                "shared-residency probe has malformed benchmark binary hash")
+        require(shared.get("benchmark_source") == "cuda_modexp_bench.cu",
+                "shared-residency probe names unexpected benchmark source")
+        source_hashes = environment.get("source_files_sha256")
+        require(isinstance(source_hashes, dict), "environment lacks source_files_sha256")
+        benchmark_source_path = "experiments/dgx_spark/cuda_modexp_bench.cu"
+        expected_source_hash = source_hashes.get(benchmark_source_path)
+        require(isinstance(expected_source_hash, str) and HEX_64.fullmatch(expected_source_hash),
+                "environment lacks benchmark source hash")
+        require(shared.get("benchmark_source_sha256") == expected_source_hash,
+                "shared-residency benchmark source hash differs from committed provenance")
+        if cuda is not None:
+            calibration_binary_hash = cuda.get("benchmark_binary_sha256")
+            require(isinstance(calibration_binary_hash, str) and HEX_64.fullmatch(calibration_binary_hash),
+                    "CUDA calibration lacks a valid benchmark binary hash")
+            require(calibration_binary_hash == binary_hash,
+                    "shared-residency and CUDA calibration benchmark binaries differ")
         require(shared.get("probe_count") == GPU_RESIDENCY_PROBE_COUNT,
                 "shared-residency probe used an unexpected probe count")
-        require(shared.get("benchmark_exit_code") != 0, "resident-service CUDA probe unexpectedly succeeded")
-        require("out of memory" in str(shared.get("benchmark_stderr", "")).lower(),
-                "shared-residency probe did not record CUDA OOM")
-        require(shared.get("vllm_container_status_before") == "running",
-                "shared-residency probe did not observe running vLLM")
-        require(vllm_health_is_ok(shared.get("vllm_health_before")),
-                "shared-residency probe did not observe healthy vLLM")
-        require(shared.get("vllm_container_status_after") == "running",
-                "shared-residency probe did not leave vLLM running")
-        require(vllm_health_is_ok(shared.get("vllm_health_after")),
-                "shared-residency probe did not leave vLLM healthy")
+        stdout, stderr = shared.get("benchmark_stdout"), shared.get("benchmark_stderr")
+        require(isinstance(stdout, str) and isinstance(stderr, str),
+                "shared-residency probe lacks benchmark output")
+        require(shared.get("benchmark_stdout_sha256") == hashlib.sha256(stdout.encode()).hexdigest() and
+                shared.get("benchmark_stderr_sha256") == hashlib.sha256(stderr.encode()).hexdigest(),
+                "shared-residency probe benchmark output hashes differ")
+        identity = shared.get("service_identity")
+        require(isinstance(identity, dict) and isinstance(identity.get("label"), str) and
+                identity["label"] and isinstance(identity.get("health_url"), str) and
+                identity["health_url"] and isinstance(identity.get("required"), bool),
+                "shared-residency probe has invalid service identity")
+        if identity["required"]:
+            require(service_health_is_positive(shared.get("service_health_before"), identity),
+                    "shared-residency probe did not positively observe service health before")
+            require(service_health_is_positive(shared.get("service_health_after"), identity),
+                    "shared-residency probe did not positively observe service health after")
+        exit_class = shared.get("benchmark_exit_class")
+        if exit_class == "success":
+            require(shared.get("benchmark_exit_code") == 0,
+                    "shared-residency success exit class has nonzero exit code")
+            require_shared_success_payload(shared, shared["provenance"]["source_commit"], expected_source_hash)
+        elif exit_class == "cuda_oom":
+            require(isinstance(shared.get("benchmark_exit_code"), int) and
+                    shared["benchmark_exit_code"] != 0,
+                    "shared-residency CUDA OOM exit class has zero exit code")
+            require("cuda" in stderr.lower() and "out of memory" in stderr.lower(),
+                    "shared-residency probe did not record recognized CUDA OOM")
+            require(not stdout.strip(), "shared-residency CUDA OOM included a successful calibration payload")
+        else:
+            raise VerificationError("shared-residency probe has unexpected benchmark exit class")
         shared_checked = True
 
     require(independent.get("verification") == "passed", "independent reproduction did not pass")
@@ -484,7 +553,7 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         "source_files_checked_against_git_commit": source_files_checked,
         "artifact_producer_hashes_checked": producer_hashes_checked,
         "cuda_all_repeats_differentially_checked": cuda_checked,
-        "shared_residency_failure_checked": shared_checked,
+        "shared_residency_outcome_checked": shared_checked,
         "scope": "Artifact consistency plus a separately implemented complete-domain reproduction; not Lean certification or an unrestricted proof.",
     }
 

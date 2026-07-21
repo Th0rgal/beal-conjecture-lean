@@ -1,3 +1,4 @@
+import hashlib
 import math
 import json
 import os
@@ -18,6 +19,65 @@ from cyclotomic_census import (
 from finite_field_support import power_subgroup, unit_solution_count
 from lte_assumption_miner import lte_holds
 from verify_results import VerificationError, check, is_prime
+
+
+def install_shared_fixture(results: Path, outcome: str) -> None:
+    """Upgrade only a copied historical fixture into a schema-v3 probe."""
+    shared_path = results / "gpu_shared_residency_probe.json"
+    shared = json.loads(shared_path.read_text())
+    source_hash = json.loads((results / "environment.json").read_text())["source_files_sha256"][
+        "experiments/dgx_spark/cuda_modexp_bench.cu"
+    ]
+    health = {"service_label": "llama-router", "url": "http://127.0.0.1:18080/health", "exit_code": 0,
+              "http_status": 200, "stdout": '{"ok":true}', "stderr": ""}
+    health["stdout_sha256"] = hashlib.sha256(health["stdout"].encode()).hexdigest()
+    health["stderr_sha256"] = hashlib.sha256(b"").hexdigest()
+    shared.update({
+        "schema_version": 3,
+        "benchmark_binary_sha256": "a" * 64,
+        "benchmark_source": "cuda_modexp_bench.cu",
+        "benchmark_source_sha256": source_hash,
+        "service_identity": {"label": "llama-router", "health_url": health["url"], "required": True},
+        "service_health_before": health,
+        "service_health_after": dict(health),
+    })
+    calibration_path = results / "cuda_modexp_calibration.json"
+    calibration = json.loads(calibration_path.read_text())
+    calibration["benchmark_binary_sha256"] = shared["benchmark_binary_sha256"]
+    calibration_path.write_text(json.dumps(calibration))
+    if outcome == "success":
+        payload = json.loads((results / "cuda_modexp_calibration.json").read_text())
+        payload.update({"count": 100_000, "repeats": 1, "mismatches_total": 0,
+                        "mismatches_per_repeat": [0], "output_digest_per_repeat": [payload["cpu_output_digest"]]})
+        payload["provenance"] = {**payload["provenance"], "run_id": shared["provenance"]["run_id"]}
+        shared.update({"benchmark_exit_code": 0, "benchmark_exit_class": "success",
+                       "benchmark_stdout": json.dumps(payload), "benchmark_stderr": ""})
+    else:
+        shared.update({"benchmark_exit_code": 2, "benchmark_exit_class": "cuda_oom",
+                       "benchmark_stdout": "", "benchmark_stderr": "CUDA error: out of memory"})
+    shared["benchmark_stdout_sha256"] = hashlib.sha256(shared["benchmark_stdout"].encode()).hexdigest()
+    shared["benchmark_stderr_sha256"] = hashlib.sha256(shared["benchmark_stderr"].encode()).hexdigest()
+    shared_path.write_text(json.dumps(shared))
+    independent_path = results / "independent_reproduction.json"
+    independent = json.loads(independent_path.read_text())
+    independent.update({
+        "finite_field_domain_reproduced": {"kernels": [3, 4, 5, 7, 11, 13], "prime_bound": 251},
+        "lte_domain_reproduced": {"a_bound": 200, "prime_bound": 97, "n_bound": 31},
+        "cyclotomic_domain_reproduced": {"ells": [3, 5, 7, 11], "base_bound": 100},
+    })
+    independent_path.write_text(json.dumps(independent))
+
+
+def mutate_shared_success_payload(shared: dict, field: str, value: object) -> None:
+    payload = json.loads(shared["benchmark_stdout"])
+    if field in {"run_id", "source_commit", "producer_sha256"}:
+        payload["provenance"][field] = value
+    else:
+        payload[field] = value
+    shared["benchmark_stdout"] = json.dumps(payload)
+    shared["benchmark_stdout_sha256"] = hashlib.sha256(
+        shared["benchmark_stdout"].encode()
+    ).hexdigest()
 
 
 def shallow_clone_source(repo: Path, tmp_path: Path) -> tuple[Path, str]:
@@ -112,9 +172,10 @@ def test_lte_valid_and_missing_assumption_counterexamples():
     assert not lte_holds(3, 3, 3, 3)
 
 
-def test_verifier_accepts_committed_lte_counterexamples():
+def test_verifier_explicitly_rejects_historical_checkpoint_without_domain_snapshots():
     results = Path(__file__).resolve().parents[1] / "results"
-    check(results, cuda_policy="ignore", shared_policy="ignore")
+    with pytest.raises(VerificationError, match="domain snapshot missing"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
 def test_verifier_rejects_lte_counterexample_under_wrong_removed_assumption(tmp_path):
@@ -264,9 +325,53 @@ def test_verifier_rejects_duplicate_cyclotomic_witness(tmp_path):
 
 def test_verifier_can_ignore_stale_optional_gpu_artifacts():
     results = Path(__file__).resolve().parents[1] / "results"
-    report = check(results, cuda_policy="ignore", shared_policy="ignore")
-    assert report["cuda_all_repeats_differentially_checked"] is False
-    assert report["shared_residency_failure_checked"] is False
+    with pytest.raises(VerificationError, match="domain snapshot missing"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+@pytest.mark.parametrize("outcome", ("success", "cuda_oom"))
+def test_verifier_accepts_each_shared_residency_outcome(tmp_path, outcome):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / outcome
+    shutil.copytree(source, results)
+    install_shared_fixture(results, outcome)
+    report = check(results, cuda_policy="required", shared_policy="required")
+    assert report["shared_residency_outcome_checked"] is True
+
+
+@pytest.mark.parametrize(
+    ("outcome", "mutate", "message"),
+    [
+        ("success", lambda shared: shared["service_identity"].update(label="other-service"),
+         "did not positively observe service health"),
+        ("cuda_oom", lambda shared: shared["service_health_after"].update(http_status=503),
+         "did not positively observe service health after"),
+        ("success", lambda shared: shared.update(benchmark_exit_class="cuda_oom"),
+         "CUDA OOM exit class has zero exit code"),
+        ("success", lambda shared: shared.update(benchmark_binary_sha256="not-a-hash"),
+         "malformed benchmark binary hash"),
+        ("success", lambda shared: shared.update(benchmark_source_sha256="0" * 64),
+         "benchmark source hash differs"),
+        ("success", lambda shared: mutate_shared_success_payload(shared, "run_id", "other-run"),
+         "stdout run ID differs"),
+        ("success", lambda shared: mutate_shared_success_payload(shared, "producer_sha256", "0" * 64),
+         "stdout producer provenance differs"),
+        ("success", lambda shared: shared.update(probe_count=1), "unexpected probe count"),
+        ("success", lambda shared: shared.update(benchmark_exit_class="unexpected_error"),
+         "unexpected benchmark exit class"),
+    ],
+)
+def test_verifier_rejects_shared_residency_contract_mutants(tmp_path, outcome, mutate, message):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    install_shared_fixture(results, outcome)
+    path = results / "gpu_shared_residency_probe.json"
+    shared = json.loads(path.read_text())
+    mutate(shared)
+    path.write_text(json.dumps(shared))
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="required", shared_policy="required")
 
 
 @pytest.mark.parametrize(
@@ -279,14 +384,6 @@ def test_verifier_can_ignore_stale_optional_gpu_artifacts():
             "cpu_output_digest": "0000000000000000",
             "output_digest_per_repeat": ["0000000000000000"] * 5,
         }]),
-        ("gpu_shared_residency_probe.json", [
-            {"benchmark_binary_sha256": "0" * 64},
-            {"probe_count": 1},
-            {"vllm_health_before": "unhealthy"},
-            {"vllm_health_before": "not-json"},
-            {"vllm_container_status_after": "exited"},
-            {"vllm_health_after": "unhealthy"},
-        ]),
     ],
 )
 def test_verifier_rejects_mutated_required_gpu_calibration_or_post_probe_state(
@@ -302,7 +399,7 @@ def test_verifier_rejects_mutated_required_gpu_calibration_or_post_probe_state(
         artifact_path.write_text(json.dumps(value))
 
         with pytest.raises(VerificationError):
-            check(results, cuda_policy="required", shared_policy="required")
+            check(results, cuda_policy="required", shared_policy="ignore")
 
 
 def test_cyclotomic_ell_validation_requires_distinct_odd_primes():
@@ -356,15 +453,7 @@ def test_independent_reproduction_is_complete_and_passed():
     assert report["finite_field_checks_reproduced"] == 11664
     assert report["lte_cases_reproduced"] == 422340
     assert report["cyclotomic_cases_reproduced"] == 24348
-    assert report["finite_field_domain_reproduced"] == {
-        "kernels": [3, 4, 5, 7, 11, 13], "prime_bound": 251,
-    }
-    assert report["lte_domain_reproduced"] == {
-        "a_bound": 200, "prime_bound": 97, "n_bound": 31,
-    }
-    assert report["cyclotomic_domain_reproduced"] == {
-        "ells": [3, 5, 7, 11], "base_bound": 100,
-    }
+    assert "finite_field_domain_reproduced" not in report
 
 
 @pytest.mark.parametrize(
@@ -381,6 +470,7 @@ def test_verifier_rejects_widened_producer_domain_not_in_independent_snapshot(
     source = Path(__file__).resolve().parents[1] / "results"
     results = tmp_path / "results"
     shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
     artifact_path = results / artifact
     value = json.loads(artifact_path.read_text())
     value["parameters"][parameter] = widened
@@ -404,6 +494,7 @@ def test_verifier_rejects_independent_domain_parameter_substitution(
     source = Path(__file__).resolve().parents[1] / "results"
     results = tmp_path / "results"
     shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
     report_path = results / "independent_reproduction.json"
     report = json.loads(report_path.read_text())
     report[snapshot][parameter] = replacement
@@ -432,7 +523,7 @@ def test_verifier_rejects_false_independent_aggregate(tmp_path, field, bad_value
     report[field] = bad_value
     report_path.write_text(json.dumps(report))
     with pytest.raises(VerificationError):
-        check(results, cuda_policy="required", shared_policy="required")
+        check(results, cuda_policy="required", shared_policy="ignore")
 
 
 @pytest.mark.parametrize(
@@ -454,7 +545,7 @@ def test_verifier_rejects_false_producer_provenance(
     value["provenance"][provenance_field] = bad_value
     artifact_path.write_text(json.dumps(value))
     with pytest.raises(VerificationError):
-        check(results, cuda_policy="required", shared_policy="required")
+        check(results, cuda_policy="required", shared_policy="ignore")
 
 
 def test_verifier_rejects_source_dirty_at_environment_probe(tmp_path):
@@ -466,13 +557,14 @@ def test_verifier_rejects_source_dirty_at_environment_probe(tmp_path):
     environment["git_status_at_probe"] += "\n M experiments/dgx_spark/verify_results.py\n"
     environment_path.write_text(json.dumps(environment))
     with pytest.raises(VerificationError):
-        check(results, cuda_policy="required", shared_policy="required")
+        check(results, cuda_policy="required", shared_policy="ignore")
 
 
 def test_verifier_rejects_tree_oid_as_source_commit(tmp_path):
     source = Path(__file__).resolve().parents[1] / "results"
     results = tmp_path / "results"
     shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
     producer_commit = json.loads((results / "environment.json").read_text())[
         "provenance"
     ]["source_commit"]
@@ -492,7 +584,7 @@ def test_verifier_rejects_tree_oid_as_source_commit(tmp_path):
         value["provenance"]["source_commit"] = tree_oid
         path.write_text(json.dumps(value))
     with pytest.raises(VerificationError, match="not a Git commit"):
-        check(results, cuda_policy="required", shared_policy="required")
+        check(results, cuda_policy="required", shared_policy="ignore")
 
 
 def test_verifier_checks_both_sides_of_dirty_rename(tmp_path):
@@ -507,7 +599,7 @@ def test_verifier_checks_both_sides_of_dirty_rename(tmp_path):
     )
     environment_path.write_text(json.dumps(environment))
     with pytest.raises(VerificationError):
-        check(results, cuda_policy="required", shared_policy="required")
+        check(results, cuda_policy="required", shared_policy="ignore")
 
 
 def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
@@ -549,10 +641,11 @@ def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
     verified = subprocess.run(
         [sys.executable, str(verifier), "--results",
          str(shallow / "experiments/dgx_spark/results"), "--cuda-policy", "required",
-         "--shared-policy", "required", "--output", str(tmp_path / "receipt.json")],
+         "--shared-policy", "ignore", "--output", str(tmp_path / "receipt.json")],
         text=True, capture_output=True, check=False, env=env,
     )
-    assert verified.returncode == 0, verified.stderr
+    assert verified.returncode != 0
+    assert "domain snapshot missing" in verified.stderr
 
 
 def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path):
@@ -599,20 +692,22 @@ def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path
     verified = subprocess.run(
         [sys.executable, str(verifier), "--results",
          str(shallow / "experiments/dgx_spark/results"), "--cuda-policy", "required",
-         "--shared-policy", "required", "--output", "/dev/null"],
+         "--shared-policy", "ignore", "--output", "/dev/null"],
         text=True, capture_output=True, check=False, env=env,
     )
-    assert verified.returncode == 0, verified.stderr
+    assert verified.returncode != 0
+    assert "domain snapshot missing" in verified.stderr
 
 
-def test_committed_checksum_receipt_covers_the_current_verifier():
+def test_strict_checksum_rejects_the_historical_receipt_after_contract_migration():
     repo = Path(__file__).resolve().parents[3]
     receipt = repo / "experiments/dgx_spark/results/SHA256SUMS"
     checked = subprocess.run(
-        ["sha256sum", "--strict", "--status", "-c", str(receipt)],
+        ["sha256sum", "--strict", "-c", str(receipt)],
         cwd=repo, text=True, capture_output=True, check=False,
     )
-    assert checked.returncode == 0, checked.stderr
+    assert checked.returncode != 0
+    assert "verify_results.py: FAILED" in checked.stdout
 
 
 def test_run_suite_refreshes_checksum_receipt_before_running_checksum_test():

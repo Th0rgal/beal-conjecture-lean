@@ -20,8 +20,9 @@ roadmap. They are **not** a proof of the unrestricted Beal conjecture.
   repetition is copied back, digested, and compared against a separately coded
   `unsigned __int128` CPU reference. This is a performance probe, not a search
   certificate.
-- `gpu_residency_probe.py`: machine-generated record of the allocation attempt
-  while resident vLLM is running.
+- `gpu_residency_probe.py`: machine-generated record of a small allocation
+  attempt while a configured model service remains healthy. It is runtime-neutral:
+  it does not assume Docker, vLLM, or a particular model server.
 - `verify_results.py`: explicit artifact-consistency and witness-replay checker.
   It uses exceptions rather than Python `assert`, so `python -O` cannot disable
   verification.
@@ -52,16 +53,22 @@ export SOURCE_COMMIT="$(git rev-parse HEAD)"
 export SOURCE_BRANCH="$(git branch --show-current)"
 export SOURCE_TREE_CLEAN=true
 export PYTHONPATH="$(pwd)/experiments/dgx_spark"
+# Current DGX: dgx-router.service fronts llama-server (Leanstral).
+export MODEL_SERVICE_LABEL=dgx-router.service
+export MODEL_SERVICE_HEALTH_URL=http://127.0.0.1:8000/health
+export MODEL_SERVICE_REQUIRED=true
 test -n "$SOURCE_BRANCH"  # create a named local run branch for a detached checkout
 ```
 
-### 1. CPU domains, independent reproduction, and resident-vLLM probe
+### 1. CPU domains, independent reproduction, and shared-residency probe
 
-The model service remains available. The probe records whether a small CUDA
-allocation can coexist with it:
+The model service remains available. Configure its operator-visible identity and
+local health endpoint; the probe records both health observations and whether a
+small CUDA allocation can coexist with it. On the current DGX this is the local
+`dgx-router.service` in front of `llama-server` (Leanstral), not historical vLLM:
 
 ```bash
-GPU_WINDOW=resident-vllm-cpu-and-allocation-probe \
+GPU_WINDOW=resident-model-service-cpu-and-allocation-probe \
 RUN_CPU=1 RUN_CUDA=0 RUN_SHARED_PROBE=1 RUN_TESTS=0 \
   ./experiments/dgx_spark/run_suite.sh
 ```
@@ -73,13 +80,14 @@ through the host's normal operator/arbiter procedure, retaining the same
 `RUN_ID` and `RUN_STARTED_AT_UTC`, then run:
 
 ```bash
-GPU_WINDOW=exclusive-vllm-stopped \
+GPU_WINDOW=exclusive-model-service-stopped \
 RUN_CPU=0 RUN_CUDA=1 RUN_SHARED_PROBE=0 RUN_TESTS=1 \
   ./experiments/dgx_spark/run_suite.sh
 ```
 
-The suite deliberately does not control host services. Restore vLLM and the
-arbiter even if the benchmark or tests fail. The exported provenance variables
+The suite deliberately does not control host services. Restore the configured
+model service through its normal operator procedure even if the benchmark or
+tests fail. The exported provenance variables
 above remain in the calling shell. After restoration, finalize with:
 
 ```bash
@@ -104,6 +112,14 @@ are never silently mixed into a new run: `verify_results.py` requires one run ID
 one exact source commit, clean producer source, and a producer SHA-256 for every
 artifact it accepts. `--cuda-policy` and `--shared-policy` support `required`,
 `ignore`, and `auto`.
+
+The shared probe uses schema version 3. Its binary SHA-256 identifies the exact
+compiled executable within a run but is deliberately not compared with a
+compiler-specific constant. Required shared verification accepts either a
+zero-mismatch calibration success or a recognized CUDA OOM; it rejects other
+errors. The committed schema-v2 shared artifact is retained as historical
+evidence and intentionally fails `--shared-policy required` until this physical
+DGX rerun produces a schema-v3 canonical artifact and checksum receipt.
 
 ## Verify the committed checkpoint from a shallow clone
 
@@ -130,11 +146,13 @@ RUN_ID=committed-checkpoint-verification \
 RUN_STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
 PYTHONPATH="$(pwd)/experiments/dgx_spark" \
   python3 experiments/dgx_spark/verify_results.py --results "$RESULTS" \
-    --cuda-policy required --shared-policy required --output /dev/null
+    --cuda-policy required --shared-policy ignore --output /dev/null
 ```
 
-The verifier prints the receipt to standard output. `--output /dev/null` avoids
-rewriting the committed report or checksum manifest during verification.
+The verifier prints the CPU/CUDA historical receipt to standard output.
+`--shared-policy ignore` is required for the committed schema-v2 checkpoint;
+`--output /dev/null` avoids rewriting the committed report or checksum manifest
+during verification.
 
 ## Assurance boundary
 
