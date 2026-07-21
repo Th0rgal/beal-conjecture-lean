@@ -12,9 +12,32 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 # root import of Challenge or BealConjecture a boundary-gate failure.
 START = "BealUnified"
 FORBIDDEN = re.compile(r"\b(sorry|admit|axiom)\b|sorryAx")
-IMPORT = re.compile(r"^import\s+(\S+)", re.M)
+IMPORT_COMMAND = re.compile(r"^import\s+(.+)$", re.M)
+MODULE_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*")
 
 def module_path(module, root=ROOT): return root.joinpath(*module.split(".")).with_suffix(".lean")
+
+def imported_modules(source, path):
+    """Return every module named by each Lean ``import`` command.
+
+    Lean accepts several module names after one ``import`` keyword.  Parsing
+    only its first token would allow a forbidden local import to hide after an
+    otherwise benign dependency.  Keep this deliberately strict: source that
+    looks like an import command but contains an unrecognised token fails the
+    boundary check instead of being partially audited.
+    """
+    modules = []
+    for command in IMPORT_COMMAND.findall(source):
+        # Lean line comments are not part of the command.  Other unexpected
+        # syntax is rejected below rather than silently discarded.
+        command = command.split("--", 1)[0].strip()
+        if not command:
+            raise RuntimeError(f"import command without module in {path}")
+        for module in command.split():
+            if not MODULE_NAME.fullmatch(module):
+                raise RuntimeError(f"unrecognised import token {module!r} in {path}")
+            modules.append(module)
+    return modules
 
 def build_public_root():
     """Make the public root import available to both CI and local probes."""
@@ -40,7 +63,7 @@ def closure(start=START, root=ROOT):
         seen.add(module)
         source = path.read_text(encoding="utf-8")
         if FORBIDDEN.search(source): raise RuntimeError(f"forbidden trusted token in {path.relative_to(root)}")
-        for dep in IMPORT.findall(source):
+        for dep in imported_modules(source, path.relative_to(root)):
             local_dep = module_path(dep, root)
             if local_dep.exists() and dep != "BealUnified" and not dep.startswith("BealUnified."):
                 raise RuntimeError(f"local trusted import escapes BealUnified: {dep} from {module}")
@@ -109,7 +132,20 @@ end Hidden
                 raise
         else:
             raise RuntimeError("trusted closure accepted a local non-BealUnified import")
-    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local import escape rejected")
+    with tempfile.TemporaryDirectory() as directory:
+        fixture_root = pathlib.Path(directory)
+        # The forbidden module is intentionally not first: this exercises the
+        # complete import-command parser rather than just a first-token match.
+        (fixture_root / "BealUnified.lean").write_text(
+            "import Mathlib BealUnified.Challenge.NormalizedCore\n", encoding="utf-8")
+        try:
+            closure(root=fixture_root)
+        except RuntimeError as exc:
+            if "forbidden trusted import BealUnified.Challenge.NormalizedCore" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("trusted closure accepted a non-first forbidden import")
+    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local and non-first forbidden imports rejected")
 
 try:
     if "--self-test" in sys.argv:
