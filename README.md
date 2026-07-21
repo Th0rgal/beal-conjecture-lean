@@ -1,6 +1,22 @@
 # Beal Conjecture — Formal Verification in Lean 4 + Mathlib
 
-> **Honest status:** This repository formalizes the [Beal conjecture](https://en.wikipedia.org/wiki/Beal_conjecture) in [Lean 4](https://lean-lang.org/) with [Mathlib](https://github.com/leanprover-community/mathlib4). It is **not a proof**. The conjecture is an open problem in number theory (unresolved since 1993, $1M prize unclaimed). What this repository contains is a clean modular formalization of the conjecture together with **all of the reductions and special cases that the existing Lean/Mathlib library can prove**. There is exactly one `sorry`, isolated to the open core after every known reduction has been discharged.
+> **Honest status:** This repository is **not a proof** of the open Beal conjecture. `import BealUnified` exposes only checked trusted reductions. The open normalized target is opt-in: `import BealUnified.Challenge.NormalizedCore`.
+
+## Trust boundary
+
+The default root has no path to `Challenge` or the legacy placeholder module.
+`Challenge.NormalizedPrimitiveCore` is a named proposition for pairwise-coprime
+positive solutions with normalized exponents (`4` or an odd prime). It is not
+asserted as a theorem. `beal_conjecture_of_normalized_core` conditionally
+assembles `BealConjecture` from its emptiness, and
+`beal_conjecture_iff_normalized_core_empty` proves the exact equivalence using
+`beal_normalize`. `(3,3,3)` is separately excluded with Mathlib FLT-3; the
+remaining target is named `non333`, not “hyperbolic”.
+
+Run `python3 scripts/check_trusted_boundary.py` for the trusted import closure,
+placeholder scan, and Lean axiom allowlist (`propext`, `Classical.choice`,
+`Quot.sound`). Run `python3 scripts/check_signature_registry.py` for the
+machine-readable registry in `signatures/registry.json`.
 
 ---
 
@@ -56,7 +72,8 @@ The original 24-theorem suite and the consolidated research lemmas above contain
 
 ## What is open
 
-There is exactly **one `sorry`**, in `BealConjecture.lean`:
+The legacy `BealConjecture.lean` module remains outside the default import
+boundary for compatibility with historical work; it is not production API.
 
 ```lean
 theorem beal_no_coprime_solution

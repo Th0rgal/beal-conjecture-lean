@@ -53,6 +53,14 @@ def LTEConclusion (p a b n : ℕ) : Prop :=
 theorem lteConclusion_one (p a b : ℕ) : LTEConclusion p a b 1 := by
   simp [LTEConclusion]
 
+/-- Mathlib's odd-prime, odd-exponent plus-sign LTE theorem in this project's
+`LTEConclusion` interface. -/
+theorem lteConclusion_of_mathlib_pow_add_pow
+    {p a b n : ℕ} [Fact p.Prime]
+    (hpodd : Odd p) (hpdiv : p ∣ a + b) (hpnotdvd : ¬ p ∣ a)
+    (hnodd : Odd n) : LTEConclusion p a b n := by
+  exact padicValNat.pow_add_pow hpodd hpdiv hpnotdvd hnodd
+
 /--
 If an LTE conclusion is available for `A ^ n + B ^ n`, then a Beal equation
 with matching left exponents forces the corresponding valuation identity on
