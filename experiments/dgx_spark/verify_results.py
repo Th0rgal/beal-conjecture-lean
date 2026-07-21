@@ -135,6 +135,17 @@ def load_json(path: Path) -> dict:
     return value
 
 
+def require_independent_domain_snapshot(
+    independent: dict, field: str, declared: dict, family: str
+) -> None:
+    """Bind aggregate reproduction to the exact producer domain it covered."""
+    snapshot = independent.get(field)
+    require(isinstance(snapshot, dict),
+            f"independent {family} domain snapshot missing or invalid")
+    require(snapshot == declared,
+            f"independent {family} domain snapshot differs from declared parameters")
+
+
 def vllm_health_is_ok(value: object) -> bool:
     """Accept only the recorded successful JSON response from vLLM's health API."""
     if not isinstance(value, str):
@@ -301,6 +312,14 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
             "finite-field witness count mismatch")
     require(not finite.get("zero_branch_failures"), "finite-field zero-branch failures recorded")
 
+    lte_parameters = lte.get("parameters")
+    require(isinstance(lte_parameters, dict), "LTE parameters missing")
+    lte_a_bound = lte_parameters.get("a_bound")
+    lte_prime_bound = lte_parameters.get("prime_bound")
+    lte_n_bound = lte_parameters.get("n_bound")
+    require(all(isinstance(value, int) and value >= 1
+                for value in (lte_a_bound, lte_prime_bound, lte_n_bound)),
+            "invalid LTE parameters")
     require(not lte.get("valid_hypothesis_violations"), "LTE violations recorded")
     lte_counterexamples = 0
     for key, case in lte.get("minimal_counterexamples_when_assumption_removed", {}).items():
@@ -411,6 +430,22 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
         shared_checked = True
 
     require(independent.get("verification") == "passed", "independent reproduction did not pass")
+    require_independent_domain_snapshot(
+        independent, "finite_field_domain_reproduced",
+        {"kernels": kernels, "prime_bound": prime_bound}, "finite-field",
+    )
+    require_independent_domain_snapshot(
+        independent, "lte_domain_reproduced",
+        {
+            "a_bound": lte_a_bound,
+            "prime_bound": lte_prime_bound,
+            "n_bound": lte_n_bound,
+        }, "LTE",
+    )
+    require_independent_domain_snapshot(
+        independent, "cyclotomic_domain_reproduced",
+        {"ells": ells, "base_bound": base_bound}, "cyclotomic",
+    )
     require(independent.get("finite_field_checks_reproduced") == finite.get("signature_prime_checks"),
             "independent finite-field coverage mismatch")
     require(independent.get("finite_field_empty_witnesses_reproduced") ==

@@ -356,6 +356,61 @@ def test_independent_reproduction_is_complete_and_passed():
     assert report["finite_field_checks_reproduced"] == 11664
     assert report["lte_cases_reproduced"] == 422340
     assert report["cyclotomic_cases_reproduced"] == 24348
+    assert report["finite_field_domain_reproduced"] == {
+        "kernels": [3, 4, 5, 7, 11, 13], "prime_bound": 251,
+    }
+    assert report["lte_domain_reproduced"] == {
+        "a_bound": 200, "prime_bound": 97, "n_bound": 31,
+    }
+    assert report["cyclotomic_domain_reproduced"] == {
+        "ells": [3, 5, 7, 11], "base_bound": 100,
+    }
+
+
+@pytest.mark.parametrize(
+    ("artifact", "parameter", "widened", "family"),
+    [
+        ("finite_field_support.json", "prime_bound", 257, "finite-field"),
+        ("lte_assumption_miner.json", "n_bound", 33, "LTE"),
+        ("cyclotomic_census.json", "base_bound", 101, "cyclotomic"),
+    ],
+)
+def test_verifier_rejects_widened_producer_domain_not_in_independent_snapshot(
+    tmp_path, artifact, parameter, widened, family
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    artifact_path = results / artifact
+    value = json.loads(artifact_path.read_text())
+    value["parameters"][parameter] = widened
+    artifact_path.write_text(json.dumps(value))
+
+    with pytest.raises(VerificationError, match=f"independent {family} domain snapshot differs"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+@pytest.mark.parametrize(
+    ("snapshot", "parameter", "replacement", "family"),
+    [
+        ("finite_field_domain_reproduced", "prime_bound", 257, "finite-field"),
+        ("lte_domain_reproduced", "a_bound", 201, "LTE"),
+        ("cyclotomic_domain_reproduced", "ells", [3, 5, 7], "cyclotomic"),
+    ],
+)
+def test_verifier_rejects_independent_domain_parameter_substitution(
+    tmp_path, snapshot, parameter, replacement, family
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    report_path = results / "independent_reproduction.json"
+    report = json.loads(report_path.read_text())
+    report[snapshot][parameter] = replacement
+    report_path.write_text(json.dumps(report))
+
+    with pytest.raises(VerificationError, match=f"independent {family} domain snapshot differs"):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
 @pytest.mark.parametrize(

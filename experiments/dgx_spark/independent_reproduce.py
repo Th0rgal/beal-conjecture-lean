@@ -47,10 +47,50 @@ def valuation(n: int, p: int) -> int:
     return value
 
 
+def finite_domain_snapshot(params: dict) -> dict:
+    """Return the exact finite-field domain consumed by this independent run."""
+    kernels = params.get("kernels")
+    prime_bound = params.get("prime_bound")
+    require(isinstance(kernels, list) and kernels and
+            all(isinstance(value, int) and value > 0 for value in kernels),
+            "invalid finite-field kernel domain")
+    require(isinstance(prime_bound, int) and prime_bound >= 2,
+            "invalid finite-field prime bound")
+    return {"kernels": list(kernels), "prime_bound": prime_bound}
+
+
+def lte_domain_snapshot(params: dict) -> dict:
+    """Return the exact LTE domain consumed by this independent run."""
+    a_bound = params.get("a_bound")
+    prime_bound = params.get("prime_bound")
+    n_bound = params.get("n_bound")
+    require(all(isinstance(value, int) and value >= 1
+                for value in (a_bound, prime_bound, n_bound)),
+            "invalid LTE domain")
+    return {
+        "a_bound": a_bound,
+        "prime_bound": prime_bound,
+        "n_bound": n_bound,
+    }
+
+
+def cyclotomic_domain_snapshot(params: dict) -> dict:
+    """Return the exact cyclotomic domain consumed by this independent run."""
+    ells = params.get("ells")
+    base_bound = params.get("base_bound")
+    require(isinstance(ells, list) and ells and
+            all(isinstance(value, int) for value in ells),
+            "invalid cyclotomic ell domain")
+    require(isinstance(base_bound, int) and base_bound >= 1,
+            "invalid cyclotomic base bound")
+    return {"ells": list(ells), "base_bound": base_bound}
+
+
 def reproduce_finite(artifact: dict) -> dict:
     params = artifact["parameters"]
-    kernels = [int(value) for value in params["kernels"]]
-    primes = [int(value) for value in primerange(2, int(params["prime_bound"]) + 1)]
+    domain = finite_domain_snapshot(params)
+    kernels = domain["kernels"]
+    primes = [int(value) for value in primerange(2, domain["prime_bound"] + 1)]
     recorded = {
         tuple(row["signature"]): {entry["prime"] for entry in row["support_forcing_primes"]}
         for row in artifact["support_forcing"]
@@ -77,14 +117,15 @@ def reproduce_finite(artifact: dict) -> dict:
     require(checks == artifact["signature_prime_checks"], "finite-field coverage count differs")
     require(empty == artifact["unit_empty_branch_occurrences"], "finite-field empty count differs")
     require(reproduced == recorded, "finite-field witness map differs")
-    return {"checks": checks, "empty_witnesses": empty}
+    return {"checks": checks, "empty_witnesses": empty, "domain": domain}
 
 
 def reproduce_lte(artifact: dict) -> dict:
     params = artifact["parameters"]
-    a_bound = int(params["a_bound"])
-    odd_primes = [int(value) for value in primerange(3, int(params["prime_bound"]) + 1)]
-    odd_ns = range(3, int(params["n_bound"]) + 1, 2)
+    domain = lte_domain_snapshot(params)
+    a_bound = domain["a_bound"]
+    odd_primes = [int(value) for value in primerange(3, domain["prime_bound"] + 1)]
+    odd_ns = range(3, domain["n_bound"] + 1, 2)
     cases = violations = 0
     for q in odd_primes:
         for a in range(1, a_bound + 1):
@@ -106,13 +147,14 @@ def reproduce_lte(artifact: dict) -> dict:
         rhs = valuation(case["a"] + case["b"], case["q"]) + valuation(case["n"], case["q"])
         require(lhs == case["lhs_valuation"] and rhs == case["rhs_valuation"] and lhs != rhs,
                 "recorded LTE counterexample differs")
-    return {"cases": cases, "violations": violations}
+    return {"cases": cases, "violations": violations, "domain": domain}
 
 
 def reproduce_cyclotomic(artifact: dict) -> dict:
     params = artifact["parameters"]
-    ells = [int(value) for value in params["ells"]]
-    bound = int(params["base_bound"])
+    domain = cyclotomic_domain_snapshot(params)
+    ells = domain["ells"]
+    bound = domain["base_bound"]
     require(len(ells) == len(set(ells)) and all(sympy.isprime(ell) and ell % 2 for ell in ells),
             "cyclotomic ell domain is not distinct odd primes")
     cases = factor_occurrences = exceptional = 0
@@ -162,6 +204,7 @@ def reproduce_cyclotomic(artifact: dict) -> dict:
         "factor_occurrences": factor_occurrences,
         "exceptional_factor_occurrences": exceptional,
         "higher_valuation_occurrences": len(high),
+        "domain": domain,
     }
 
 
@@ -182,12 +225,15 @@ def main() -> None:
             "sympy_version": sympy.__version__,
             "finite_field_checks_reproduced": finite["checks"],
             "finite_field_empty_witnesses_reproduced": finite["empty_witnesses"],
+            "finite_field_domain_reproduced": finite["domain"],
             "lte_cases_reproduced": lte["cases"],
             "lte_violations_reproduced": lte["violations"],
+            "lte_domain_reproduced": lte["domain"],
             "cyclotomic_cases_reproduced": cyclo["cases"],
             "cyclotomic_factor_occurrences_reproduced": cyclo["factor_occurrences"],
             "cyclotomic_exceptional_occurrences_reproduced": cyclo["exceptional_factor_occurrences"],
             "cyclotomic_higher_valuation_occurrences_reproduced": cyclo["higher_valuation_occurrences"],
+            "cyclotomic_domain_reproduced": cyclo["domain"],
             "elapsed_seconds": time.perf_counter() - started,
             "provenance": artifact_provenance(__file__),
             "scope": "Independent bounded reproduction using SymPy; not Lean certification or an unrestricted theorem.",
