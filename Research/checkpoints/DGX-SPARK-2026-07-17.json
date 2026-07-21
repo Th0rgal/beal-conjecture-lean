@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "DGX-SPARK-2026-07-17-merged-source",
+  "status": "merged-source",
+  "source_commit": "94067210fb660713add9374ba8fbb7260f5e6df6",
+  "artifacts": [
+    {
+      "path": "Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md",
+      "sha256": "af63c56d67c57257ff4bb5fb3758125054290e475f265a5febb2e61a9ab5d040"
+    },
+    {
+      "path": "experiments/dgx_spark/results/SHA256SUMS",
+      "sha256": "140ca8579ca34c45cc6cb7dc3d6de2da4d2bac9007e4b8d151ab17f29db1863d"
+    },
+    {
+      "path": "experiments/dgx_spark/results/verification_report.json",
+      "sha256": "d6f962c1935739a076c07d088bb8615350538195cbbea092039907a10b6e960b"
+    }
+  ],
+  "verification_commands": [
+    "git show 94067210fb660713add9374ba8fbb7260f5e6df6:Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md | sha256sum",
+    "git show 94067210fb660713add9374ba8fbb7260f5e6df6:experiments/dgx_spark/results/SHA256SUMS | sha256sum",
+    "git show 94067210fb660713add9374ba8fbb7260f5e6df6:experiments/dgx_spark/results/verification_report.json | sha256sum",
+    "git merge-base --is-ancestor 94067210fb660713add9374ba8fbb7260f5e6df6 HEAD"
+  ],
+  "non_claims": [
+    "This manifest records immutable merged-source provenance for bounded DGX Spark experiments; it is not a Lean theorem, a general Beal proof, or a certificate of an unbounded search.",
+    "The validator verifies these artifact bytes from the recorded merge commit, not from working-tree copies or runtime hardware state."
+  ],
+  "trust_boundary_evidence": [
+    "python3 scripts/check_trusted_boundary.py"
+  ],
+  "validation_evidence": [
+    "python3 scripts/check_research_checkpoints.py"
+  ],
+  "last_audit": "2026-07-21"
+}
