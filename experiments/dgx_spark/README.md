@@ -117,24 +117,24 @@ The shared probe uses schema version 3. Its binary SHA-256 identifies the exact
 compiled executable within a run but is deliberately not compared with a
 compiler-specific constant. Required shared verification accepts either a
 zero-mismatch calibration success or a recognized CUDA OOM; it rejects other
-errors. The committed schema-v2 shared artifact is retained as historical
-evidence and intentionally fails `--shared-policy required` until this physical
-DGX rerun produces a schema-v3 canonical artifact and checksum receipt.
+errors. The committed schema-v3 shared artifact records the promoted physical
+DGX run and passes `--shared-policy required` together with the calibration
+artifact.
 
-## Historical checkpoint and fail-closed migration
+## Promoted checkpoint and fail-closed compatibility
 
-The committed result JSON and `SHA256SUMS` predate the exact-domain snapshot and
-source-contract changes in the current verifier. They are retained unchanged as
-historical evidence: the current verifier rejects the missing domain snapshots,
-and strict checksum verification rejects source hashes changed after that
-receipt was produced. This is intentional fail-closed behavior, not a current
-checkpoint claim. Do not update either computational artifacts or their receipt
+The committed result JSON and `SHA256SUMS` are the promoted checkpoint from the
+documented physical DGX run. The independent reproduction includes exact-domain
+snapshots, the verifier accepts the artifacts under required CUDA and shared
+policies, and strict checksum verification accepts the receipt. Older fixtures
+that omit the domain snapshots, or mutations that alter a receipt-covered file,
+continue to fail closed. Do not update computational artifacts or their receipt
 without rerunning the real deterministic producers on the documented hardware.
 
-`bootstrap_provenance_history.py` remains available for a newly generated
-checkpoint whose producer commit is outside a shallow clone. It fetches one
+`bootstrap_provenance_history.py` remains available when a checkpoint's
+producer commit is outside a shallow clone. It fetches one
 ancestry layer at a time (up to 32) and rejects a source commit that cannot be
-proved an ancestor of `HEAD`; it does not make the stale checkpoint current.
+proved an ancestor of `HEAD`.
 
 ## Assurance boundary
 

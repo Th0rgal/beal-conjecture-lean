@@ -190,8 +190,19 @@ def test_lte_valid_and_missing_assumption_counterexamples():
     assert not lte_holds(3, 3, 3, 3)
 
 
-def test_verifier_explicitly_rejects_historical_checkpoint_without_domain_snapshots():
-    results = Path(__file__).resolve().parents[1] / "results"
+def test_verifier_rejects_fixture_without_domain_snapshots(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    independent_path = results / "independent_reproduction.json"
+    independent = json.loads(independent_path.read_text())
+    for field in (
+        "finite_field_domain_reproduced",
+        "lte_domain_reproduced",
+        "cyclotomic_domain_reproduced",
+    ):
+        del independent[field]
+    independent_path.write_text(json.dumps(independent))
     with pytest.raises(VerificationError, match="domain snapshot missing"):
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
@@ -477,10 +488,12 @@ def test_verifier_rejects_duplicate_cyclotomic_witness(tmp_path):
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
-def test_verifier_can_ignore_stale_optional_gpu_artifacts():
+def test_verifier_accepts_promoted_checkpoint_with_optional_gpu_artifacts_ignored():
     results = Path(__file__).resolve().parents[1] / "results"
-    with pytest.raises(VerificationError, match="domain snapshot missing"):
-        check(results, cuda_policy="ignore", shared_policy="ignore")
+    report = check(results, cuda_policy="ignore", shared_policy="ignore")
+    assert report["verification"] == "passed"
+    assert report["cuda_all_repeats_differentially_checked"] is False
+    assert report["shared_residency_outcome_checked"] is False
 
 
 @pytest.mark.parametrize("outcome", ("success", "cuda_oom"))
@@ -614,7 +627,15 @@ def test_independent_reproduction_is_complete_and_passed():
     assert report["finite_field_checks_reproduced"] == 11664
     assert report["lte_cases_reproduced"] == 422340
     assert report["cyclotomic_cases_reproduced"] == 24348
-    assert "finite_field_domain_reproduced" not in report
+    assert report["finite_field_domain_reproduced"] == {
+        "kernels": [3, 4, 5, 7, 11, 13], "prime_bound": 251,
+    }
+    assert report["lte_domain_reproduced"] == {
+        "a_bound": 200, "prime_bound": 97, "n_bound": 31,
+    }
+    assert report["cyclotomic_domain_reproduced"] == {
+        "ells": [3, 5, 7, 11], "base_bound": 100,
+    }
 
 
 @pytest.mark.parametrize(
@@ -842,8 +863,8 @@ def test_shallow_clone_bootstrap_fetches_only_needed_producer_history(tmp_path):
          "--shared-policy", "ignore", "--output", str(tmp_path / "receipt.json")],
         text=True, capture_output=True, check=False, env=env,
     )
-    assert verified.returncode != 0
-    assert "domain snapshot missing" in verified.stderr
+    assert verified.returncode == 0, verified.stderr
+    assert json.loads(verified.stdout)["verification"] == "passed"
 
 
 def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path):
@@ -893,27 +914,46 @@ def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path
          "--shared-policy", "ignore", "--output", "/dev/null"],
         text=True, capture_output=True, check=False, env=env,
     )
-    assert verified.returncode != 0
-    assert "domain snapshot missing" in verified.stderr
+    assert verified.returncode == 0, verified.stderr
+    assert json.loads(verified.stdout)["verification"] == "passed"
 
 
-def test_strict_checksum_rejects_the_historical_receipt_after_contract_migration():
+def test_strict_checksum_accepts_the_promoted_checkpoint_receipt():
     repo = Path(__file__).resolve().parents[3]
     receipt = repo / "experiments/dgx_spark/results/SHA256SUMS"
     checked = subprocess.run(
         ["sha256sum", "--strict", "-c", str(receipt)],
         cwd=repo, text=True, capture_output=True, check=False,
     )
+    assert checked.returncode == 0, checked.stderr
+    assert "verify_results.py: OK" in checked.stdout
+
+
+def test_strict_checksum_rejects_mutated_receipt_covered_source(tmp_path):
+    repo = Path(__file__).resolve().parents[3]
+    relative = Path("experiments/dgx_spark/run_suite.sh")
+    copied = tmp_path / relative
+    copied.parent.mkdir(parents=True)
+    shutil.copyfile(repo / relative, copied)
+    expected = hashlib.sha256(copied.read_bytes()).hexdigest()
+    receipt = tmp_path / "SHA256SUMS"
+    receipt.write_text(f"{expected}  {relative}\n")
+    copied.write_text(copied.read_text() + "# mutation\n")
+
+    checked = subprocess.run(
+        ["sha256sum", "--strict", "-c", str(receipt)],
+        cwd=tmp_path, text=True, capture_output=True, check=False,
+    )
     assert checked.returncode != 0
-    assert "verify_results.py: FAILED" in checked.stdout
+    assert f"{relative}: FAILED" in checked.stdout
 
 
-def test_run_suite_refreshes_checksum_receipt_before_running_checksum_test():
+def test_run_suite_tests_checkpoint_before_rewriting_results():
     script = (Path(__file__).resolve().parents[1] / "run_suite.sh").read_text()
+    test_phase = script.index('python3 -m pytest -q "$ROOT/tests"')
     receipt_covered_rewrite = script.index('python3 "$ROOT/verify_results.py"')
     receipt_refresh = script.index('sha256sum "${manifest[@]}" > experiments/dgx_spark/results/SHA256SUMS')
-    strict_checksum_test = script.index('python3 -m pytest -q "$ROOT/tests"')
-    assert receipt_covered_rewrite < receipt_refresh < strict_checksum_test
+    assert test_phase < receipt_covered_rewrite < receipt_refresh
 
 
 def test_run_suite_override_contract_is_explicit_and_fail_closed():

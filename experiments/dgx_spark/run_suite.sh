@@ -57,6 +57,12 @@ if [[ "$MODEL_SERVICE_REQUIRED" != "true" && "$MODEL_SERVICE_REQUIRED" != "false
   exit 2
 fi
 
+# Test the immutable checked-in checkpoint before any requested producer phase
+# rewrites results or its checksum receipt.
+if [[ "$RUN_TESTS" == "1" ]]; then
+  python3 -m pytest -q "$ROOT/tests" | tee "$LOGS/pytest.log"
+fi
+
 if [[ "$RUN_CPU" == "1" ]]; then
   python3 "$ROOT/finite_field_support.py" \
     --kernels 3,4,5,7,11,13 --prime-bound 251 \
@@ -144,9 +150,5 @@ python3 "$ROOT/verify_results.py" --results "$RESULTS" \
   sha256sum "${manifest[@]}" > experiments/dgx_spark/results/SHA256SUMS
   sha256sum -c experiments/dgx_spark/results/SHA256SUMS
 )
-
-if [[ "$RUN_TESTS" == "1" ]]; then
-  python3 -m pytest -q "$ROOT/tests" | tee "$LOGS/pytest.log"
-fi
 
 printf 'RUN_ID=%s\nSOURCE_COMMIT=%s\nRESULTS_DIR=%s\n' "$RUN_ID" "$SOURCE_COMMIT" "$RESULTS"
