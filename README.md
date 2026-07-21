@@ -64,7 +64,7 @@ covered by the environment audit, which permits only standard Mathlib axioms
 | LTE modular obstruction ⇒ no matching Beal equation | `no_beal_equal_left_exponents_of_lte_mod_obstruction` | rewrite |
 | `rad n = ∏ primeFactors(n)` | `rad`, `rad_dvd`, `rad_pow_of_pos` | Mathlib `Nat.prod_primeFactors_dvd` |
 | ABC applies to `(A^x, B^y, C^z)` of any primitive triple | `abc_applies_to_primitive_beal_counterexample` | assuming `ABCConjecture` |
-| Bounded search: no counterexample for bases `< 2` | `noCounterexample_bases_lt_two` | omega + decide |
+| Opt-in computational evidence: no counterexample for bases `< 2` | `noCounterexample_bases_lt_two` | omega + decide (outside `Trusted`) |
 | Radical/minimum-exponent bridge | `rad_base_pow_min_le_max_cube` | elementary inequalities |
 | Coprime-sum valuation side condition | `padicValNat_prime_dvd_coprime_sum_pows_eq_zero` | `padicValNat` |
 | Primitive-divisor data ⇒ exact order and `n ∣ p - 1` | `orderOf_primitivePowSubRatio_eq`, `PrimitivePowSubDivisor.dvd_prime_sub_one` | finite-group order |
@@ -79,8 +79,8 @@ for finite-search evidence (`python3 scripts/check_computational_evidence.py`).
 It is not imported by `BealUnified` or `BealUnified.Trusted`, because its
 `native_decide` certificate uses Lean's generated native-decision axiom, which
 is intentionally outside the strict trusted allowlist. The audit records that
-dependency and rejects `sorryAx`; it does not elevate the finite computation
-to trusted theorem evidence.
+dependency as exactly `Lean.ofReduceBool` and rejects every other axiom; it
+does not elevate the finite computation to trusted theorem evidence.
 
 ---
 

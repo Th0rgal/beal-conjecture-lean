@@ -23,5 +23,5 @@ jobs:
       - run: lake build
       - run: lake env lean BealUnified/Challenge/NormalizedCore.lean
       - run: python3 scripts/check_signature_registry.py
-      - run: python3 scripts/check_computational_evidence.py
+      - run: python3 scripts/check_computational_evidence.py --self-test
       - run: git diff --check
