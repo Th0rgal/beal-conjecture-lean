@@ -138,7 +138,8 @@ proved an ancestor of `HEAD`; it does not make the stale checkpoint current.
 
 ## Assurance boundary
 
-The committed checkpoint has four executable layers:
+A newly generated checkpoint is eligible for promotion only after all four
+executable layers pass together and its checksum receipt is generated last:
 
 1. producer enumeration with explicit failure lists;
 2. complete-domain reconstruction through a separately implemented SymPy path;
