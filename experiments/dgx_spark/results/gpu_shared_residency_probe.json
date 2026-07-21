@@ -1,0 +1,52 @@
+{
+  "benchmark_binary_sha256": "ad7de86963b750f519dcaa7b012b5d25db015b00b362f91938057db26f83e06a",
+  "benchmark_exit_class": "success",
+  "benchmark_exit_code": 0,
+  "benchmark_source": "cuda_modexp_bench.cu",
+  "benchmark_source_sha256": "f709259ff5e037d647b30fd7beed6c1c89ac44be5d158505d9e7193e9ac636a2",
+  "benchmark_stderr": "",
+  "benchmark_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "benchmark_stdout": "{\n  \"schema_version\": 2,\n  \"experiment\": \"cuda_modexp_calibration\",\n  \"gpu_name\": \"NVIDIA GB10\",\n  \"compute_capability\": \"12.1\",\n  \"cuda_runtime_version\": 13000,\n  \"count\": 100000,\n  \"repeats\": 1,\n  \"exponent\": 65537,\n  \"modulus\": 2147483647,\n  \"cpu_reference\": \"independent unsigned-__int128 implementation\",\n  \"cpu_openmp_threads\": 20,\n  \"cpu_seconds\": 0.001868,\n  \"cpu_candidates_per_second\": 53524021.580886,\n  \"cpu_output_digest\": \"50acfa71f6907f64\",\n  \"gpu_kernel_seconds_per_repeat\": 0.000199,\n  \"gpu_kernel_candidates_per_second\": 502169361.972213,\n  \"gpu_total_seconds_all_repeats_including_each_verification_transfer\": 0.000794,\n  \"gpu_end_to_end_seconds_per_repeat\": 0.000794,\n  \"mismatches_per_repeat\": [0],\n  \"mismatches_total\": 0,\n  \"output_digest_per_repeat\": [\"50acfa71f6907f64\"],\n  \"provenance\": {\n    \"run_id\": \"dgx-20260721T103359Z-139511b6377a\",\n    \"run_started_at_utc\": \"2026-07-21T10:33:59Z\",\n    \"source_branch\": \"research/dgx-computational-experiments-20260717\",\n    \"source_commit\": \"139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a\",\n    \"source_tree_clean\": true,\n    \"producer\": \"cuda_modexp_bench.cu\",\n    \"producer_sha256\": \"f709259ff5e037d647b30fd7beed6c1c89ac44be5d158505d9e7193e9ac636a2\"\n  },\n  \"interpretation\": \"Calibration only; every timed repeat was copied back, digested, and compared with an independent CPU reference.\"\n}",
+  "benchmark_stdout_sha256": "fb35f53c4c6fee22c45722513108e576c95218c393d7ae51d04176b513844de5",
+  "experiment": "gpu_shared_residency_probe",
+  "finished_at_utc": "2026-07-21T11:24:36.802203+00:00",
+  "probe_count": 100000,
+  "provenance": {
+    "produced_at_utc": "2026-07-21T11:24:36.808461+00:00",
+    "producer": "gpu_residency_probe.py",
+    "producer_sha256": "a9c2706ad6c87a711f439f8729a7d7a0977791a47c4016868a80d3282ea97e1a",
+    "run_id": "dgx-20260721T103359Z-139511b6377a",
+    "run_started_at_utc": "2026-07-21T10:33:59Z",
+    "source_branch": "research/dgx-computational-experiments-20260717",
+    "source_commit": "139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a",
+    "source_tree_clean": true
+  },
+  "schema_version": 3,
+  "scope": "Platform co-residency observation; not a CUDA arithmetic certificate.",
+  "service_health_after": {
+    "exit_code": 0,
+    "http_status": 200,
+    "service_label": "dgx-router-leanstral-1.5",
+    "stderr": "",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "{\"status\": \"ok\", \"current_model\": \"leanstral-1.5\"}",
+    "stdout_sha256": "5d74919c8a77ef1640fce63442c7be2a48dee5f87d888da268c9f2a050c2eb11",
+    "url": "http://127.0.0.1:8000/health"
+  },
+  "service_health_before": {
+    "exit_code": 0,
+    "http_status": 200,
+    "service_label": "dgx-router-leanstral-1.5",
+    "stderr": "",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "{\"status\": \"ok\", \"current_model\": \"leanstral-1.5\"}",
+    "stdout_sha256": "5d74919c8a77ef1640fce63442c7be2a48dee5f87d888da268c9f2a050c2eb11",
+    "url": "http://127.0.0.1:8000/health"
+  },
+  "service_identity": {
+    "health_url": "http://127.0.0.1:8000/health",
+    "label": "dgx-router-leanstral-1.5",
+    "required": true
+  },
+  "started_at_utc": "2026-07-21T11:24:36.522074+00:00"
+}

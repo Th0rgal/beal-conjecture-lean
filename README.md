@@ -154,10 +154,17 @@ Even an elementary attempt at `A³ + B⁴ = C⁵` quickly runs into needing eith
 │   ├── ABC.lean               — radical, ABC conjecture, primitive-triple application
 │   ├── Computational.lean     — opt-in bounded search, `native_decide` certificate
 │   └── BealConjecture.lean    — collected main theorem + isolated `sorry` on the open core
+├── experiments/dgx_spark/     — reproducible external finite-field, LTE, cyclotomic, and CUDA experiments
+├── Research/                   — bounded research checkpoints and explicit status notes
 └── .github/workflows/         — Mathlib CI, release tagging, dependency updates
 ```
 
 Each module has a top-of-file docstring explaining what is proved in it and what is left to the open core.
+
+The external computational checkpoint is documented in
+[`Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md`](Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md).
+Its JSON artifacts are bounded experimental evidence and are deliberately kept
+separate from the Lean-certified theorem inventory above.
 
 ---
 

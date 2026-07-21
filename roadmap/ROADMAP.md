@@ -52,6 +52,33 @@ A^x + B^y = C^z,  x,y,z >= 3,  x,y,z not all equal,  gcd(A,B,C) = 1
 
 with at least one exponent not divisible by 3 or 4. The cleanest such cases are `(3,4,5)`, `(3,5,7)`, `(4,5,7)`, etc. `(3,4,5)` has a Siksek--Stoll (2012) locator, but this repository records it as open pending a source audit and checked certificate.
 
+## DGX computational checkpoint — 2026-07-17
+
+The reproducible checkpoint in
+[`Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md`](../Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md)
+adds bounded evidence and changes the near-term experimental ordering without
+changing the conjecture's status:
+
+1. prioritize the symbolic fixed cyclotomic gcd congruence on shared-exponent
+   slices;
+2. explicitly reject any unconditional “primitive divisor has valuation one”
+   heuristic — the bounded census found valuations through four;
+3. use finite fields only for support and character restrictions, because the
+   `A=0, B=C=1` branch survives every modulus;
+4. retain plus-sign LTE as a precisely hypothesized formal target, but do not
+   treat a zero-exception bounded sweep as a theorem;
+5. reserve CUDA for certificate-producing fixed-width residue/order batches in
+   operator-approved exclusive GPU windows; keep general PARI/FLINT arithmetic
+   on the bounded CPU lane.
+
+The checkpoint tested 24,348 ordered coprime cyclotomic pairs, 422,340 LTE
+instances, 11,664 finite-field signature/prime combinations, and a four-million
+input CPU/GPU differential calibration. A separately implemented SymPy path
+reconstructed all three complete CPU domains, while every one of five CUDA
+repetitions matched the independent CPU digest. Every artifact carries one exact
+clean producer commit and run ID. This stronger bounded assurance added no Lean
+theorem and does not advance the single open Beal core by itself.
+
 ## The 3 prioritized paths
 
 ### Path 1 — Audit then formalize a `(3,4,5)` descent
@@ -112,7 +139,7 @@ with at least one exponent not divisible by 3 or 4. The cleanest such cases are 
 | Full Wiles / Ribet / Khare-Wintenberger formalization | 30-80+ person-years, doesn't give Beal as a corollary |
 | ABC + IUT approach | IUT not accepted; even ABC wouldn't give a clean proof, only finiteness |
 | Baker / linear forms in logarithms → brute force | Constants too large to search; bounds exceed 10³⁰⁰ for relevant signatures |
-| Cyclotomic methods for mixed exponents | Only works for symmetric `(p,p,r)` or regular-prime cases, not `(3,4,5)` |
+| Full generic cyclotomic attack on arbitrary mixed exponents | Useful on shared-factor/symmetric slices, but does not address a general signature such as `(3,4,5)` |
 | Additive combinatorics / sum-product | No published Beal attack exists |
 | Transcendence (Gel'fond-Schneider directly) | Integer exponents don't trigger transcendence methods |
 
@@ -175,4 +202,5 @@ The honest deliverable is: a Beal signature library, an audited candidate `(3,4,
 - [`roadmap/mission-B-Mathlib-gap-audit.md`](../beal-unified/BEAL_MATHLIB_GAP_AUDIT.md) — concrete Mathlib 4.31 audit
 - [`roadmap/mission-C-modular-method.md`](mission-C-modular-method.md) — deep dive on modular method: Frey curves, Galois reps, level lowering, Lean FLT project status
 - [`roadmap/mission-D-alternative-paths.md`](mission-D-alternative-paths.md) — Darmon-Granville, Baker, weak ABC, cyclotomic, descent, Mason-Stothers, Vojta, sum-product — all 10 ranked by effort/payoff
+- [`Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md`](../Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md) — reproducible finite-field, LTE, cyclotomic, and CUDA checkpoint with exact bounds and trust limitations
 - [`ROADMAP.md`](../ROADMAP.md) — this file, the executive summary

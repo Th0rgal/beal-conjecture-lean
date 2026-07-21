@@ -1,3 +1,8 @@
 /.lake/
 /build/
 *.olean
+__pycache__/
+.pytest_cache/
+/experiments/dgx_spark/build/
+/experiments/dgx_spark/logs/
+/experiments/dgx_spark/smoke/
