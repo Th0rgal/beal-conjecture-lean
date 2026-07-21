@@ -111,7 +111,7 @@ The committed artifacts name their producer commit and the verifier reads the
 producer files from that exact commit. Before verifying from a fresh
 `--depth 1 --single-branch` clone, bootstrap only the bounded ancestry required
 for that commit. The bootstrap fetches one additional history layer at a time,
-up to 16 layers, and fails if the named commit cannot be proven an ancestor of
+up to 32 layers, and fails if the named commit cannot be proven an ancestor of
 `HEAD`; it does not accept a disconnected object fetch.
 
 ```bash

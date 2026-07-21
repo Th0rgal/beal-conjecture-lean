@@ -15,7 +15,9 @@ from pathlib import Path
 
 
 HEX_40 = re.compile(r"[0-9a-f]{40}")
-MAX_INCREMENTAL_DEEPENS = 16
+# Keep a finite bound while accommodating the committed checkpoint's ancestry
+# as the verification harness itself gains follow-up commits.
+MAX_INCREMENTAL_DEEPENS = 32
 
 
 class BootstrapError(RuntimeError):
