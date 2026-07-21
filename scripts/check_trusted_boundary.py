@@ -64,7 +64,8 @@ def run_axiom_audit(extra_source=""):
     suffix = "\n#audit_trusted_axioms\n"
     if not auditor.startswith(prefix) or not auditor.endswith(suffix):
         raise RuntimeError("axiom auditor has an unexpected standalone layout")
-    source = prefix + auditor.removeprefix(prefix).removesuffix(suffix) + extra_source + suffix
+    source = (prefix + auditor.removeprefix(prefix).removesuffix(suffix) + extra_source
+              + "\n#audit_current_additions_against_mathlib\n")
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
         probe.write(source)
         probe_path = pathlib.Path(probe.name)
@@ -86,10 +87,16 @@ axiom trustWitness : True
 theorem newlyLoadedTrustedDeclaration : True := trustWitness
 theorem injectedSorry : True := by sorry
 end BealUnified.TrustAuditNegative
+
+namespace Hidden
+axiom leak : True
+theorem constant : True := leak
+end Hidden
 """
     run = run_axiom_audit(source)
     if (run.returncode == 0 or "unapproved trusted axioms" not in run.stdout
-            or "trustWitness" not in run.stdout or "sorryAx" not in run.stdout):
+            or "trustWitness" not in run.stdout or "sorryAx" not in run.stdout
+            or "Hidden.leak" not in run.stdout):
         raise RuntimeError("environment audit accepted the controlled negative fixture:\n" + run.stdout)
     with tempfile.TemporaryDirectory() as directory:
         fixture_root = pathlib.Path(directory)
@@ -102,7 +109,7 @@ end BealUnified.TrustAuditNegative
                 raise
         else:
             raise RuntimeError("trusted closure accepted a local non-BealUnified import")
-    print("trusted environment negative fixture rejected (unrecognizable-name axiom and sorryAx); local import escape rejected")
+    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local import escape rejected")
 
 try:
     if "--self-test" in sys.argv:
