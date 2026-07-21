@@ -958,6 +958,20 @@ def test_strict_checksum_accepts_the_promoted_checkpoint_receipt():
     assert "verify_results.py: OK" in checked.stdout
 
 
+def test_verification_report_producer_hash_matches_its_source_commit():
+    repo = Path(__file__).resolve().parents[3]
+    report = json.loads(
+        (repo / "experiments/dgx_spark/results/verification_report.json").read_text()
+    )
+    provenance = report["provenance"]
+    producer = subprocess.run(
+        ["git", "-C", str(repo), "show",
+         f'{provenance["source_commit"]}:experiments/dgx_spark/verify_results.py'],
+        capture_output=True, check=True,
+    ).stdout
+    assert hashlib.sha256(producer).hexdigest() == provenance["producer_sha256"]
+
+
 def test_strict_checksum_receipt_covers_and_rejects_mutated_cuda_calibration(tmp_path):
     repo = Path(__file__).resolve().parents[3]
     relative = Path("experiments/dgx_spark/results/cuda_modexp_calibration.json")

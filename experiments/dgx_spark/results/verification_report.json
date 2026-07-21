@@ -7,13 +7,13 @@
   "lte_counterexamples_replayed": 3,
   "primality_checks": 1974,
   "provenance": {
-    "produced_at_utc": "2026-07-21T13:07:03.820259+00:00",
+    "produced_at_utc": "2026-07-21T13:15:30.300799+00:00",
     "producer": "verify_results.py",
     "producer_sha256": "fde4506483a6301253613063e3042286b3098439f3b78505fbab4dc52f53b238",
     "run_id": "dgx-20260721T103359Z-139511b6377a",
     "run_started_at_utc": "2026-07-21T10:33:59Z",
     "source_branch": "research/dgx-computational-experiments-20260717",
-    "source_commit": "139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a",
+    "source_commit": "6399a34b54ad204e00345baf393ce86200563f67",
     "source_tree_clean": true
   },
   "run_id": "dgx-20260721T103359Z-139511b6377a",
