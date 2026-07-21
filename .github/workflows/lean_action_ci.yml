@@ -17,6 +17,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: python3 scripts/check_research_checkpoints.py
       - uses: leanprover/lean-action@v1
       # docgen-action@v1 only builds and deploys docs on push events, and its
       # Pages deployment 404s while GitHub Pages is disabled on this repo.

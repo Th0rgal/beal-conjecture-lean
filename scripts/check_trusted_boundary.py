@@ -10,15 +10,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 START = "BealUnified.Trusted"
 FORBIDDEN = re.compile(r"\b(sorry|admit|axiom)\b|sorryAx")
 IMPORT = re.compile(r"^import\s+(BealUnified(?:\.[A-Za-z0-9_]+)*)", re.M)
-ALLOWED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 
 def module_path(module): return ROOT.joinpath(*module.split(".")).with_suffix(".lean")
-if "--self-test" in sys.argv:
-    # Controlled negative fixture: this must be rejected before Lean is run.
-    if not FORBIDDEN.search("theorem fixture : True := by sorry"):
-        raise SystemExit("negative fixture was not detected")
-    print("trusted boundary negative fixture rejected")
-    raise SystemExit(0)
 def closure():
     todo, seen = [START], set()
     while todo:
@@ -35,33 +28,53 @@ def closure():
             todo.append(dep)
     return seen
 
-try:
-    modules = closure()
-    # Representative declarations cover every direct trusted module.  Import
-    # closure and placeholder checks above cover all source; this Lean probe
-    # asks the kernel for the actual axiom dependencies of the public surface.
-    names = [
-        "BealUnified.BealConjecture", "BealUnified.pairwise_coprime_of_solution",
-        "BealUnified.beal_case_pow_three", "BealUnified.beal_normalize",
-        "BealUnified.lteConclusion_of_mathlib_pow_add_pow",
-        "BealUnified.rad_base_pow_min_le_max_cube",
-        "BealUnified.no_solution_all_bases_odd",
-        "BealUnified.nonexceptional_prime_order_and_congruence",
-        "BealUnified.B_modEq_seven_of_even_C_even_x_odd_y_of_solution_of_primitive",
-        "BealUnified.PrimitivePowSubDivisor.dvd_prime_sub_one",
-    ]
+def run_axiom_audit(extra_source=""):
+    """Audit declarations actually loaded by a trusted import."""
+    if not extra_source:
+        return subprocess.run(["lake", "env", "lean", "scripts/Axioms.lean"], cwd=ROOT, text=True,
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    auditor = (ROOT / "scripts" / "Axioms.lean").read_text(encoding="utf-8")
+    prefix = "import BealUnified.Trusted\n"
+    suffix = "\n#audit_trusted_axioms\n"
+    if not auditor.startswith(prefix) or not auditor.endswith(suffix):
+        raise RuntimeError("axiom auditor has an unexpected standalone layout")
+    source = prefix + auditor.removeprefix(prefix).removesuffix(suffix) + extra_source + suffix
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
-        probe.write("import BealUnified.Trusted\n")
-        probe.write("\n".join(f"#print axioms {n}" for n in sorted(set(names))))
+        probe.write(source)
         probe_path = pathlib.Path(probe.name)
-    run = subprocess.run(["lake", "env", "lean", str(probe_path)], cwd=ROOT, text=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-    probe_path.unlink(missing_ok=True)
+    try:
+        return subprocess.run(["lake", "env", "lean", str(probe_path)], cwd=ROOT, text=True,
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    finally:
+        probe_path.unlink(missing_ok=True)
+
+def self_test():
+    # This fixture is temporary and outside the Trusted source tree.  The
+    # declaration name is deliberately harmless: a name-based/regex audit
+    # cannot recognize ``trustWitness`` as an axiom.  The theorem is a newly
+    # loaded BealUnified declaration, so this also proves the audit is not
+    # limited to a representative, hard-coded declaration list.
+    source = """
+namespace BealUnified.TrustAuditNegative
+axiom trustWitness : True
+theorem newlyLoadedTrustedDeclaration : True := trustWitness
+theorem injectedSorry : True := by sorry
+end BealUnified.TrustAuditNegative
+"""
+    run = run_axiom_audit(source)
+    if (run.returncode == 0 or "unapproved trusted axioms" not in run.stdout
+            or "trustWitness" not in run.stdout or "sorryAx" not in run.stdout):
+        raise RuntimeError("environment audit accepted the controlled negative fixture:\n" + run.stdout)
+    print("trusted environment negative fixture rejected (unrecognizable-name axiom and sorryAx)")
+
+try:
+    if "--self-test" in sys.argv:
+        self_test()
+        raise SystemExit(0)
+    modules = closure()
+    run = run_axiom_audit()
     if run.returncode: raise RuntimeError(run.stdout)
-    found = set(re.findall(r"(?:propext|Classical\.choice|Quot\.sound|sorryAx|[A-Za-z][\w.]*axiom[\w.]*)", run.stdout))
-    bad = found - ALLOWED_AXIOMS
-    if bad: raise RuntimeError("unapproved axioms: " + ", ".join(sorted(bad)))
-    print(f"trusted boundary passed ({len(modules)} local modules; axioms: {', '.join(sorted(found)) or 'none'})")
+    print(f"trusted boundary passed ({len(modules)} local modules)\n{run.stdout.strip()}")
 except Exception as exc:
     print(f"trusted boundary failed: {exc}", file=sys.stderr)
     sys.exit(1)

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "BR-117-all-exponents-divisible-by-three",
+  "status": "historical-source",
+  "source_commit": "7266c7bcdfd5eb7161365d5184f7e25d9ffe1a38",
+  "artifacts": [
+    {
+      "path": "BealUnified/FLTReduction.lean",
+      "sha256": "124fc075d595b1850e236949c0bf7ad4c61713aea57e9979172f6eaa76067c3b"
+    }
+  ],
+  "verification_commands": [
+    "git show 7266c7bcdfd5eb7161365d5184f7e25d9ffe1a38:BealUnified/FLTReduction.lean | sha256sum",
+    "git merge-base --is-ancestor 7266c7bcdfd5eb7161365d5184f7e25d9ffe1a38 HEAD"
+  ],
+  "non_claims": [
+    "This checkpoint records the proved reduction for exponents all divisible by three; it does not prove the general Beal conjecture.",
+    "The artifact is historical-source evidence and is verified from its source commit, not from a working-tree copy."
+  ],
+  "trust_boundary_evidence": [
+    "python3 scripts/check_trusted_boundary.py"
+  ],
+  "validation_evidence": [
+    "python3 scripts/check_research_checkpoints.py"
+  ],
+  "last_audit": "2026-07-21"
+}

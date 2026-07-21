@@ -2,6 +2,27 @@
 
 > Generated 2026-06-26 from four parallel research missions (A: state-of-the-art survey, B: Mathlib gap audit, C: modular method feasibility, D: alternative elementary paths). All four reports are in this repository at `roadmap/state-of-the-art.md`, `roadmap/mission-C-modular-method.md`, `roadmap/mission-D-alternative-paths.md`.
 
+## Architecture roadmap (v1, 2026-07-21)
+
+This repository now has an executable checkpoint boundary in addition to the
+trusted Lean boundary. `Research/checkpoints/*.json` records only historical,
+reachable source commits and exact artifact hashes. The validator reads those
+artifacts with `git show <source_commit>:<path>`, rejects self-references and
+unreachable commits, and runs before Lean in CI. A checkpoint is provenance,
+not a mathematical result or certificate.
+
+Follow-up PRs, in order of dependency:
+
+1. Formalize an asymmetric ABC radical theorem and derive a uniform 11/12 bound
+   under its stated assumptions.
+2. Build a signature-aware certificate engine with independent replay.
+3. Integrate an official Lean comparator/challenge module once its API and trust
+   model are reviewed.
+4. Extend the durable checkpoint manifests with independently replayed research
+   certificates and retained source-audit evidence.
+
+None of these follow-ups is implemented by the checkpoint format itself.
+
 ## Bottom line first
 
 The Beal conjecture **cannot be proved in Lean 4 + Mathlib with currently available formal mathematics**. The bottleneck is genuinely mathematical, not formalization: every known attack either solves only fixed signature families (not all Beal), gives finiteness without enumeration, or is conditional on conjectures at least as strong as ABC.
