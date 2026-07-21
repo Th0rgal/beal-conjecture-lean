@@ -14,10 +14,14 @@ import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CERTIFICATE = "BealUnified.noCounterexampleUpTo_8_8"
-# This is the only axiom emitted by `native_decide` for the certificate under
-# the pinned Lean toolchain.  A set comparison below intentionally rejects
-# both missing and additional axioms.
-PERMITTED_AXIOMS = {"Lean.ofReduceBool"}
+# This is the complete axiom set emitted by the certificate under the pinned
+# Lean toolchain. A set comparison below intentionally rejects both missing
+# and additional axioms.
+PERMITTED_AXIOMS = {
+    "BealUnified.noCounterexampleUpTo_8_8._native.native_decide.ax_1_1",
+    "Quot.sound",
+    "propext",
+}
 
 # This audit runs before the full project build in the trust-gate workflow.
 # Build its one opt-in target explicitly so a clean checkout has the olean that
@@ -45,7 +49,13 @@ def printed_axioms(source: str, declaration: str):
     match = re.search(r"depends on axioms:\s*\[([^]]*)\]", result.stdout)
     if not match:
         raise RuntimeError("could not parse #print axioms output:\n" + result.stdout)
-    names = re.findall(r"[A-Za-z_][A-Za-z0-9_'.]*", match.group(1))
+    # Lean prints a comma-separated list of fully qualified Names.  Do not use
+    # an ASCII identifier regex here: an adversarial axiom name may be Unicode
+    # and must remain visible to the exact-set comparison.
+    content = match.group(1).strip()
+    names = [] if not content else [name.strip() for name in content.split(",")]
+    if any(not name for name in names):
+        raise RuntimeError("malformed #print axioms name list:\n" + result.stdout)
     return set(names), result.stdout
 
 def require_exact_axioms(actual, context):
@@ -56,18 +66,18 @@ def require_exact_axioms(actual, context):
         )
 
 def self_test():
-    # `harmlessWitness` deliberately does not contain "axiom" in its name.
+    # `harmlessΩ` deliberately does not contain "axiom" and is non-ASCII.
     # The audited declaration depends on both it and the generated
     # native_decide axiom, so this proves that extra axioms fail closed.
     actual, _ = printed_axioms("""import BealUnified.Computational
 namespace BealUnified.ComputationalAuditNegative
-axiom harmlessWitness : True
+axiom harmlessΩ : True
 theorem certificateWithExtraWitness :
     hasCounterexampleUpTo 8 8 = false ∧ True :=
-  ⟨noCounterexampleUpTo_8_8, harmlessWitness⟩
+  ⟨noCounterexampleUpTo_8_8, harmlessΩ⟩
 end BealUnified.ComputationalAuditNegative
 """, "BealUnified.ComputationalAuditNegative.certificateWithExtraWitness")
-    negative_axiom = "BealUnified.ComputationalAuditNegative.harmlessWitness"
+    negative_axiom = "BealUnified.ComputationalAuditNegative.harmlessΩ"
     if actual == PERMITTED_AXIOMS or negative_axiom not in actual:
         raise RuntimeError("computational negative fixture did not expose its extra axiom")
     try:
@@ -83,7 +93,7 @@ try:
     require_exact_axioms(actual, CERTIFICATE)
     if "--self-test" in sys.argv:
         self_test()
-    print("computational evidence is opt-in and uses exactly Lean.ofReduceBool")
+    print("computational evidence is opt-in and uses exactly the pinned native_decide axiom set")
 except Exception as exc:
     print(f"computational evidence audit failed: {exc}", file=sys.stderr)
     raise SystemExit(1)

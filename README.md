@@ -79,10 +79,11 @@ The original 24-theorem suite and the consolidated research lemmas above contain
 `BealUnified.Computational` is an explicit, separately audited opt-in module
 for finite-search evidence (`python3 scripts/check_computational_evidence.py`).
 It is not imported by `BealUnified` or `BealUnified.Trusted`, because its
-`native_decide` certificate uses Lean's generated native-decision axiom, which
-is intentionally outside the strict trusted allowlist. The audit records that
-dependency as exactly `Lean.ofReduceBool` and rejects every other axiom; it
-does not elevate the finite computation to trusted theorem evidence.
+`native_decide` certificate uses its generated native-decision axiom, which is
+intentionally outside the strict trusted allowlist. The audit records the exact
+pinned generated axiom together with `propext` and `Quot.sound`, and rejects
+every other axiom; it does not elevate the finite computation to trusted theorem
+evidence.
 
 ---
 

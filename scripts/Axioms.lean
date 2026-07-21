@@ -41,13 +41,7 @@ partial def collectAxioms (env : Environment) (decl : Name) : AuditM (List Name)
 private def allowedAxiom (name : Name) : Bool :=
   name == ``propext || name == ``Classical.choice || name == ``Quot.sound
 
-/-- Fail when the imported trusted environment uses an unapproved axiom. -/
-elab "#audit_trusted_axioms" : command => do
-  let env ← getEnv
-  let trustedPrefix : Name := `BealUnified
-  let declarations := (env.constants.map₁.toList ++ env.constants.map₂.toList).foldl
-    (init := #[]) fun declarations entry =>
-      if trustedPrefix.isPrefixOf entry.1 then declarations.push entry.1 else declarations
+private def reportRejectedAxioms (env : Environment) (declarations : Array Name) : CommandElabM Unit := do
   let (usedAxioms, _) := (declarations.foldlM (init := []) fun used declaration =>
     return used ++ (← collectAxioms env declaration)).run {}
   let axioms := usedAxioms.eraseDups
@@ -57,6 +51,27 @@ elab "#audit_trusted_axioms" : command => do
   logInfo m!"trusted environment axioms: {axioms}"
   if rejected != [] then
     logError m!"unapproved trusted axioms: {rejected}"
+
+/-- Fail when the imported trusted environment uses an unapproved axiom. -/
+elab "#audit_trusted_axioms" : command => do
+  let env ← getEnv
+  let trustedPrefix : Name := `BealUnified
+  let declarations := (env.constants.map₁.toList ++ env.constants.map₂.toList).foldl
+    (init := #[]) fun declarations entry =>
+      if trustedPrefix.isPrefixOf entry.1 then declarations.push entry.1 else declarations
+  reportRejectedAxioms env declarations
+
+/-- Audit one registry declaration only when it is loaded by the public trusted root. -/
+elab "#audit_trusted_registry_declaration " ident:ident : command => do
+  let env ← getEnv
+  let declaration := ident.getId
+  let trustedPrefix : Name := `BealUnified
+  if !trustedPrefix.isPrefixOf declaration then
+    logError m!"registry declaration is outside BealUnified: {declaration}"
+  else if env.find? declaration |>.isNone then
+    logError m!"registry declaration is not loaded by the trusted root: {declaration}"
+  else
+    reportRejectedAxioms env #[declaration]
 
 end BealTrustAudit
 
