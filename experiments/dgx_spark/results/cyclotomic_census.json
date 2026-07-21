@@ -1,7 +1,7 @@
 {
   "congruence_failures": [],
   "distinct_prime_factor_occurrences_tested": 55758,
-  "elapsed_seconds": 480.257400454022,
+  "elapsed_seconds": 476.75941868009977,
   "ell_exception_factor_occurrences": 3774,
   "experiment": "odd_plus_cyclotomic_census",
   "factor_identity_failures": [],
@@ -6906,13 +6906,13 @@
     "workers": 2
   },
   "provenance": {
-    "produced_at_utc": "2026-07-17T09:48:51.689836+00:00",
+    "produced_at_utc": "2026-07-21T10:41:58.102008+00:00",
     "producer": "cyclotomic_census.py",
     "producer_sha256": "ce68c212306388261c91493362f36aee698176989d865c34f6c129223b4126ba",
-    "run_id": "beal-dgx-20260717-4795b06",
-    "run_started_at_utc": "2026-07-17T09:40:40Z",
-    "source_branch": "exact-run-4795b06",
-    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "run_id": "dgx-20260721T103359Z-139511b6377a",
+    "run_started_at_utc": "2026-07-21T10:33:59Z",
+    "source_branch": "research/dgx-computational-experiments-20260717",
+    "source_commit": "139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a",
     "source_tree_clean": true
   },
   "schema_version": 1

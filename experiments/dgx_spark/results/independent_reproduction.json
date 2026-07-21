@@ -1,22 +1,47 @@
 {
   "cyclotomic_cases_reproduced": 24348,
+  "cyclotomic_domain_reproduced": {
+    "base_bound": 100,
+    "ells": [
+      3,
+      5,
+      7,
+      11
+    ]
+  },
   "cyclotomic_exceptional_occurrences_reproduced": 3774,
   "cyclotomic_factor_occurrences_reproduced": 55758,
   "cyclotomic_higher_valuation_occurrences_reproduced": 860,
-  "elapsed_seconds": 10.655034391093068,
+  "elapsed_seconds": 10.867975160013884,
   "experiment": "independent_complete_domain_reproduction",
   "finite_field_checks_reproduced": 11664,
+  "finite_field_domain_reproduced": {
+    "kernels": [
+      3,
+      4,
+      5,
+      7,
+      11,
+      13
+    ],
+    "prime_bound": 251
+  },
   "finite_field_empty_witnesses_reproduced": 254,
   "lte_cases_reproduced": 422340,
+  "lte_domain_reproduced": {
+    "a_bound": 200,
+    "n_bound": 31,
+    "prime_bound": 97
+  },
   "lte_violations_reproduced": 0,
   "provenance": {
-    "produced_at_utc": "2026-07-17T09:49:02.604798+00:00",
+    "produced_at_utc": "2026-07-21T10:42:09.098273+00:00",
     "producer": "independent_reproduce.py",
-    "producer_sha256": "1f7c52362b83bf4dda82abd30c2e9c5c9a105eaaa199d7160450e9b75a42a8d8",
-    "run_id": "beal-dgx-20260717-4795b06",
-    "run_started_at_utc": "2026-07-17T09:40:40Z",
-    "source_branch": "exact-run-4795b06",
-    "source_commit": "4795b061133f7a24e6c522a2d9f64ad823259895",
+    "producer_sha256": "27db76a41fcf462c6d0c148a644fc263e03ac8ad443f2b9081b19e0fe36de2d0",
+    "run_id": "dgx-20260721T103359Z-139511b6377a",
+    "run_started_at_utc": "2026-07-21T10:33:59Z",
+    "source_branch": "research/dgx-computational-experiments-20260717",
+    "source_commit": "139511b6377a1b8f63ea8e98d2a17ec6bc2f8e6a",
     "source_tree_clean": true
   },
   "schema_version": 1,
