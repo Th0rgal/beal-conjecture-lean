@@ -225,6 +225,104 @@ def test_verifier_rejects_wrong_lte_predicted_rhs_valuation(tmp_path):
         check(results, cuda_policy="ignore", shared_policy="ignore")
 
 
+@pytest.mark.parametrize(
+    ("field", "replacement", "message"),
+    [
+        ("valid_hypothesis_violations", None, "valid_hypothesis_violations"),
+        ("minimal_counterexamples_when_assumption_removed", None, "minimal counterexamples"),
+        ("minimal_counterexamples_when_assumption_removed", {}, "assumption keys"),
+    ],
+)
+def test_verifier_rejects_missing_or_malformed_mandatory_lte_evidence(
+    tmp_path, field, replacement, message
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    lte_path = results / "lte_assumption_miner.json"
+    lte = json.loads(lte_path.read_text())
+    if replacement is None:
+        del lte[field]
+    else:
+        lte[field] = replacement
+    lte_path.write_text(json.dumps(lte))
+
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda case: case.update(q="3"), "invalid value types"),
+        (lambda case: case.pop("rhs_valuation"), "invalid fields"),
+        (lambda case: case.update(unexpected=0), "invalid fields"),
+    ],
+)
+def test_verifier_rejects_malformed_lte_counterexample_schema(tmp_path, mutation, message):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    lte_path = results / "lte_assumption_miner.json"
+    lte = json.loads(lte_path.read_text())
+    mutation(lte["minimal_counterexamples_when_assumption_removed"]["remove_odd_n"])
+    lte_path.write_text(json.dumps(lte))
+
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="ignore", shared_policy="ignore")
+
+
+def test_valid_lte_evidence_schema_passes_replay(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
+    report = check(results, cuda_policy="ignore", shared_policy="ignore")
+    assert report["lte_counterexamples_replayed"] == 3
+
+
+def test_cuda_producer_and_suite_cover_complete_provenance_contract():
+    root = Path(__file__).resolve().parents[1]
+    producer = (root / "cuda_modexp_bench.cu").read_text()
+    suite = (root / "run_suite.sh").read_text()
+    for option, output_field in (
+        ("--run-started-at-utc", '\\"run_started_at_utc\\"'),
+        ("--source-branch", '\\"source_branch\\"'),
+    ):
+        assert option in producer
+        assert output_field in producer
+        variable = "RUN_STARTED_AT_UTC" if "started" in option else "SOURCE_BRANCH"
+        assert f'{option} "${variable}"' in suite
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("run_started_at_utc", None, "invalid run_started_at_utc"),
+        ("run_started_at_utc", "not-a-UTC-timestamp", "invalid run_started_at_utc"),
+        ("source_branch", None, "invalid source_branch"),
+        ("source_branch", 7, "invalid source_branch"),
+    ],
+)
+def test_verifier_rejects_missing_or_malformed_cuda_provenance(
+    tmp_path, field, value, message
+):
+    source = Path(__file__).resolve().parents[1] / "results"
+    results = tmp_path / "results"
+    shutil.copytree(source, results)
+    install_shared_fixture(results, "cuda_oom")
+    cuda_path = results / "cuda_modexp_calibration.json"
+    cuda = json.loads(cuda_path.read_text())
+    if value is None:
+        del cuda["provenance"][field]
+    else:
+        cuda["provenance"][field] = value
+    cuda_path.write_text(json.dumps(cuda))
+
+    with pytest.raises(VerificationError, match=message):
+        check(results, cuda_policy="required", shared_policy="ignore")
+
+
 def test_verifier_primality_check():
     assert is_prime(2) and is_prime(7789)
     assert not is_prime(1) and not is_prime(7 * 11)
@@ -576,7 +674,7 @@ def test_verifier_rejects_false_producer_provenance(
 @pytest.mark.parametrize(
     ("artifact", "field", "bad_value", "message"),
     [
-        ("cuda_modexp_calibration.json", "run_started_at_utc", "other-time", "mixed run start times"),
+        ("cuda_modexp_calibration.json", "run_started_at_utc", "2026-07-21T08:42:19Z", "mixed run start times"),
         ("cuda_modexp_calibration.json", "source_branch", "other-branch", "mixed source branches"),
     ],
 )

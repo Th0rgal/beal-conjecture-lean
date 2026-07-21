@@ -121,38 +121,20 @@ errors. The committed schema-v2 shared artifact is retained as historical
 evidence and intentionally fails `--shared-policy required` until this physical
 DGX rerun produces a schema-v3 canonical artifact and checksum receipt.
 
-## Verify the committed checkpoint from a shallow clone
+## Historical checkpoint and fail-closed migration
 
-The committed artifacts name their producer commit and the verifier reads the
-producer files from that exact commit. Before verifying from a fresh
-`--depth 1 --single-branch` clone, bootstrap only the bounded ancestry required
-for that commit. The bootstrap fetches one additional history layer at a time,
-up to 32 layers, and fails if the named commit cannot be proven an ancestor of
-`HEAD`; it does not accept a disconnected object fetch.
+The committed result JSON and `SHA256SUMS` predate the exact-domain snapshot and
+source-contract changes in the current verifier. They are retained unchanged as
+historical evidence: the current verifier rejects the missing domain snapshots,
+and strict checksum verification rejects source hashes changed after that
+receipt was produced. This is intentional fail-closed behavior, not a current
+checkpoint claim. Do not update either computational artifacts or their receipt
+without rerunning the real deterministic producers on the documented hardware.
 
-```bash
-RESULTS=experiments/dgx_spark/results
-python3 experiments/dgx_spark/bootstrap_provenance_history.py --results "$RESULTS"
-SOURCE_BRANCH="$(git branch --show-current)"
-if [ -z "$SOURCE_BRANCH" ]; then
-  SOURCE_BRANCH="$(git for-each-ref --format='%(refname:short) %(symref)' --contains HEAD \
-    | awk 'index($1, "origin/") == 1 && $2 == "" { print $1; exit }')"
-fi
-test -n "$SOURCE_BRANCH"
-SOURCE_TREE_CLEAN=true \
-SOURCE_COMMIT="$(git rev-parse HEAD)" \
-SOURCE_BRANCH="$SOURCE_BRANCH" \
-RUN_ID=committed-checkpoint-verification \
-RUN_STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-PYTHONPATH="$(pwd)/experiments/dgx_spark" \
-  python3 experiments/dgx_spark/verify_results.py --results "$RESULTS" \
-    --cuda-policy required --shared-policy ignore --output /dev/null
-```
-
-The verifier prints the CPU/CUDA historical receipt to standard output.
-`--shared-policy ignore` is required for the committed schema-v2 checkpoint;
-`--output /dev/null` avoids rewriting the committed report or checksum manifest
-during verification.
+`bootstrap_provenance_history.py` remains available for a newly generated
+checkpoint whose producer commit is outside a shallow clone. It fetches one
+ancestry layer at a time (up to 32) and rejects a source commit that cannot be
+proved an ancestor of `HEAD`; it does not make the stale checkpoint current.
 
 ## Assurance boundary
 

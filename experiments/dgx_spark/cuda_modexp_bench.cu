@@ -59,6 +59,29 @@ static std::string digest_output(const std::vector<uint32_t>& values) {
   return stream.str();
 }
 
+static std::string json_escape(const std::string& value) {
+  std::ostringstream escaped;
+  for (unsigned char character : value) {
+    switch (character) {
+      case '\"': escaped << "\\\""; break;
+      case '\\': escaped << "\\\\"; break;
+      case '\b': escaped << "\\b"; break;
+      case '\f': escaped << "\\f"; break;
+      case '\n': escaped << "\\n"; break;
+      case '\r': escaped << "\\r"; break;
+      case '\t': escaped << "\\t"; break;
+      default:
+        if (character < 0x20) {
+          escaped << "\\u" << std::hex << std::setw(4) << std::setfill('0')
+                  << static_cast<int>(character) << std::dec;
+        } else {
+          escaped << character;
+        }
+    }
+  }
+  return escaped.str();
+}
+
 __global__ void pow_kernel(const uint32_t* input, uint32_t* output, size_t count,
                            uint32_t exponent, uint32_t modulus) {
   size_t index = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
@@ -73,7 +96,7 @@ int main(int argc, char** argv) {
   int repeats = 5;
   uint32_t exponent = 65537;
   uint32_t modulus = 2'147'483'647U;
-  std::string run_id, source_commit, producer_sha256;
+  std::string run_id, run_started_at_utc, source_branch, source_commit, producer_sha256;
   bool source_tree_clean = false;
   bool source_tree_clean_set = false;
   for (int i = 1; i < argc; ++i) {
@@ -83,6 +106,8 @@ int main(int argc, char** argv) {
     else if (arg == "--exponent" && i + 1 < argc) exponent = std::stoul(argv[++i]);
     else if (arg == "--modulus" && i + 1 < argc) modulus = std::stoul(argv[++i]);
     else if (arg == "--run-id" && i + 1 < argc) run_id = argv[++i];
+    else if (arg == "--run-started-at-utc" && i + 1 < argc) run_started_at_utc = argv[++i];
+    else if (arg == "--source-branch" && i + 1 < argc) source_branch = argv[++i];
     else if (arg == "--source-commit" && i + 1 < argc) source_commit = argv[++i];
     else if (arg == "--producer-sha256" && i + 1 < argc) producer_sha256 = argv[++i];
     else if (arg == "--source-tree-clean" && i + 1 < argc) {
@@ -99,6 +124,7 @@ int main(int argc, char** argv) {
     }
   }
   if (count == 0 || repeats <= 0 || modulus < 2 || run_id.empty() ||
+      run_started_at_utc.empty() || source_branch.empty() ||
       source_commit.size() != 40 || producer_sha256.size() != 64 || !source_tree_clean_set) {
     std::cerr << "invalid benchmark parameters or missing provenance\n";
     return 2;
@@ -205,7 +231,9 @@ int main(int argc, char** argv) {
   }
   std::cout << "],\n"
             << "  \"provenance\": {\n"
-            << "    \"run_id\": \"" << run_id << "\",\n"
+            << "    \"run_id\": \"" << json_escape(run_id) << "\",\n"
+            << "    \"run_started_at_utc\": \"" << json_escape(run_started_at_utc) << "\",\n"
+            << "    \"source_branch\": \"" << json_escape(source_branch) << "\",\n"
             << "    \"source_commit\": \"" << source_commit << "\",\n"
             << "    \"source_tree_clean\": " << (source_tree_clean ? "true" : "false") << ",\n"
             << "    \"producer\": \"cuda_modexp_bench.cu\",\n"

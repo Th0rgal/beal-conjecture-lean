@@ -90,7 +90,8 @@ if [[ "$RUN_SHARED_PROBE" == "1" ]]; then
 fi
 if [[ "$RUN_CUDA" == "1" ]]; then
   "$BUILD/cuda_modexp_bench" --count 4000000 --repeats 5 \
-    --run-id "$RUN_ID" --source-commit "$SOURCE_COMMIT" \
+    --run-id "$RUN_ID" --run-started-at-utc "$RUN_STARTED_AT_UTC" \
+    --source-branch "$SOURCE_BRANCH" --source-commit "$SOURCE_COMMIT" \
     --source-tree-clean "$SOURCE_TREE_CLEAN" --producer-sha256 "$CUDA_SOURCE_SHA" \
     > "$RESULTS/cuda_modexp_calibration.json"
   python3 -m json.tool "$RESULTS/cuda_modexp_calibration.json" >/dev/null

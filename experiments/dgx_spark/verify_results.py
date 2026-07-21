@@ -33,6 +33,7 @@ EXPECTED_PRODUCERS = {
 
 HEX_40 = re.compile(r"[0-9a-f]{40}")
 HEX_64 = re.compile(r"[0-9a-f]{64}")
+UTC_SECOND = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
 
 # These are the fixed inputs of the documented GB10 differential calibration,
 # rather than merely internally consistent fields in an artifact.
@@ -46,6 +47,13 @@ CUDA_CALIBRATION_OUTPUT_DIGEST = "b03df39b05355ebb"
 # size.  These are verifier-owned expectations, not artifact-owned claims.
 GPU_RESIDENCY_PROBE_COUNT = 100_000
 GPU_RESIDENCY_SCHEMA_VERSION = 3
+LTE_REMOVED_ASSUMPTIONS = {
+    "remove_odd_n",
+    "remove_q_divides_sum",
+    "remove_base_coprimality",
+    "allow_q_two_with_odd_n",
+}
+LTE_COUNTEREXAMPLE_FIELDS = {"q", "a", "b", "n", "lhs_valuation", "rhs_valuation"}
 
 
 def require(condition: object, message: str) -> None:
@@ -252,7 +260,7 @@ def check_provenance(
             raise VerificationError(f"{name} has invalid run_id")
         if not isinstance(commit, str) or HEX_40.fullmatch(commit) is None:
             raise VerificationError(f"{name} has invalid source_commit")
-        if not isinstance(started, str) or not started:
+        if not isinstance(started, str) or UTC_SECOND.fullmatch(started) is None:
             raise VerificationError(f"{name} has invalid run_started_at_utc")
         if not isinstance(branch, str) or not branch:
             raise VerificationError(f"{name} has invalid source_branch")
@@ -380,11 +388,23 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     require(all(isinstance(value, int) and value >= 1
                 for value in (lte_a_bound, lte_prime_bound, lte_n_bound)),
             "invalid LTE parameters")
-    require(not lte.get("valid_hypothesis_violations"), "LTE violations recorded")
+    violations = lte.get("valid_hypothesis_violations")
+    require(isinstance(violations, list),
+            "missing or invalid LTE valid_hypothesis_violations list")
+    require(not violations, "LTE violations recorded")
+    removed_assumption_cases = lte.get("minimal_counterexamples_when_assumption_removed")
+    require(isinstance(removed_assumption_cases, dict),
+            "missing or invalid LTE minimal counterexamples object")
+    require(set(removed_assumption_cases) == LTE_REMOVED_ASSUMPTIONS,
+            "LTE minimal counterexamples have missing or unexpected assumption keys")
     lte_counterexamples = 0
-    for key, case in lte.get("minimal_counterexamples_when_assumption_removed", {}).items():
+    for key, case in removed_assumption_cases.items():
         if case is None:
             continue
+        require(isinstance(case, dict) and set(case) == LTE_COUNTEREXAMPLE_FIELDS,
+                f"LTE counterexample has invalid fields for {key}")
+        require(all(type(case[field]) is int for field in LTE_COUNTEREXAMPLE_FIELDS),
+                f"LTE counterexample has invalid value types for {key}")
         q, a, b, n = (case[key] for key in ("q", "a", "b", "n"))
         require(is_lte_counterexample_for_removed_assumption(key, q, a, b, n),
                 f"LTE counterexample does not match removed assumption {key}: {case}")
@@ -559,7 +579,7 @@ def check(results: Path, cuda_policy: str = "auto", shared_policy: str = "auto")
     require(independent.get("lte_cases_reproduced") == lte.get("valid_hypothesis_cases_tested"),
             "independent LTE coverage mismatch")
     require(independent.get("lte_violations_reproduced") ==
-            len(lte.get("valid_hypothesis_violations", [])),
+            len(violations),
             "independent LTE violation count mismatch")
     require(independent.get("cyclotomic_cases_reproduced") == cyclo.get("pairs_tested"),
             "independent cyclotomic coverage mismatch")
