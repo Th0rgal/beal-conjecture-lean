@@ -117,9 +117,15 @@ up to 16 layers, and fails if the named commit cannot be proven an ancestor of
 ```bash
 RESULTS=experiments/dgx_spark/results
 python3 experiments/dgx_spark/bootstrap_provenance_history.py --results "$RESULTS"
+SOURCE_BRANCH="$(git branch --show-current)"
+if [ -z "$SOURCE_BRANCH" ]; then
+  SOURCE_BRANCH="$(git for-each-ref --format='%(refname:short) %(symref)' --contains HEAD \
+    | awk 'index($1, "origin/") == 1 && $2 == "" { print $1; exit }')"
+fi
+test -n "$SOURCE_BRANCH"
 SOURCE_TREE_CLEAN=true \
 SOURCE_COMMIT="$(git rev-parse HEAD)" \
-SOURCE_BRANCH="$(git branch --show-current)" \
+SOURCE_BRANCH="$SOURCE_BRANCH" \
 RUN_ID=committed-checkpoint-verification \
 RUN_STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
 PYTHONPATH="$(pwd)/experiments/dgx_spark" \

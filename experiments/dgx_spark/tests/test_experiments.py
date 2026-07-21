@@ -475,6 +475,31 @@ def test_detached_shallow_clone_bootstrap_uses_the_unique_origin_branch(tmp_path
         ["git", "-C", str(shallow), "merge-base", "--is-ancestor", producer_commit, "HEAD"],
         check=True,
     )
+    remote_refs = subprocess.run(
+        ["git", "-C", str(shallow), "for-each-ref", "--format=%(refname:short) %(symref)",
+         "--contains", "HEAD"],
+        text=True, capture_output=True, check=True,
+    ).stdout.splitlines()
+    detached_branch = next(
+        line.split()[0] for line in remote_refs
+        if len(line.split()) == 1 and line.startswith("origin/")
+    )
+    assert detached_branch == f"origin/{branch}"
+    verifier = shallow / "experiments/dgx_spark/verify_results.py"
+    env = {**os.environ,
+           "SOURCE_TREE_CLEAN": "true", "SOURCE_COMMIT": subprocess.run(
+               ["git", "-C", str(shallow), "rev-parse", "HEAD"], text=True,
+               capture_output=True, check=True,
+           ).stdout.strip(), "SOURCE_BRANCH": detached_branch, "RUN_ID": "detached-bootstrap-test",
+           "RUN_STARTED_AT_UTC": "2026-07-17T00:00:00Z",
+           "PYTHONPATH": str(shallow / "experiments/dgx_spark")}
+    verified = subprocess.run(
+        [sys.executable, str(verifier), "--results",
+         str(shallow / "experiments/dgx_spark/results"), "--cuda-policy", "required",
+         "--shared-policy", "required", "--output", "/dev/null"],
+        text=True, capture_output=True, check=False, env=env,
+    )
+    assert verified.returncode == 0, verified.stderr
 
 
 def test_committed_checksum_receipt_covers_the_current_verifier():
