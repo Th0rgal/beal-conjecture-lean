@@ -54,6 +54,8 @@ def main() -> None:
     proc = subprocess.run([
         str(args.benchmark), "--count", str(args.count), "--repeats", "1",
         "--run-id", os.environ["RUN_ID"],
+        "--run-started-at-utc", os.environ["RUN_STARTED_AT_UTC"],
+        "--source-branch", os.environ["SOURCE_BRANCH"],
         "--source-commit", os.environ["SOURCE_COMMIT"],
         "--source-tree-clean", os.environ["SOURCE_TREE_CLEAN"],
         "--producer-sha256", sha256_file(Path(__file__).with_name("cuda_modexp_bench.cu")),

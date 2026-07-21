@@ -295,6 +295,44 @@ def test_cuda_producer_and_suite_cover_complete_provenance_contract():
         assert f'{option} "${variable}"' in suite
 
 
+def test_shared_probe_passes_complete_provenance_to_benchmark(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    benchmark = tmp_path / "benchmark"
+    benchmark.write_text(
+        "#!/bin/sh\n"
+        "printf '%s\\n' \"$@\" > \"$CAPTURED_ARGS\"\n"
+        "exit 0\n"
+    )
+    benchmark.chmod(0o755)
+    curl = tmp_path / "curl"
+    curl.write_text("#!/bin/sh\nprintf '{\\\"ok\\\":true}\\n200'\n")
+    curl.chmod(0o755)
+    output = tmp_path / "probe.json"
+    captured = tmp_path / "benchmark.args"
+    env = {
+        **os.environ,
+        "PATH": f"{tmp_path}:{os.environ['PATH']}",
+        "CAPTURED_ARGS": str(captured),
+        "RUN_ID": "probe-test",
+        "RUN_STARTED_AT_UTC": "2026-07-21T12:34:56Z",
+        "SOURCE_BRANCH": "research/dgx-computational-experiments-20260717",
+        "SOURCE_COMMIT": "c8c8014f381f7aa52d454ac4cb9a44f86e5c9bf0",
+        "SOURCE_TREE_CLEAN": "true",
+    }
+    subprocess.run(
+        [sys.executable, str(root / "gpu_residency_probe.py"),
+         "--benchmark", str(benchmark), "--output", str(output),
+         "--service-label", "test-service",
+         "--service-health-url", "http://127.0.0.1/health"],
+        env=env, check=True, capture_output=True, text=True,
+    )
+
+    arguments = captured.read_text().splitlines()
+    assert arguments[arguments.index("--run-started-at-utc") + 1] == env["RUN_STARTED_AT_UTC"]
+    assert arguments[arguments.index("--source-branch") + 1] == env["SOURCE_BRANCH"]
+    assert json.loads(output.read_text())["benchmark_exit_class"] == "success"
+
+
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
