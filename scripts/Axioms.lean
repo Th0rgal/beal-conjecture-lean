@@ -1,10 +1,10 @@
-import BealUnified.Trusted
+import BealUnified
 
 /-!
 # Trusted-environment axiom audit
 
 This command examines every declaration actually loaded by
-`import BealUnified.Trusted` whose name is in the `BealUnified` namespace. It
+`import BealUnified` whose name is in the `BealUnified` namespace. It
 recursively follows declaration bodies and types to their axioms, and rejects
 anything other than Lean's standard logical axioms. It intentionally does not
 use a maintained list of representative theorems.

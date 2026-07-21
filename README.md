@@ -37,9 +37,11 @@ Equivalently (the contrapositive used internally): there is no *primitive* solut
 
 ## What is proved in this repository
 
-Every trusted theorem below compiles under `lake build` with `0 errors` and is
-covered by the environment audit, which permits only standard Mathlib axioms
-(`propext`, `Quot.sound`, `Classical.choice`) — **none depend on `sorryAx`**.
+Every table entry, except the explicitly marked **Opt-in** row, compiles under
+`lake build` with `0 errors` and is covered by the environment audit, which
+permits only standard Mathlib axioms (`propext`, `Quot.sound`,
+`Classical.choice`) — **none depend on `sorryAx`**. The opt-in row is
+deliberately outside that boundary.
 
 | Subcase | Theorem | Method |
 |---|---|---|
@@ -64,7 +66,7 @@ covered by the environment audit, which permits only standard Mathlib axioms
 | LTE modular obstruction ⇒ no matching Beal equation | `no_beal_equal_left_exponents_of_lte_mod_obstruction` | rewrite |
 | `rad n = ∏ primeFactors(n)` | `rad`, `rad_dvd`, `rad_pow_of_pos` | Mathlib `Nat.prod_primeFactors_dvd` |
 | ABC applies to `(A^x, B^y, C^z)` of any primitive triple | `abc_applies_to_primitive_beal_counterexample` | assuming `ABCConjecture` |
-| Opt-in computational evidence: no counterexample for bases `< 2` | `noCounterexample_bases_lt_two` | omega + decide (outside `Trusted`) |
+| **Opt-in, outside `Trusted`:** no counterexample for bases `< 2` | `noCounterexample_bases_lt_two` | omega + decide |
 | Radical/minimum-exponent bridge | `rad_base_pow_min_le_max_cube` | elementary inequalities |
 | Coprime-sum valuation side condition | `padicValNat_prime_dvd_coprime_sum_pows_eq_zero` | `padicValNat` |
 | Primitive-divisor data ⇒ exact order and `n ∣ p - 1` | `orderOf_primitivePowSubRatio_eq`, `PrimitivePowSubDivisor.dvd_prime_sub_one` | finite-group order |

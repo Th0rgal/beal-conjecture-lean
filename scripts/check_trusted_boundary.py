@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit the local import closure of BealUnified.Trusted, fail closed."""
+"""Audit the local import closure of the public BealUnified root, fail closed."""
 import pathlib
 import re
 import subprocess
@@ -7,11 +7,22 @@ import sys
 import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-START = "BealUnified.Trusted"
+# `BealUnified` is the advertised production import.  Starting here, rather
+# than at its current `Trusted` implementation detail, makes a future direct
+# root import of Challenge or BealConjecture a boundary-gate failure.
+START = "BealUnified"
 FORBIDDEN = re.compile(r"\b(sorry|admit|axiom)\b|sorryAx")
 IMPORT = re.compile(r"^import\s+(BealUnified(?:\.[A-Za-z0-9_]+)*)", re.M)
 
 def module_path(module): return ROOT.joinpath(*module.split(".")).with_suffix(".lean")
+
+def build_public_root():
+    """Make the public root import available to both CI and local probes."""
+    build = subprocess.run(["lake", "build", START], cwd=ROOT, text=True,
+                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    if build.returncode:
+        raise RuntimeError("could not build public trusted root:\n" + build.stdout)
+
 def closure():
     todo, seen = [START], set()
     while todo:
@@ -29,12 +40,16 @@ def closure():
     return seen
 
 def run_axiom_audit(extra_source=""):
-    """Audit declarations actually loaded by a trusted import."""
+    """Audit declarations actually loaded by the public trusted import."""
+    # The workflow deliberately runs this gate before the project-wide build.
+    # Build precisely the root being audited, so clean checkouts and direct
+    # invocations do not depend on a pre-existing olean file.
+    build_public_root()
     if not extra_source:
         return subprocess.run(["lake", "env", "lean", "scripts/Axioms.lean"], cwd=ROOT, text=True,
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     auditor = (ROOT / "scripts" / "Axioms.lean").read_text(encoding="utf-8")
-    prefix = "import BealUnified.Trusted\n"
+    prefix = "import BealUnified\n"
     suffix = "\n#audit_trusted_axioms\n"
     if not auditor.startswith(prefix) or not auditor.endswith(suffix):
         raise RuntimeError("axiom auditor has an unexpected standalone layout")
@@ -49,7 +64,7 @@ def run_axiom_audit(extra_source=""):
         probe_path.unlink(missing_ok=True)
 
 def self_test():
-    # This fixture is temporary and outside the Trusted source tree.  The
+    # This fixture is temporary and outside the trusted source tree.  The
     # declaration name is deliberately harmless: a name-based/regex audit
     # cannot recognize ``trustWitness`` as an axiom.  The theorem is a newly
     # loaded BealUnified declaration, so this also proves the audit is not
