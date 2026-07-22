@@ -26,6 +26,16 @@ DATE = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
 DECLARATION = re.compile(
     r"\A[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*\Z"
 )
+# Registry IDs are semantic claims, not merely labels.  Keep the expected Lean
+# type next to the validator so a solved row cannot point at an unrelated
+# trusted theorem.
+EXPECTED_TYPES = {
+    "signature-3-3-3": "∀ {A B C : ℕ}, Solution A B C 3 3 3 → False",
+    "family-all-exponents-divisible-by-3": (
+        "∀ {A B C x y z : ℕ}, Solution A B C x y z → "
+        "3 ∣ x → 3 ∣ y → 3 ∣ z → False"
+    ),
+}
 
 
 def fail(message: str) -> None:
@@ -92,6 +102,24 @@ def audit_trusted_declaration(declaration: str) -> None:
              + result.stdout)
 
 
+def verify_claimed_type(entry_id: str, declaration: str) -> None:
+    expected = EXPECTED_TYPES.get(entry_id)
+    if expected is None:
+        fail(f"solved registry entry lacks an expected theorem type: {entry_id}")
+    source = f"import BealUnified\nexample : {expected} := {declaration}\n"
+    with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
+        probe.write(source)
+        probe_path = pathlib.Path(probe.name)
+    try:
+        result = subprocess.run(["lake", "env", "lean", str(probe_path)], cwd=ROOT, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    finally:
+        probe_path.unlink(missing_ok=True)
+    if result.returncode:
+        fail(f"declaration does not have the expected type for {entry_id}: {declaration}\n"
+             + result.stdout)
+
+
 def validate(registry: pathlib.Path) -> int:
     try:
         data = load_json(registry)
@@ -120,12 +148,13 @@ def validate(registry: pathlib.Path) -> int:
         if entry["status"] in SOLVED_STATUSES:
             if not isinstance(declaration, str) or not declaration:
                 fail(f"{entry['status']} entry lacks a formal declaration: {entry['id']}")
-            trusted_declarations.append(declaration)
+            trusted_declarations.append((entry_id, declaration))
         elif declaration is not None:
             fail(f"open entry must not claim a formal declaration: {entry['id']}")
     build_public_root()
-    for declaration in trusted_declarations:
+    for entry_id, declaration in trusted_declarations:
         audit_trusted_declaration(declaration)
+        verify_claimed_type(entry_id, declaration)
     return len(data["entries"])
 
 
@@ -147,6 +176,25 @@ def self_test() -> None:
     finally:
         fixture_path.unlink(missing_ok=True)
     print("registry negative fixture rejected an on-disk declaration outside Trusted")
+
+    data = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    data["entries"][0]["formal_declaration"] = (
+        "BealUnified.beal_case_all_exponents_divisible_by_three"
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".json", dir=ROOT, delete=False) as fixture:
+        json.dump(data, fixture)
+        fixture_path = pathlib.Path(fixture.name)
+    try:
+        try:
+            validate(fixture_path)
+        except ValueError as exc:
+            if "does not have the expected type" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("registry accepted a declaration for another signature")
+    finally:
+        fixture_path.unlink(missing_ok=True)
+    print("registry negative fixture rejected a declaration for another signature")
 
     for field, malformed in [
         ("id", 7),

@@ -13,14 +13,15 @@ import sys
 import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CERTIFICATE = "BealUnified.noCounterexampleUpTo_8_8"
-# This is the complete axiom set emitted by the certificate under the pinned
-# Lean toolchain. A set comparison below intentionally rejects both missing
-# and additional axioms.
-PERMITTED_AXIOMS = {
-    "BealUnified.noCounterexampleUpTo_8_8._native.native_decide.ax_1_1",
-    "Quot.sound",
-    "propext",
+# Every theorem advertised in the README as computational evidence is audited.
+# Each exact-set comparison rejects both missing and additional axioms.
+CERTIFICATES = {
+    "BealUnified.noCounterexample_bases_lt_two": set(),
+    "BealUnified.noCounterexampleUpTo_8_8": {
+        "BealUnified.noCounterexampleUpTo_8_8._native.native_decide.ax_1_1",
+        "Quot.sound",
+        "propext",
+    },
 }
 
 # This audit runs before the full project build in the trust-gate workflow.
@@ -58,11 +59,11 @@ def printed_axioms(source: str, declaration: str):
         raise RuntimeError("malformed #print axioms name list:\n" + result.stdout)
     return set(names), result.stdout
 
-def require_exact_axioms(actual, context):
-    if actual != PERMITTED_AXIOMS:
+def require_exact_axioms(actual, expected, context):
+    if actual != expected:
         raise RuntimeError(
             f"{context} has unexpected axiom set: got {sorted(actual)}, "
-            f"expected {sorted(PERMITTED_AXIOMS)}"
+            f"expected {sorted(expected)}"
         )
 
 def self_test():
@@ -78,10 +79,11 @@ theorem certificateWithExtraWitness :
 end BealUnified.ComputationalAuditNegative
 """, "BealUnified.ComputationalAuditNegative.certificateWithExtraWitness")
     negative_axiom = "BealUnified.ComputationalAuditNegative.harmlessΩ"
-    if actual == PERMITTED_AXIOMS or negative_axiom not in actual:
+    expected = CERTIFICATES["BealUnified.noCounterexampleUpTo_8_8"]
+    if actual == expected or negative_axiom not in actual:
         raise RuntimeError("computational negative fixture did not expose its extra axiom")
     try:
-        require_exact_axioms(actual, "controlled computational negative fixture")
+        require_exact_axioms(actual, expected, "controlled computational negative fixture")
     except RuntimeError:
         print("computational negative fixture rejected (extra harmlessly named axiom)")
         return
@@ -89,8 +91,9 @@ end BealUnified.ComputationalAuditNegative
 
 try:
     build_target()
-    actual, _ = printed_axioms("import BealUnified.Computational\n", CERTIFICATE)
-    require_exact_axioms(actual, CERTIFICATE)
+    for declaration, expected in CERTIFICATES.items():
+        actual, _ = printed_axioms("import BealUnified.Computational\n", declaration)
+        require_exact_axioms(actual, expected, declaration)
     if "--self-test" in sys.argv:
         self_test()
     print("computational evidence is opt-in and uses exactly the pinned native_decide axiom set")
