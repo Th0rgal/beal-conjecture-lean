@@ -30,9 +30,9 @@ DECLARATION = re.compile(
 # type next to the validator so a solved row cannot point at an unrelated
 # trusted theorem.
 EXPECTED_TYPES = {
-    "signature-3-3-3": "∀ {A B C : ℕ}, Solution A B C 3 3 3 → False",
+    "signature-3-3-3": "∀ {A B C : ℕ}, BealUnified.Solution A B C 3 3 3 → False",
     "family-all-exponents-divisible-by-3": (
-        "∀ {A B C x y z : ℕ}, Solution A B C x y z → "
+        "∀ {A B C x y z : ℕ}, BealUnified.Solution A B C x y z → "
         "3 ∣ x → 3 ∣ y → 3 ∣ z → False"
     ),
 }
