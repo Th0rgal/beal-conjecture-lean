@@ -5,6 +5,7 @@ Every artifact is read from its recorded historical commit with ``git show``;
 the working tree is never accepted as evidence.
 """
 import argparse
+from datetime import date
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -64,7 +65,8 @@ def validate_manifest(root: Path, path: Path, seen_ids: set[str]) -> None:
                           object_pairs_hook=reject_duplicate_keys)
     except (OSError, json.JSONDecodeError) as exc:
         fail(f"{path}: {exc}")
-    if not isinstance(data, dict) or set(data) != REQUIRED or data.get("schema_version") != 1:
+    if (not isinstance(data, dict) or set(data) != REQUIRED
+            or type(data.get("schema_version")) is not int or data["schema_version"] != 1):
         fail(f"{path}: expected exactly the version-1 checkpoint schema")
     checkpoint_id = data["id"]
     if not isinstance(checkpoint_id, str) or not checkpoint_id or checkpoint_id in seen_ids:
@@ -110,6 +112,10 @@ def validate_manifest(root: Path, path: Path, seen_ids: set[str]) -> None:
             fail(f"{path}: verification_commands must use {required}")
     if not isinstance(data["last_audit"], str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", data["last_audit"]):
         fail(f"{path}: last_audit must be YYYY-MM-DD")
+    try:
+        date.fromisoformat(data["last_audit"])
+    except ValueError:
+        fail(f"{path}: last_audit must be a valid calendar date")
 
 
 def main() -> None:

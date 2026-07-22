@@ -59,6 +59,7 @@ class CheckpointValidatorTests(unittest.TestCase):
     def test_rejects_schema_status_path_and_duplicate_id(self):
         cases = []
         bad_schema = self.manifest(); bad_schema["schema_version"] = 2; cases.append(bad_schema)
+        string_schema = self.manifest(); string_schema["schema_version"] = "1"; cases.append(string_schema)
         bad_status = self.manifest(); bad_status["status"] = "claimed-solved"; cases.append(bad_status)
         bad_path = self.manifest(); bad_path["artifacts"][0]["path"] = "../unsafe"; cases.append(bad_path)
         bad_sha = self.manifest(); bad_sha["source_commit"] = "abc"; cases.append(bad_sha)
@@ -68,6 +69,9 @@ class CheckpointValidatorTests(unittest.TestCase):
         self.write_manifest(self.manifest())
         duplicate = self.manifest(); duplicate["artifacts"] = [{"path": "stable/artifact.txt", "sha256": hashlib.sha256(b"historical artifact\n").hexdigest()}]
         (self.root / "Research" / "checkpoints" / "duplicate.json").write_text(json.dumps(duplicate), encoding="utf-8")
+        self.assertNotEqual(self.check().returncode, 0)
+    def test_rejects_impossible_audit_date(self):
+        data = self.manifest(); data["last_audit"] = "2026-02-30"; self.write_manifest(data)
         self.assertNotEqual(self.check().returncode, 0)
     def test_rejects_duplicate_json_key(self):
         manifest = json.dumps(self.manifest())

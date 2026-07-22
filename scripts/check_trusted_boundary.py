@@ -13,12 +13,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 START = "BealUnified"
 FORBIDDEN = re.compile(r"\b(sorry|admit|axiom)\b|sorryAx")
 # Lean permits commands to be indented.  Restrict the leading whitespace to a
-# physical line's spaces/tabs so this still identifies one import command per
-# line rather than accidentally crossing a newline.
+# command's whitespace so import module names may be continued across indented
+# lines without confusing an unrelated unindented command for an import.
 # Lean module headers may qualify imports with `public`, `meta`, or `all`.
 # Recognize those modifiers so a forbidden local import cannot escape the
 # closure merely by using the module-header spelling.
-IMPORT_COMMAND = re.compile(r"^[ \t]*(?:(?:public|meta|all)[ \t]+)*import[ \t]+(.+)$", re.M)
+IMPORT_COMMAND = re.compile(r"^[ \t]*(?:(?:public|meta|all)[ \t]+)*import[ \t]+([^\n]*(?:\n[ \t]+[^\n]*)*)", re.M)
 MODULE_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*")
 
 def module_path(module, root=ROOT): return root.joinpath(*module.split(".")).with_suffix(".lean")
@@ -36,7 +36,8 @@ def imported_modules(source, path):
     for command in IMPORT_COMMAND.findall(source):
         # Lean line comments are not part of the command.  Other unexpected
         # syntax is rejected below rather than silently discarded.
-        command = command.split("--", 1)[0].strip()
+        command = re.sub(r"--[^\n]*", "", command)
+        command = re.sub(r"[ \t\r\n]*\.[ \t\r\n]*", ".", command).strip()
         if not command:
             raise RuntimeError(f"import command without module in {path}")
         for module in command.split():
@@ -168,6 +169,17 @@ end Hidden
     with tempfile.TemporaryDirectory() as directory:
         fixture_root = pathlib.Path(directory)
         (fixture_root / "BealUnified.lean").write_text(
+            "import Mathlib BealUnified.Challenge.\n  NormalizedCore\n", encoding="utf-8")
+        try:
+            closure(root=fixture_root)
+        except RuntimeError as exc:
+            if "forbidden trusted import BealUnified.Challenge.NormalizedCore" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("trusted closure accepted a multiline forbidden import")
+    with tempfile.TemporaryDirectory() as directory:
+        fixture_root = pathlib.Path(directory)
+        (fixture_root / "BealUnified.lean").write_text(
             "public import Mathlib BealUnified.Challenge.NormalizedCore\n", encoding="utf-8")
         try:
             closure(root=fixture_root)
@@ -176,7 +188,7 @@ end Hidden
                 raise
         else:
             raise RuntimeError("trusted closure accepted a modifier-qualified forbidden import")
-    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local, non-first, indented, and modifier-qualified forbidden imports rejected")
+    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local, non-first, indented, multiline, and modifier-qualified forbidden imports rejected")
 
 try:
     if "--self-test" in sys.argv:
