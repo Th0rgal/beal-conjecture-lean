@@ -49,9 +49,19 @@ def strings(name: str, value: object, *, nonempty: bool = True) -> list[str]:
     return value
 
 
+def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            fail(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
 def validate_manifest(root: Path, path: Path, seen_ids: set[str]) -> None:
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8"),
+                          object_pairs_hook=reject_duplicate_keys)
     except (OSError, json.JSONDecodeError) as exc:
         fail(f"{path}: {exc}")
     if not isinstance(data, dict) or set(data) != REQUIRED or data.get("schema_version") != 1:

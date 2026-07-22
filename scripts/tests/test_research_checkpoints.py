@@ -69,6 +69,11 @@ class CheckpointValidatorTests(unittest.TestCase):
         duplicate = self.manifest(); duplicate["artifacts"] = [{"path": "stable/artifact.txt", "sha256": hashlib.sha256(b"historical artifact\n").hexdigest()}]
         (self.root / "Research" / "checkpoints" / "duplicate.json").write_text(json.dumps(duplicate), encoding="utf-8")
         self.assertNotEqual(self.check().returncode, 0)
+    def test_rejects_duplicate_json_key(self):
+        manifest = json.dumps(self.manifest())
+        manifest = manifest.replace('"schema_version": 1,', '"schema_version": 1, "schema_version": 1,', 1)
+        (self.root / "Research" / "checkpoints" / "valid.json").write_text(manifest, encoding="utf-8")
+        self.assertNotEqual(self.check().returncode, 0)
 
 
 if __name__ == "__main__": unittest.main()
