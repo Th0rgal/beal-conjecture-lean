@@ -16,7 +16,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 # Every theorem advertised in the README as computational evidence is audited.
 # Each exact-set comparison rejects both missing and additional axioms.
 CERTIFICATES = {
-    "BealUnified.noCounterexample_bases_lt_two": set(),
+    "BealUnified.noCounterexample_bases_lt_two": {
+        "Quot.sound",
+        "propext",
+    },
     "BealUnified.noCounterexampleUpTo_8_8": {
         "BealUnified.noCounterexampleUpTo_8_8._native.native_decide.ax_1_1",
         "Quot.sound",
