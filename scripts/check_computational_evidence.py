@@ -26,6 +26,18 @@ CERTIFICATES = {
         "propext",
     },
 }
+# A pinned axiom set alone is not evidence of the advertised computation: a
+# different (or weakened) declaration can retain an allowed dependency.  Probe
+# each declaration against its full intended proposition as well.
+EXPECTED_PROPOSITIONS = {
+    "BealUnified.noCounterexample_bases_lt_two": (
+        "∀ A B C x y z : ℕ, A < 2 → B < 2 → C < 2 → "
+        "¬ (BealUnified.Solution A B C x y z ∧ Nat.gcd (Nat.gcd A B) C = 1)"
+    ),
+    "BealUnified.noCounterexampleUpTo_8_8": (
+        "BealUnified.hasCounterexampleUpTo 8 8 = false"
+    ),
+}
 
 # This audit runs before the full project build in the trust-gate workflow.
 # Build its one opt-in target explicitly so a clean checkout has the olean that
@@ -51,7 +63,9 @@ def printed_axioms(source: str, declaration: str):
     if result.returncode:
         raise RuntimeError("Lean axiom probe failed:\n" + result.stdout)
     match = re.search(r"depends on axioms:\s*\[([^]]*)\]", result.stdout)
-    if not match:
+    if match is None:
+        if re.search(r"does not depend on any axioms", result.stdout):
+            return set(), result.stdout
         raise RuntimeError("could not parse #print axioms output:\n" + result.stdout)
     # Lean prints a comma-separated list of fully qualified Names.  Do not use
     # an ASCII identifier regex here: an adversarial axiom name may be Unicode
@@ -62,6 +76,21 @@ def printed_axioms(source: str, declaration: str):
         raise RuntimeError("malformed #print axioms name list:\n" + result.stdout)
     return set(names), result.stdout
 
+def require_expected_proposition(source: str, declaration: str, expected: str) -> None:
+    """Require Lean to elaborate the declaration at its complete advertised type."""
+    with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
+        probe.write(source + f"\nexample : {expected} := {declaration}\n")
+        probe_path = pathlib.Path(probe.name)
+    try:
+        result = subprocess.run(["lake", "env", "lean", str(probe_path)], cwd=ROOT, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    finally:
+        probe_path.unlink(missing_ok=True)
+    if result.returncode:
+        raise RuntimeError(
+            f"{declaration} does not have its expected proposition:\n" + result.stdout
+        )
+
 def require_exact_axioms(actual, expected, context):
     if actual != expected:
         raise RuntimeError(
@@ -70,6 +99,16 @@ def require_exact_axioms(actual, expected, context):
         )
 
 def self_test():
+    axiom_free, axiom_free_output = printed_axioms("""import BealUnified.Computational
+namespace BealUnified.ComputationalAuditNegative
+theorem axiomFree : True := True.intro
+end BealUnified.ComputationalAuditNegative
+""", "BealUnified.ComputationalAuditNegative.axiomFree")
+    if axiom_free:
+        raise RuntimeError("axiom-free #print axioms output was not parsed as an empty set:\n"
+                           + axiom_free_output)
+    print("computational axiom-free fixture parsed as an empty axiom set")
+
     # `harmlessΩ` deliberately does not contain "axiom" and is non-ASCII.
     # The audited declaration depends on both it and the generated
     # native_decide axiom, so this proves that extra axioms fail closed.
@@ -92,13 +131,33 @@ end BealUnified.ComputationalAuditNegative
         return
     raise RuntimeError("computational negative fixture was accepted")
 
+def proposition_self_test():
+    source = """import BealUnified.Computational
+namespace BealUnified.ComputationalAuditNegative
+theorem weakenedCertificate : True :=
+  (fun _ : hasCounterexampleUpTo 8 8 = false => True.intro) noCounterexampleUpTo_8_8
+end BealUnified.ComputationalAuditNegative
+"""
+    declaration = "BealUnified.ComputationalAuditNegative.weakenedCertificate"
+    try:
+        require_expected_proposition(
+            source, declaration, EXPECTED_PROPOSITIONS["BealUnified.noCounterexampleUpTo_8_8"]
+        )
+    except RuntimeError:
+        print("computational negative fixture rejected a weakened certificate proposition")
+        return
+    raise RuntimeError("computational negative fixture accepted a weakened certificate proposition")
+
 try:
     build_target()
     for declaration, expected in CERTIFICATES.items():
-        actual, _ = printed_axioms("import BealUnified.Computational\n", declaration)
+        source = "import BealUnified.Computational\n"
+        require_expected_proposition(source, declaration, EXPECTED_PROPOSITIONS[declaration])
+        actual, _ = printed_axioms(source, declaration)
         require_exact_axioms(actual, expected, declaration)
     if "--self-test" in sys.argv:
         self_test()
+        proposition_self_test()
     print("computational evidence is opt-in and uses exactly the pinned native_decide axiom set")
 except Exception as exc:
     print(f"computational evidence audit failed: {exc}", file=sys.stderr)
