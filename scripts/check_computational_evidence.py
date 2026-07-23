@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed audit of the opt-in bounded-search certificate's axioms.
+"""Fail-closed audit of opt-in bounded-search certificates and their module.
 
 This is deliberately not a trusted-boundary gate: native_decide's generated
 axiom is outside the trusted allowlist.  The check makes that boundary
@@ -13,6 +13,9 @@ import sys
 import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+COMPUTATIONAL_SOURCE = ROOT / "BealUnified" / "Computational.lean"
+COMPUTATIONAL_AUDITOR = ROOT / "scripts" / "ComputationalAxioms.lean"
+FORBIDDEN_SOURCE_TOKEN = re.compile(r"\b(sorry|admit|axiom)\b|sorryAx")
 # Every theorem advertised in the README as computational evidence is audited.
 # Each exact-set comparison rejects both missing and additional axioms.
 CERTIFICATES = {
@@ -51,6 +54,44 @@ def build_target():
     if build.returncode:
         print(build.stdout, file=sys.stderr)
         raise RuntimeError("could not build BealUnified.Computational")
+
+def require_clean_source(path=COMPUTATIONAL_SOURCE):
+    """Reject source placeholders before trusting the environment audit.
+
+    The environment audit below is complete for declarations loaded by the
+    module.  This direct source check is deliberately fail-closed too, so an
+    explicit placeholder is diagnosed even if it is unused.
+    """
+    source = path.read_text(encoding="utf-8")
+    if FORBIDDEN_SOURCE_TOKEN.search(source):
+        display_path = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+        raise RuntimeError(f"forbidden computational source token in {display_path}")
+
+def run_environment_audit(extra_source=""):
+    """Audit every declaration introduced by the computational module.
+
+    The test-only form audits additions to the loaded environment, proving the
+    audit rejects an otherwise unused axiom in any namespace.
+    """
+    if not extra_source:
+        return subprocess.run(["lake", "env", "lean", str(COMPUTATIONAL_AUDITOR)], cwd=ROOT,
+                              text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                              check=False)
+    auditor = COMPUTATIONAL_AUDITOR.read_text(encoding="utf-8")
+    prefix = "import BealUnified.Computational\n"
+    suffix = "\n#audit_computational_axioms\n"
+    if not auditor.startswith(prefix) or not auditor.endswith(suffix):
+        raise RuntimeError("computational axiom auditor has an unexpected standalone layout")
+    source = (prefix + auditor.removeprefix(prefix).removesuffix(suffix) + extra_source
+              + "\n#audit_current_computational_additions\n")
+    with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
+        probe.write(source)
+        probe_path = pathlib.Path(probe.name)
+    try:
+        return subprocess.run(["lake", "env", "lean", str(probe_path)], cwd=ROOT, text=True,
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    finally:
+        probe_path.unlink(missing_ok=True)
 
 def printed_axioms(source: str, declaration: str):
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT, delete=False) as probe:
@@ -102,6 +143,42 @@ def require_exact_axioms(actual, expected, context):
         )
 
 def self_test():
+    require_clean_source()
+    print("computational source audit accepted the production module")
+
+    run = run_environment_audit()
+    if run.returncode:
+        raise RuntimeError("computational environment audit rejected the production module:\n"
+                           + run.stdout)
+    print("computational environment audit accepted the production module")
+
+    with tempfile.TemporaryDirectory() as directory:
+        fixture = pathlib.Path(directory) / "Computational.lean"
+        fixture.write_text("theorem hiddenSourceWitness : True := by sorry\n", encoding="utf-8")
+        try:
+            require_clean_source(fixture)
+        except RuntimeError as exc:
+            if "forbidden computational source token" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("computational source audit accepted a placeholder fixture")
+    print("computational source negative fixture rejected")
+
+    # This axiom is deliberately unused and hidden under a harmless namespace.
+    # The environment audit must inspect every newly loaded declaration rather
+    # than only the representative certificate list.
+    run = run_environment_audit("""
+namespace BealUnified.ComputationalAuditNegative
+axiom unusedΩ : True
+theorem unusedSorry : True := by sorry
+end BealUnified.ComputationalAuditNegative
+""")
+    if (run.returncode == 0 or "unapproved computational axioms" not in run.stdout
+            or "unusedΩ" not in run.stdout or "sorryAx" not in run.stdout):
+        raise RuntimeError("computational environment audit accepted unused placeholders:\n"
+                           + run.stdout)
+    print("computational environment negative fixture rejected (unused non-ASCII axiom and sorry)")
+
     axiom_free, axiom_free_output = printed_axioms("""import BealUnified.Computational
 namespace BealUnified.ComputationalAuditNegative
 theorem axiomFree : True := True.intro
@@ -153,6 +230,10 @@ end BealUnified.ComputationalAuditNegative
 
 try:
     build_target()
+    require_clean_source()
+    environment_audit = run_environment_audit()
+    if environment_audit.returncode:
+        raise RuntimeError("computational environment audit failed:\n" + environment_audit.stdout)
     for declaration, expected in CERTIFICATES.items():
         source = "import BealUnified.Computational\n"
         require_expected_proposition(source, declaration, EXPECTED_PROPOSITIONS[declaration])
