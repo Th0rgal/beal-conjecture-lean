@@ -38,6 +38,7 @@ EXPECTED_PROPOSITIONS = {
         "BealUnified.hasCounterexampleUpTo 8 8 = false"
     ),
 }
+AXIOM_FREE_OUTPUT = re.compile(r"^'[^'\n]+' does not depend on any axioms\s*$", re.M)
 
 # This audit runs before the full project build in the trust-gate workflow.
 # Build its one opt-in target explicitly so a clean checkout has the olean that
@@ -64,7 +65,9 @@ def printed_axioms(source: str, declaration: str):
         raise RuntimeError("Lean axiom probe failed:\n" + result.stdout)
     match = re.search(r"depends on axioms:\s*\[([^]]*)\]", result.stdout)
     if match is None:
-        if re.search(r"does not depend on any axioms", result.stdout):
+        # Unlike a nonempty set, Lean reports an axiom-free declaration as a
+        # standalone sentence rather than a bracketed list.
+        if AXIOM_FREE_OUTPUT.search(result.stdout):
             return set(), result.stdout
         raise RuntimeError("could not parse #print axioms output:\n" + result.stdout)
     # Lean prints a comma-separated list of fully qualified Names.  Do not use

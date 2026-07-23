@@ -120,7 +120,7 @@ end BealUnified.TrustAuditNegative
 
 namespace Hidden
 axiom leak : True
-theorem constant : True := leak
+theorem hiddenLeakWitness : True := leak
 end Hidden
 """
     run = run_axiom_audit(source)
