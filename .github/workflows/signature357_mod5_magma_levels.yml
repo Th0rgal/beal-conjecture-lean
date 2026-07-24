@@ -6,12 +6,14 @@ on:
       - agent/signature-345-357-certificates
     paths:
       - "scripts/run_signature_357_magma_mod5_levels.py"
+      - "scripts/run_signature_357_magma_level33.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   pull_request:
     paths:
       - "scripts/run_signature_357_magma_mod5_levels.py"
+      - "scripts/run_signature_357_magma_level33.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
@@ -42,6 +44,10 @@ jobs:
           python3 scripts/run_signature_357_magma_mod5_levels.py
           --local-data mod5-complete-local.json
           > mod5-magma-high-levels.json
+      - name: Query the fixed-7 level-(3,3) space
+        run: >-
+          python3 scripts/run_signature_357_magma_level33.py
+          > fixed7-magma-level33.json
       - uses: actions/upload-artifact@v4
         with:
           name: signature357-mod5-magma-high-levels
@@ -49,4 +55,5 @@ jobs:
             mod5-complete-local.json
             fixed7-complete-local.json
             mod5-magma-high-levels.json
+            fixed7-magma-level33.json
           if-no-files-found: error
