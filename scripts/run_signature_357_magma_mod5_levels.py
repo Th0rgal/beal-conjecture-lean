@@ -3,22 +3,17 @@
 
 Each requested level is submitted independently. A failed or timed-out level is
 retained as an explicit error record and is never interpreted as an empty space.
-Besides the marginal local filter, the producer applies a coefficient-field-safe
-version of the exact even-branch coupling at 13, 29 and 41.
+Besides the marginal local filter, the producer applies coefficient-field-safe
+constraints from the fixed-7 reducibility analysis in the even branch.
 
-The coupled regimes are determined on the fixed-7 side before inspecting the
-mod-5 Hecke field:
-
-* at 13 only u=0 or u=infinity can survive;
-* at 29 only generic u or u=0 can survive;
-* at 41 generic u, u=0 or u=infinity can survive.
-
-The stronger rational-trace consequences recorded elsewhere must not be applied
-to non-rational packets.
+The coupled regimes at 13, 29 and 41 are determined on the fixed-7 side before
+inspecting the mod-5 Hecke field.  A separate fixed-7 ray-character sieve forces
+19*71 | C, hence u=C^7/A^3 is the zero specialization at 19 and 71.
 """
 from __future__ import annotations
 import argparse, hashlib, html, http.cookiejar, json, pathlib, re, urllib.parse, urllib.request
 from typing import Any
+
 CALCULATOR_URL="https://magma.maths.usyd.edu.au/calc/"
 LEVEL_PAIRS=[(2,1),(1,3),(3,0),(2,2),(3,1),(2,3),(3,2)]
 MAX_INPUT=49000
@@ -59,6 +54,17 @@ def candidate_rows(local:dict[str,Any])->list[tuple[int,list[str],list[str],list
             kinds[kind]=[row['trace_polynomial'] for row in local[f'{kind}_rows'] if row['prime']==prime]
         result.append((prime,kinds['generic'],kinds['zero'],kinds['infinity'],metadata['residue_degree_K7'],metadata['residue_degree_F21']))
     return result
+
+def forced_zero_rows(data:dict[str,Any])->list[tuple[int,list[str],int,int]]:
+    result=[]
+    if data.get('primes') != [19,71]: raise ResearchError('forced-zero data must cover exactly 19 and 71')
+    for prime in data['primes']:
+        metadata=data['residue_metadata'][str(prime)]
+        polynomials=[row['trace_polynomial'] for row in data['zero_rows'] if row['prime']==prime]
+        if len(polynomials)!=7: raise ResearchError(f'expected seven zero polynomials at {prime}')
+        result.append((prime,polynomials,metadata['residue_degree_K7'],metadata['residue_degree_F21']))
+    return result
+
 PREFIX=r'''
 _<x> := PolynomialRing(Rationals());
 K<w> := NumberField(x^3-x^2-2*x+1); OK := Integers(K);
@@ -67,28 +73,34 @@ F5 := GF(5); R5<X> := PolynomialRing(F5);
 Red := function(P) return R5![F5!Coefficient(P,i) : i in [0..Degree(P)]]; end function;
 Common := function(P,Q) return Degree(GreatestCommonDivisor(Red(P),Red(Q))) gt 0; end function;
 AnyCommon := function(P,L) for Q in L do if Common(P,Q) then return true; end if; end for; return false; end function;
-TracePolynomials := function(form,row)
-  l:=row[1]; fK:=row[5]; fF:=row[6]; I:=Factorisation(l*OK)[1][1]; Eig:=HeckeEigenvalue(form,I); Pbase:=MinimalPolynomial(Eig); Efull:=Eig;
+TracePolynomials := function(form,l,fK,fF)
+  I:=Factorisation(l*OK)[1][1]; Eig:=HeckeEigenvalue(form,I); Pbase:=MinimalPolynomial(Eig); Efull:=Eig;
   if fF/fK eq 2 then Efull:=Eig^2-2*l^fK; end if;
   return Pbase,MinimalPolynomial(Efull),Integers()!Norm(I);
 end function;
 PossibleAt := function(form,row)
-  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
+  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,l,row[5],row[6]);
   if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
   return Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1));
 end function;
 PossibleEvenAt := function(form,row)
-  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
+  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,l,row[5],row[6]);
   if l eq 13 then return AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf); end if;
   if l eq 29 then return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z); end if;
   if l eq 41 then return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf); end if;
   if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
   return Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1));
 end function;
+PossibleForcedZero := function(form,row)
+  l:=row[1]; Z:=row[2]; _,Pfull,_:=TracePolynomials(form,l,row[3],row[4]);
+  return AnyCommon(Pfull,Z);
+end function;
 '''
-def make_code(e3:int,e7:int,rows)->str:
+
+def make_code(e3:int,e7:int,rows,forced)->str:
     encoded=[f'<{prime},{magma_list(generic)},{magma_list(zero)},{magma_list(infinity)},{fk},{ff}>' for prime,generic,zero,infinity,fk,ff in rows]
-    data='Rows:=['+','.join(encoded)+'];\n'
+    forced_encoded=[f'<{prime},{magma_list(zero)},{fk},{ff}>' for prime,zero,fk,ff in forced]
+    data='Rows:=['+','.join(encoded)+'];\nForcedZeroRows:=['+','.join(forced_encoded)+'];\n'
     suffix=rf'''
 M := HilbertCuspForms(K,I3^{e3}*I7^{e7}); decomp := NewformDecomposition(NewSubspace(M));
 S8 := []; Slocal := []; Seven := []; Dims := [];
@@ -101,6 +113,7 @@ for i in [1..#decomp] do
       if aliveEven and not PossibleEvenAt(form,row) then aliveEven:=false; end if;
       if not alive and not aliveEven then break; end if;
     end for;
+    if aliveEven then for row in ForcedZeroRows do if not PossibleForcedZero(form,row) then aliveEven:=false; break; end if; end for; end if;
     if alive then Append(~Slocal,i); end if;
     if aliveEven then Append(~Seven,i); end if;
   end if;
@@ -125,14 +138,14 @@ def parse_pair(raw:str)->tuple[int,int]:
     return pair
 
 def main()->int:
-    parser=argparse.ArgumentParser(); parser.add_argument('--local-data',type=pathlib.Path,required=True); parser.add_argument('--pair',type=parse_pair); args=parser.parse_args()
-    local=json.loads(args.local_data.read_text()); rows=candidate_rows(local); outputs=[]; pairs=[args.pair] if args.pair else LEVEL_PAIRS
+    parser=argparse.ArgumentParser(); parser.add_argument('--local-data',type=pathlib.Path,required=True); parser.add_argument('--forced-zero-data',type=pathlib.Path,required=True); parser.add_argument('--pair',type=parse_pair); args=parser.parse_args()
+    local=json.loads(args.local_data.read_text()); forced_data=json.loads(args.forced_zero_data.read_text()); rows=candidate_rows(local); forced=forced_zero_rows(forced_data); outputs=[]; pairs=[args.pair] if args.pair else LEVEL_PAIRS
     for e3,e7 in pairs:
-        code=make_code(e3,e7,rows); record={'level_exponents':[e3,e7],'level_norm':27**e3*7**e7,'input_bytes':len(code.encode()),'even_only_level':e3==1 or e7==3}
+        code=make_code(e3,e7,rows,forced); record={'level_exponents':[e3,e7],'level_norm':27**e3*7**e7,'input_bytes':len(code.encode()),'even_only_level':e3==1 or e7==3}
         try:
             text=submit(code); record.update({'status':'completed','space_dimension':parse_int(text,'SPACE_DIMENSION'),'packet_count':parse_int(text,'PACKET_COUNT'),'packet_dimensions':parse_list(text,'PACKET_DIMS'),'norm8_survivors':parse_list(text,'NORM8_SURVIVORS'),'local_survivors':parse_list(text,'LOCAL_SURVIVORS'),'even_coupled_survivors':parse_list(text,'EVEN_COUPLED_SURVIVORS'),'output_tail':text[-1200:]})
         except Exception as exc: record.update({'status':'failed','error':f'{type(exc).__name__}: {exc}'})
         outputs.append(record)
-    body={'schema_version':3,'status':'public-Magma mod-5 high-level packet enumeration with marginal and coefficient-field-safe even-coupled local filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'even_coupled_primes':[13,29,41],'even_coupled_regimes':{'13':['zero','infinity'],'29':['generic','zero'],'41':['generic','zero','infinity']},'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
+    body={'schema_version':4,'status':'public-Magma mod-5 high-level packet enumeration with marginal and coefficient-field-safe even-coupled filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'source_forced_zero_data_sha256':forced_data['certificate_sha256'],'even_coupled_primes':[13,19,29,41,71],'even_coupled_regimes':{'13':['zero','infinity'],'19':['zero'],'29':['generic','zero'],'41':['generic','zero','infinity'],'71':['zero']},'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
     result=dict(body); result['certificate_sha256']=canonical_sha256(body); print(json.dumps(result,sort_keys=True,indent=2)); return 0
 if __name__=='__main__': raise SystemExit(main())
