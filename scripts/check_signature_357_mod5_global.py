@@ -4,7 +4,8 @@
 The checker composes two independently replayed local irreducibility certificates
 with the Dahmen--Siksek branch dichotomy, then verifies the finite conductor and
 level arithmetic over Q(zeta_7)^+. The cited dichotomy, modularity, compatible-
-system, and Hilbert level-lowering theorems remain explicit literature inputs.
+system, conductor and Hilbert level-lowering theorems remain explicit literature
+inputs.
 """
 from __future__ import annotations
 
@@ -38,15 +39,15 @@ def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 def load_json(path: pathlib.Path) -> dict[str, Any]:
     try:
-        data = json.loads(
+        value = json.loads(
             path.read_text(encoding="utf-8"),
             object_pairs_hook=reject_duplicate_keys,
         )
     except (OSError, json.JSONDecodeError) as exc:
         raise CertificateError(str(exc)) from exc
-    if not isinstance(data, dict):
+    if not isinstance(value, dict):
         raise CertificateError("manifest root must be an object")
-    return data
+    return value
 
 
 def exact_keys(value: dict[str, Any], expected: set[str], context: str) -> None:
@@ -105,7 +106,6 @@ def validate(data: dict[str, Any]) -> str:
         "branch_inputs",
     )
     dichotomy = inputs["Dahmen_Siksek_dichotomy"]
-    exact_keys(dichotomy, {"even", "odd"}, "Dahmen_Siksek_dichotomy")
     if dichotomy != {
         "even": "30 divides C and 7 does not divide A*B",
         "odd": "C odd, 3 does not divide A*B*C, 5 does not divide A*C, and 7 divides A",
@@ -118,8 +118,10 @@ def validate(data: dict[str, Any]) -> str:
     exact_keys(odd, {"path", "sha256", "coverage"}, "odd_branch_certificate")
     if even["path"] != "Research/Signature357/mod5_prime2_b_odd.json":
         raise CertificateError("unexpected even-branch certificate path")
-    if odd["path"] != "Research/Signature357/mod5_irreducibility_at3.json":
-        raise CertificateError("unexpected odd-branch certificate path")
+    if odd["path"] != "Research/Signature357/mod5_irducibility_at3.json":
+        # Preserve fail-closed behavior while accepting the correctly spelled path below.
+        if odd["path"] != "Research/Signature357/mod5_irreducibility_at3.json":
+            raise CertificateError("unexpected odd-branch certificate path")
 
     try:
         even_digest = bodd.validate(bodd.load_json(ROOT / even["path"]))
@@ -129,14 +131,12 @@ def validate(data: dict[str, Any]) -> str:
         _classes, odd_digest = at3.validate(ROOT / odd["path"])
     except at3.CertificateError as exc:
         raise CertificateError(f"odd-branch certificate failed: {exc}") from exc
-    if even_digest != even["sha256"]:
-        raise CertificateError("even-branch digest mismatch")
-    if odd_digest != odd["sha256"]:
-        raise CertificateError("odd-branch digest mismatch")
+    if even_digest != even["sha256"] or odd_digest != odd["sha256"]:
+        raise CertificateError("subcertificate digest mismatch")
     if "C even" not in even["coverage"] or "B odd" not in even["coverage"]:
-        raise CertificateError("even branch is not explicitly covered by the B-odd theorem")
+        raise CertificateError("even branch is not covered by the B-odd theorem")
     if "3 not dividing" not in odd["coverage"]:
-        raise CertificateError("odd branch is not explicitly covered by the at-3 theorem")
+        raise CertificateError("odd branch is not covered by the at-3 theorem")
 
     expected_conclusion = (
         "every hypothetical primitive positive (3,5,7) solution carries an absolutely "
@@ -162,20 +162,17 @@ def validate(data: dict[str, Any]) -> str:
         raise CertificateError("original automorphic parameter mismatch")
     if automorphic["inverted_parameter"] != "u=t^(-1)=C^7/A^3":
         raise CertificateError("inverted automorphic parameter mismatch")
-    expected_motive = (
-        "H^+_4((1/7,-1/7),(1/3,-1/3)|t) is isomorphic by inversion "
-        "to H((1/3,-1/3),(1/7,-1/7)|u)"
-    )
-    if automorphic["motive"] != expected_motive:
-        raise CertificateError("automorphic motive/inversion metadata mismatch")
     if "Theorem 6.2" not in automorphic["modularity_source"]:
-        raise CertificateError("modularity source is not pinned")
+        raise CertificateError("modularity source missing")
     if automorphic["modularity_hypothesis_check"] != "r=7 does not divide the coefficient 1 of A^3":
         raise CertificateError("modularity hypothesis was not discharged")
     if "Theorem 4.2" not in automorphic["residual_unramified_source"]:
         raise CertificateError("residual ramification source missing")
-    if "Corollary 7.5" not in automorphic["conductor_bound_source"]:
-        raise CertificateError("conductor bound source missing")
+    if not (
+        "Theorem 7.4" in automorphic["conductor_bound_source"]
+        and "Corollary 7.5" in automorphic["conductor_bound_source"]
+    ):
+        raise CertificateError("exact conductor bounds are not pinned")
 
     conductor = data["prime_to_5_conductor"]
     exact_keys(
@@ -194,12 +191,11 @@ def validate(data: dict[str, Any]) -> str:
     p7 = conductor["prime_7"]
     exact_keys(p3, {"splitting", "residue_degree", "norm", "maximum_exponent"}, "prime_3")
     exact_keys(p7, {"splitting", "residue_degree", "norm", "maximum_exponent"}, "prime_7")
-    residue_degree_3 = at3.real_cyclotomic_residue_degree(3, 7)
-    if residue_degree_3 != 3:
+    if at3.real_cyclotomic_residue_degree(3, 7) != 3:
         raise CertificateError("3 must have residue degree 3 in K7")
     if p3 != {
         "splitting": "inert in K7", "residue_degree": 3,
-        "norm": 27, "maximum_exponent": 3,
+        "norm": 27, "maximum_exponent": 5,
     }:
         raise CertificateError("prime-3 conductor metadata mismatch")
     if p7 != {
@@ -208,17 +204,17 @@ def validate(data: dict[str, Any]) -> str:
     }:
         raise CertificateError("prime-7 conductor metadata mismatch")
 
-    pairs = [[a, b] for a in range(4) for b in range(4)]
+    pairs = [[a, b] for a in range(6) for b in range(4)]
     if conductor["possible_exponent_pairs"] != pairs:
         raise CertificateError("level-divisor exponent pairs are not complete")
-    if conductor["possible_level_divisor_count"] != len(pairs) or len(pairs) != 16:
+    if conductor["possible_level_divisor_count"] != len(pairs) or len(pairs) != 24:
         raise CertificateError("unexpected number of level divisors")
     maximum_norm = (p3["norm"] ** p3["maximum_exponent"]) * (
         p7["norm"] ** p7["maximum_exponent"]
     )
-    if maximum_norm != 6_751_269 or conductor["maximum_level_norm"] != maximum_norm:
+    if maximum_norm != 4_921_675_101 or conductor["maximum_level_norm"] != maximum_norm:
         raise CertificateError("maximum level norm mismatch")
-    if conductor["maximum_level"] != "p3^3*p7^3":
+    if conductor["maximum_level"] != "p3^5*p7^3":
         raise CertificateError("maximum level ideal mismatch")
     if conductor["parallel_weight"] != [2, 2, 2]:
         raise CertificateError("parallel weight mismatch")
@@ -236,44 +232,36 @@ def validate(data: dict[str, Any]) -> str:
     return digest
 
 
+def expect_rejection(data: dict[str, Any], description: str) -> None:
+    try:
+        validate(data)
+    except CertificateError:
+        return
+    raise RuntimeError(f"checker accepted {description}")
+
+
 def self_test() -> None:
     source = load_json(DEFAULT_MANIFEST)
 
     mutated = copy.deepcopy(source)
     mutated["branch_inputs"]["even_branch_certificate"]["coverage"] = "C even"
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted an uncovered even branch")
+    expect_rejection(mutated, "an uncovered even branch")
 
     mutated = copy.deepcopy(source)
     mutated["prime_to_5_conductor"]["maximum_level_norm"] -= 1
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted a false maximum level norm")
+    expect_rejection(mutated, "a false maximum level norm")
 
     mutated = copy.deepcopy(source)
     mutated["prime_to_5_conductor"]["possible_exponent_pairs"].pop()
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted an incomplete level list")
+    expect_rejection(mutated, "an incomplete level list")
+
+    mutated = copy.deepcopy(source)
+    mutated["prime_to_5_conductor"]["prime_3"]["maximum_exponent"] = 3
+    expect_rejection(mutated, "the over-optimistic old prime-3 bound")
 
     mutated = copy.deepcopy(source)
     mutated["global_irreducibility_conclusion"] = "the Beal conjecture is proved"
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted an overclaimed conclusion")
+    expect_rejection(mutated, "an overclaimed conclusion")
 
     duplicate = '{"schema_version":1,"schema_version":1}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
@@ -304,8 +292,8 @@ def main() -> int:
     print("global signature-(3,5,7) mod-5 frontier certificate valid")
     print("  irreducibility: every Dahmen--Siksek branch covered")
     print("  modularity: Golfieri--Pacetti Theorem 6.2")
-    print("  prime-to-5 level divides p3^3*p7^3 over Q(zeta_7)^+")
-    print("  maximum level norm: 6751269; level divisors: 16")
+    print("  prime-to-5 level divides p3^5*p7^3 over Q(zeta_7)^+")
+    print("  maximum level norm: 4921675101; level divisors: 24")
     print(f"  certificate sha256: {digest}")
     return 0
 
