@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Inventory the LMFDB-covered mod-5 levels for signature (3,5,7).
 
-The legacy public web API is now protected by an interactive CAPTCHA.  LMFDB's
+The legacy public web API is now protected by an interactive CAPTCHA. LMFDB's
 read-only PostgreSQL mirror remains its documented machine interface (and is the
-backend of the official LMFDB MCP server).  This research producer queries that
-mirror directly.  It is not a trusted theorem checker.
+backend of the official LMFDB MCP server). This research producer queries that
+mirror directly. It is not a trusted theorem checker.
 """
 from __future__ import annotations
 
@@ -20,9 +20,11 @@ import psycopg2.extras
 
 FIELD_LABEL = "3.3.49.1"
 COMPLETENESS_BOUND = 2059
+# The inversion-optimized conductor bound is p3^3*p7^3, so only exponents
+# 0..3 occur at each wild prime.
 LEVELS = sorted(
     (27**a * 7**b, a, b)
-    for a in range(6)
+    for a in range(4)
     for b in range(4)
     if 27**a * 7**b <= COMPLETENESS_BOUND
 )
@@ -99,7 +101,7 @@ def main() -> int:
         )
 
     body = {
-        "schema_version": 2,
+        "schema_version": 3,
         "status": "LMFDB complete-range form inventory, not a nonexistence theorem",
         "source": {
             "database": "LMFDB read-only PostgreSQL mirror",
@@ -107,7 +109,11 @@ def main() -> int:
             "field_label": FIELD_LABEL,
             "parallel_weight": 2,
             "documented_degree3_completeness_bound": COMPLETENESS_BOUND,
-            "query": "SELECT forms over 3.3.49.1 of parallel weight 2 at the eight candidate level norms <=2059",
+            "global_level_bound": "p3^3*p7^3",
+            "query": (
+                "SELECT forms over 3.3.49.1 of parallel weight 2 at the eight "
+                "inversion-optimized candidate level norms <=2059"
+            ),
         },
         "candidate_levels_within_bound": norms,
         "level_count": len(LEVELS),
