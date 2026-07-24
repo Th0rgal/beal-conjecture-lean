@@ -2,14 +2,14 @@
 """Test fixed-7 level (3,3) directly in the residual Hecke module.
 
 The characteristic-zero decomposition of the 2025-dimensional Hilbert space
-exceeds the public calculator limit.  This producer instead computes the
-superspecial subspace `ker(T_7)` modulo 7, restricts one auxiliary Hecke
+exceeds the public calculator limit. This producer instead computes the
+superspecial subspace ``ker(T_7)`` modulo 7, restricts one auxiliary Hecke
 operator to it, and compares its characteristic polynomial with the union of
 all allowed local trace polynomials.
 
 A degree-zero gcd eliminates every residual Hecke eigensystem at this level for
-the selected auxiliary prime.  A nonzero gcd is only a necessary survivor and
-is never promoted to a packet count.
+the selected auxiliary prime. A nonzero gcd is only a necessary survivor.
+Failed requests retain raw output and phase markers for fail-closed diagnosis.
 """
 from __future__ import annotations
 
@@ -160,10 +160,18 @@ UnionPolynomial := function(row)
   P *:= (X-F7!(q+1))*(X+F7!(q+1));
   return P;
 end function;
+printf "PHASE=space-start\n";
 M0 := HilbertCuspForms(K,3^3*I5^3);
-M := NewSubspace(M0); SetRationalBasis(M);
+printf "AMBIENT_DIM=%o\n",Dimension(M0);
+M := NewSubspace(M0);
+printf "NEW_DIM_PREBASIS=%o\n",Dimension(M);
+SetRationalBasis(M);
+printf "PHASE=rational-basis-ready\n";
 printf "NEW_DIM=%o\n",Dimension(M);
-T7 := Matrix(F7,HeckeOperator(M,I7));
+T7Q := HeckeOperator(M,I7);
+printf "PHASE=T7-rational-ready\n";
+T7 := Matrix(F7,T7Q);
+printf "PHASE=T7-mod7-ready\n";
 S := Kernel(T7); d := Dimension(S);
 printf "SUPERSPECIAL_DIM=%o\n",d;
 if d eq 0 then
@@ -173,7 +181,10 @@ if d eq 0 then
   printf "GCD_DEGREE=0\n";
 else
   I := Factorisation(Row[1]*OK)[1][1];
-  T := Matrix(F7,HeckeOperator(M,I));
+  TQ := HeckeOperator(M,I);
+  printf "PHASE=Taux-rational-ready\n";
+  T := Matrix(F7,TQ);
+  printf "PHASE=Taux-mod7-ready\n";
   TS := Matrix(F7,d,d,&cat[Coordinates(S,S.i*T) : i in [1..d]]);
   P := UnionPolynomial(Row);
   CP := R7!CharacteristicPolynomial(TS);
@@ -201,7 +212,7 @@ def main() -> int:
     row = selected_row(fetch_data(), args.prime)
     code = make_code(row)
     record: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "fixed-7 level-(3,3) residual Hecke-module test",
         "calculator": CALCULATOR_URL,
         "candidate_blob_sha1": EXPECTED_DATA_BLOB,
@@ -214,6 +225,7 @@ def main() -> int:
             "positive degree is only a necessary survivor"
         ),
     }
+    output = ""
     try:
         output = submit(code)
         record.update(
@@ -228,7 +240,7 @@ def main() -> int:
                     output, "RESTRICTED_CHARPOLY_DEGREE"
                 ),
                 "gcd_degree": parse_int(output, "GCD_DEGREE"),
-                "output_tail": output[-1600:],
+                "output_tail": output[-4000:],
             }
         )
     except Exception as exc:
@@ -236,6 +248,7 @@ def main() -> int:
             {
                 "request_status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
+                "output_tail": output[-8000:],
             }
         )
     body = dict(record)
