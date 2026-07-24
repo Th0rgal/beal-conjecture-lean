@@ -34,6 +34,17 @@ def NormalizedPrimitiveCoreNon333 : Prop :=
     Nat.Coprime A B ∧ Nat.Coprime B C ∧ Nat.Coprime A C ∧
     (x, y, z) ≠ (3, 3, 3)
 
+/-- The normalized target after both diagonal signatures already proved by the
+trusted FLT-3 and FLT-4 modules have been excluded.  No claim is made about any
+other equal- or mixed-exponent signature. -/
+def NormalizedPrimitiveCoreNonDiagonal : Prop :=
+  ∃ A B C x y z : ℕ,
+    NormalizedExponent x ∧ NormalizedExponent y ∧ NormalizedExponent z ∧
+    Solution A B C x y z ∧
+    Nat.Coprime A B ∧ Nat.Coprime B C ∧ Nat.Coprime A C ∧
+    (x, y, z) ≠ (3, 3, 3) ∧
+    (x, y, z) ≠ (4, 4, 4)
+
 /-- The open Beal target is explicitly a named proposition, with no proof
 claim attached to it. -/
 def OpenBealTarget : Prop := ¬ NormalizedPrimitiveCore
@@ -47,6 +58,22 @@ theorem normalized_core_iff_non333 :
     rcases Prod.ext_iff.mp hsig with ⟨rfl, rfl, rfl⟩
     exact beal_case_pow_three sol
   · rintro ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC, _⟩
+    exact ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC⟩
+
+/-- Exact reduction after removing both diagonal normalized signatures already
+settled in the trusted boundary. -/
+theorem normalized_core_iff_nonDiagonal :
+    NormalizedPrimitiveCore ↔ NormalizedPrimitiveCoreNonDiagonal := by
+  constructor
+  · rintro ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC⟩
+    refine ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC, ?_, ?_⟩
+    · rintro hsig
+      rcases Prod.ext_iff.mp hsig with ⟨rfl, rfl, rfl⟩
+      exact beal_case_pow_three sol
+    · rintro hsig
+      rcases Prod.ext_iff.mp hsig with ⟨rfl, rfl, rfl⟩
+      exact beal_case_pow_four sol
+  · rintro ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC, _, _⟩
     exact ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC⟩
 
 /-- A normalized primitive core directly contradicts the standard
