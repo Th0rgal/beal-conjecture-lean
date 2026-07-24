@@ -8,7 +8,7 @@ on:
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read # Read access to repository contents
-  pages: write # Write access to GitHub Pages
+  pages: write # Read access to GitHub Pages
   id-token: write # Write access to ID tokens
 
 jobs:
@@ -20,6 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: python3 scripts/check_research_checkpoints.py
+      - run: python3 -m pip install --disable-pip-version-check psycopg2-binary
       - name: Fetch LMFDB-covered signature-357 levels
         continue-on-error: true
         run: python3 scripts/fetch_signature_357_lmfdb.py > lmfdb-low-levels.json 2> lmfdb-low-levels.err
