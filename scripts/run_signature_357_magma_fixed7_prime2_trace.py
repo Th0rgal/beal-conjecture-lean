@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Test the universal odd-branch fixed-7 trace condition at the norm-4 prime.
+"""Test the universal odd-branch fixed-7 base trace at the norm-4 prime.
 
-For every primitive specialization with C odd, the imported Frey trace computation
-at the unique prime above 2 gives a_P in {-1,-8}, hence a_P=6 modulo 7.  The
-condition is independent of the 3-adic conductor block and of which variable is
-even.  A zero kernel of T_P-6 on the full level-(3,3) newspace therefore eliminates
-the last fixed-7 level before imposing superspecial or auxiliary-prime conditions.
+For C odd, the pinned degenerate HGM computation over Q(zeta_15) gives the
+degree-two Frobenius trace w in {-1,-8}.  The prime above 2 has norm q=4 in
+Q(sqrt(5)), and the relative residue degree is two, so
 
-The request uses Magma's low-memory Hecke path and is fail closed.
+    w = a_P^2 - 2*q = a_P^2 - 8.
+
+Thus a_P^2 is 7 or 0, and consequently a_P=0 modulo 7.  A zero kernel of T_P on
+the full level-(3,3) newspace eliminates the last fixed-7 level before imposing
+superspecial or odd auxiliary-prime conditions.  A failed request is explicit.
 """
 from __future__ import annotations
 
@@ -106,8 +108,8 @@ T := Matrix(F7,TQ);
 delete TQ;
 DeleteHeckePrecomputation(O,I2);
 printf "PHASE=T2-mod7-ready\n";
-S := Kernel(T-6*IdentityMatrix(F7,n));
-printf "TRACE6_DIM=%o\n",Dimension(S);
+S := Kernel(T);
+printf "TRACE0_DIM=%o\n",Dimension(S);
 printf "FINAL_DIM=%o\n",Dimension(S);
 '''
 
@@ -121,18 +123,23 @@ def parse_int(output: str, marker: str) -> int:
 
 def main() -> int:
     code = magma_code()
+    full_traces = [-1, -8]
+    base_trace_squares = [value + 8 for value in full_traces]
     body: dict[str, Any] = {
-        "schema_version": 1,
-        "status": "fixed-7 level-(3,3) universal odd-C trace-at-2 residual probe",
+        "schema_version": 2,
+        "status": "fixed-7 level-(3,3) universal odd-C base-trace-at-2 probe",
         "calculator": CALCULATOR_URL,
         "level_exponents": [3, 3],
         "level_norm": 91125,
         "auxiliary_rational_prime": 2,
-        "prime_ideal_norm": 4,
-        "required_trace_integers": [-1, -8],
-        "required_trace_mod7": 6,
+        "base_prime_norm": 4,
+        "full_cyclotomic_residue_degree_over_base": 2,
+        "full_cyclotomic_trace_integers": full_traces,
+        "base_trace_square_integers": base_trace_squares,
+        "base_trace_mod7": 0,
+        "trace_transform": "w=a_P^2-2*Norm(P)=a_P^2-8",
         "input_bytes": len(code.encode()),
-        "conditions_applied": ["a_P=6 mod 7 at the unique prime P above 2"],
+        "conditions_applied": ["a_P=0 mod 7 at the unique prime P above 2"],
         "conditions_omitted": [
             "superspecial T_7 kernel",
             "local HGM unions at odd auxiliary primes",
@@ -143,10 +150,12 @@ def main() -> int:
             "positive dimension is only a necessary survivor space"
         ),
         "nonclaim": (
-            "the trace set {-1,-8}, modularity and level lowering are imported inputs; "
+            "the full-cyclotomic trace set, modularity and level lowering are imported inputs; "
             "a failed request leaves the level unresolved"
         ),
     }
+    if [value % 7 for value in base_trace_squares] != [0, 0]:
+        raise ResearchError("base/full trace reduction does not force trace zero")
     output = ""
     try:
         output = submit(code)
@@ -154,7 +163,7 @@ def main() -> int:
             {
                 "request_status": "completed",
                 "new_dimension": parse_int(output, "NEW_DIM"),
-                "trace6_dimension": parse_int(output, "TRACE6_DIM"),
+                "trace0_dimension": parse_int(output, "TRACE0_DIM"),
                 "final_dimension": parse_int(output, "FINAL_DIM"),
                 "output_tail": output[-6000:],
             }
