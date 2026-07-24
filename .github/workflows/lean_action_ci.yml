@@ -8,7 +8,7 @@ on:
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read # Read access to repository contents
-  pages: write # Write access to GitHub Pages
+  pages: write # Read access to GitHub Pages
   id-token: write # Write access to ID tokens
 
 jobs:
@@ -24,6 +24,12 @@ jobs:
       - run: python3 scripts/check_signature_345_edwards.py
       - run: python3 scripts/check_signature_345_published_factorizations.py --self-test
       - run: python3 scripts/check_signature_345_published_factorizations.py
+      - run: python3 scripts/inventory_signature_345_local.py > signature345-local-inventory.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature345-local-inventory
+          path: signature345-local-inventory.json
+          if-no-files-found: error
       - run: python3 scripts/check_signature_345_local.py --self-test
       - run: python3 scripts/check_signature_345_local.py
       - run: python3 scripts/check_signature_357_fixed7.py --self-test
