@@ -2,11 +2,11 @@
 """Run an optimized fixed-7 Hilbert-newform replay on the public Magma calculator.
 
 The published integer-resultant computation at conductor exponents (2,3) takes
-about 105 seconds.  For the fixed residual characteristic 7 we can work directly
-in F_7: a resultant is divisible by 7 exactly when the reduced coefficient-field
+about 105 seconds.  For the fixed residual characteristic 7 we work directly in
+F_7: a resultant is divisible by 7 exactly when the reduced coefficient-field
 polynomial and candidate trace polynomial have a common factor.  This avoids the
-large integer resultants and is designed to fit the public calculator's 60-second
-per-request limit.
+large integer resultants and is designed to fit the public calculator's
+60-second per-request limit.
 
 The pinned candidate data are split into independent batches to respect the
 calculator's 50,000-byte input limit.  Every batch recomputes the 35 newform
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+import http.cookiejar
 import json
 import re
 import sys
@@ -35,8 +36,9 @@ CALCULATOR_URL = "https://magma.maths.usyd.edu.au/calc/"
 EXPECTED_DATA_BLOB = "9c96357834f2298b4d91ab97812c38e84b8ef7a2"
 MAX_INPUT = 49_000
 USER_AGENT = (
-    "beal-conjecture-lean-research/1.0 "
-    "(+https://github.com/Th0rgal/beal-conjecture-lean)"
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "Chrome/136.0 Safari/537.36 "
+    "beal-conjecture-lean-research/1.0"
 )
 
 
@@ -173,19 +175,62 @@ def make_code(rows: list[tuple[int, str]]) -> str:
     return MAGMA_PREFIX + data + MAGMA_SUFFIX
 
 
+def form_metadata(page: str) -> tuple[str, dict[str, str]]:
+    form = re.search(r"<form\b([^>]*)>(.*?)</form>", page, flags=re.I | re.S)
+    if form is None:
+        raise ResearchError("calculator page contains no form")
+    attributes, body = form.groups()
+    action_match = re.search(r"\baction=[\"']([^\"']*)", attributes, flags=re.I)
+    action = CALCULATOR_URL if action_match is None else urllib.parse.urljoin(
+        CALCULATOR_URL, html.unescape(action_match.group(1))
+    )
+    hidden: dict[str, str] = {}
+    for tag in re.findall(r"<input\b[^>]*>", body, flags=re.I):
+        type_match = re.search(r"\btype=[\"']([^\"']*)", tag, flags=re.I)
+        name_match = re.search(r"\bname=[\"']([^\"']*)", tag, flags=re.I)
+        value_match = re.search(r"\bvalue=[\"']([^\"']*)", tag, flags=re.I)
+        if (
+            type_match is not None
+            and type_match.group(1).lower() == "hidden"
+            and name_match is not None
+        ):
+            hidden[html.unescape(name_match.group(1))] = (
+                "" if value_match is None else html.unescape(value_match.group(1))
+            )
+    return action, hidden
+
+
 def submit(code: str) -> tuple[str, list[int], int]:
     if len(code.encode("utf-8")) > MAX_INPUT:
         raise ResearchError("generated Magma input exceeds calculator limit")
-    encoded = urllib.parse.urlencode({"input": code}).encode("ascii")
-    request = urllib.request.Request(
+
+    jar = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    get_request = urllib.request.Request(
         CALCULATOR_URL,
+        headers={"User-Agent": USER_AGENT, "Accept": "text/html"},
+    )
+    with opener.open(get_request, timeout=120) as response:
+        landing = response.read().decode("utf-8", errors="replace")
+        landing_url = response.geturl()
+    action, hidden = form_metadata(landing)
+    payload = dict(hidden)
+    payload["input"] = code
+    encoded = urllib.parse.urlencode(payload).encode("utf-8")
+    parsed = urllib.parse.urlparse(action)
+    origin = f"{parsed.scheme}://{parsed.netloc}"
+    request = urllib.request.Request(
+        action,
         data=encoded,
         headers={
             "User-Agent": USER_AGENT,
             "Content-Type": "application/x-www-form-urlencoded",
+            "Referer": landing_url,
+            "Origin": origin,
+            "Accept": "text/html,application/xhtml+xml",
         },
     )
-    with urllib.request.urlopen(request, timeout=180) as response:
+    with opener.open(request, timeout=180) as response:
         page = response.read().decode("utf-8", errors="replace")
     text = html.unescape(re.sub(r"<[^>]+>", "", page))
     match = re.search(r"FIXED7_SURVIVORS=\[\s*([^\]]*)\]", text)
