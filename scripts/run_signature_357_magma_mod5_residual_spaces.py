@@ -2,13 +2,15 @@
 """Test a mod-5 Hilbert level in the residual Hecke module.
 
 The characteristic-zero packet decomposition is unnecessary for a fail-closed
-elimination.  The script computes the norm-8 subspace `ker(T_2)` modulo 5,
+elimination. The script computes the norm-8 subspace ``ker(T_2)`` modulo 5,
 restricts one auxiliary Hecke operator to it, and takes a gcd between its
 characteristic polynomial and the polynomial encoding the union of generic,
 zero, infinity and multiplicative local HGM traces.
 
 A degree-zero gcd eliminates every residual Hecke eigensystem at that level for
-the selected auxiliary prime.  A positive degree is only a necessary survivor.
+the selected auxiliary prime. A positive degree is only a necessary survivor.
+Failed Magma requests retain the raw output tail so implementation errors cannot
+masquerade as unresolved arithmetic.
 """
 from __future__ import annotations
 
@@ -148,12 +150,20 @@ UnionPolynomial := function(row)
   P *:= (X-F5!(q+1))*(X+F5!(q+1));
   return P;
 end function;
+printf "PHASE=space-start\n";
 M0 := HilbertCuspForms(K,I3^{e3}*I7^{e7});
-M := NewSubspace(M0); SetRationalBasis(M);
+printf "AMBIENT_DIM=%o\n",Dimension(M0);
+M := NewSubspace(M0);
+printf "NEW_DIM_PREBASIS=%o\n",Dimension(M);
+SetRationalBasis(M);
+printf "PHASE=rational-basis-ready\n";
 printf "LEVEL_PAIR=[{e3},{e7}]\n";
 printf "LEVEL_NORM=%o\n",27^{e3}*7^{e7};
 printf "NEW_DIM=%o\n",Dimension(M);
-T2 := Matrix(F5,HeckeOperator(M,I2));
+T2Q := HeckeOperator(M,I2);
+printf "PHASE=T2-rational-ready\n";
+T2 := Matrix(F5,T2Q);
+printf "PHASE=T2-mod5-ready\n";
 S := Kernel(T2); d := Dimension(S);
 printf "NORM8_DIM=%o\n",d;
 if d eq 0 then
@@ -163,7 +173,10 @@ if d eq 0 then
   printf "GCD_DEGREE=0\n";
 else
   I := Factorisation(Row[1]*OK)[1][1];
-  T := Matrix(F5,HeckeOperator(M,I));
+  TQ := HeckeOperator(M,I);
+  printf "PHASE=Taux-rational-ready\n";
+  T := Matrix(F5,TQ);
+  printf "PHASE=Taux-mod5-ready\n";
   TS := Matrix(F5,d,d,&cat[Coordinates(S,S.i*T) : i in [1..d]]);
   P := UnionPolynomial(Row);
   CP := R5!CharacteristicPolynomial(TS);
@@ -204,7 +217,7 @@ def main() -> int:
     e3, e7 = args.pair
     code = make_code(e3, e7, candidate_row(local, args.prime))
     record: dict[str, Any] = {
-        "schema_version": 2,
+        "schema_version": 3,
         "status": "public-Magma residual Hecke-module characteristic-polynomial test",
         "calculator": CALCULATOR_URL,
         "field": "K7=Q(zeta_7)^+",
@@ -218,6 +231,7 @@ def main() -> int:
             "positive degree is only a necessary survivor"
         ),
     }
+    output = ""
     try:
         output = submit(code)
         record.update(
@@ -232,7 +246,7 @@ def main() -> int:
                     output, "RESTRICTED_CHARPOLY_DEGREE"
                 ),
                 "gcd_degree": parse_int(output, "GCD_DEGREE"),
-                "output_tail": output[-1600:],
+                "output_tail": output[-4000:],
             }
         )
     except Exception as exc:
@@ -240,6 +254,7 @@ def main() -> int:
             {
                 "request_status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
+                "output_tail": output[-8000:],
             }
         )
     body = dict(record)
