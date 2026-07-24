@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Replay the complete LMFDB low-level mod-5 filter for signature (3,5,7).
 
-The inventory is the canonical response pinned from LMFDB's documented complete
-degree-three range (level norm <=2059).  This offline standard-library checker
-verifies the 14-packet enumeration, applies the norm-8 residual condition
-``a_P = 0 (mod 5)``, and derives the odd/even branch-local survivor sets from
-explicitly named literature inputs.
+The pinned inventory is the canonical response from LMFDB's documented complete
+degree-three range (level norm <=2059). This offline checker verifies the
+14-packet enumeration, applies the norm-8 residual congruence, composes the
+global non-CM certificate, and derives the branch-local survivor sets.
 
 It does not assert that levels above 2059 are empty and does not prove the
 (3,5,7) equation.
@@ -20,6 +19,8 @@ import pathlib
 import re
 import tempfile
 from typing import Any
+
+import check_signature_357_mod5_noncm as noncm
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "Research" / "Signature357" / "lmfdb_low_levels.json"
@@ -84,8 +85,7 @@ def has_prime_above_five_with_zero_trace(record: dict[str, Any]) -> bool:
     if type(value) is int:
         return value % 5 == 0
     if value == "e":
-        # In Q[e]/(f), a prime above 5 with e=0 exists exactly when x divides
-        # f(x) modulo 5, equivalently f(0)=0 modulo 5.
+        # In Q[e]/(f), a prime above 5 with e=0 exists exactly when f(0)=0 mod 5.
         return polynomial_constant(record["hecke_polynomial"]) % 5 == 0
     raise CertificateError(
         f"unsupported norm-8 eigenvalue encoding for {record.get('label')}: {value!r}"
@@ -179,25 +179,44 @@ def validate_inventory(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 def validate_filter(
     manifest: dict[str, Any], inventory: dict[str, Any], records: dict[str, dict[str, Any]]
-) -> tuple[list[str], list[str], list[str], list[str]]:
+) -> tuple[list[str], list[str], list[str], list[str], list[str], list[str]]:
     exact_keys(
         manifest,
         {
             "schema_version", "status", "scope", "residual_filter",
-            "branch_filters", "source_dependencies", "certificate_sha256",
+            "global_noncm_filter", "branch_filters", "source_dependencies",
+            "certificate_sha256",
         },
         "filter manifest",
     )
-    if manifest["schema_version"] != 1:
-        raise CertificateError("filter schema_version must equal 1")
+    if manifest["schema_version"] != 2:
+        raise CertificateError("filter schema_version must equal 2")
     if canonical_sha256(manifest) != manifest["certificate_sha256"]:
         raise CertificateError("filter certificate hash mismatch")
 
     scope = manifest["scope"]
+    exact_keys(
+        scope,
+        {
+            "equation", "field", "residual_characteristic",
+            "complete_level_norm_bound", "candidate_level_norms",
+            "inventory_path", "inventory_sha256", "global_noncm_path",
+            "global_noncm_sha256",
+        },
+        "scope",
+    )
     if scope["inventory_sha256"] != inventory["certificate_sha256"]:
         raise CertificateError("filter is not bound to the pinned inventory")
     if scope["candidate_level_norms"] != inventory["candidate_levels_within_bound"]:
         raise CertificateError("filter level list differs from inventory")
+
+    noncm_path = ROOT / scope["global_noncm_path"]
+    try:
+        noncm_digest = noncm.validate(noncm.load_json(noncm_path))
+    except noncm.CertificateError as exc:
+        raise CertificateError(f"global non-CM certificate failed: {exc}") from exc
+    if noncm_digest != scope["global_noncm_sha256"]:
+        raise CertificateError("global non-CM subcertificate digest mismatch")
 
     survivors = sorted(
         label for label, record in records.items()
@@ -219,38 +238,54 @@ def validate_filter(
         raise CertificateError("a low-level survivor has non-rational Hecke field")
     if not all(records[label]["is_base_change"] == "yes" for label in survivors):
         raise CertificateError("a low-level survivor is not a base change")
-    if not residual["all_survivors_rational"] or not residual["all_survivors_base_change"]:
-        raise CertificateError("survivor structural summary is false")
+
+    global_noncm = sorted(
+        label for label in survivors if records[label]["is_CM"] == "no"
+    )
+    removed_cm = sorted(set(survivors) - set(global_noncm))
+    noncm_manifest = manifest["global_noncm_filter"]
+    if (
+        removed_cm != noncm_manifest["cm_packets_removed"]
+        or global_noncm != noncm_manifest["survivors"]
+        or noncm_manifest["count"] != len(global_noncm)
+        or noncm_manifest["all_survivors_non_cm"] is not True
+    ):
+        raise CertificateError("global non-CM low-level filter mismatch")
 
     exponent3 = lambda label: int(records[label]["exponent_pair"][0])
     exponent7 = lambda label: int(records[label]["exponent_pair"][1])
+    branches = manifest["branch_filters"]
 
-    # Corollary 3.6/Table 3.2: in the Dahmen--Siksek odd branch all three
-    # variables are 3-adic units, so the residual conductor exponent is 2 or 3.
-    odd = sorted(label for label in survivors if exponent3(label) in {2, 3})
-    if odd != manifest["branch_filters"]["odd_branch"]["low_level_survivors"]:
-        raise CertificateError(f"odd-branch low-level set mismatch: {odd}")
+    # Before the non-CM theorem, the only odd-branch packet is the level-729 CM
+    # packet. The global non-CM theorem removes it, closing the complete range.
+    odd_pre = sorted(label for label in survivors if exponent3(label) in {2, 3})
+    odd = sorted(label for label in global_noncm if exponent3(label) in {2, 3})
+    odd_manifest = branches["odd_branch"]
+    if (
+        odd_pre != odd_manifest["pre_noncm_survivors"]
+        or odd != odd_manifest["low_level_survivors"]
+        or odd_manifest["count"] != 0
+        or odd_manifest["conclusion"] != "the complete LMFDB low-level odd branch is empty"
+    ):
+        raise CertificateError("odd-branch low-level closure mismatch")
 
-    # In the even branch, 3|C gives special local type at 3 with conductor 1 or
-    # 2.  Special type has nonzero monodromy and cannot arise from a CM
-    # automorphic induction, so the CM level-729 packet is removed.
-    even = sorted(
-        label for label in survivors
-        if exponent3(label) in {1, 2} and records[label]["is_CM"] == "no"
-    )
-    if even != manifest["branch_filters"]["even_branch"]["low_level_survivors"]:
+    # In the even branch, 3|C gives special local type at 3 with exponent 1 or 2.
+    even = sorted(label for label in global_noncm if exponent3(label) in {1, 2})
+    if even != branches["even_branch"]["low_level_survivors"]:
         raise CertificateError(f"even-branch low-level set mismatch: {even}")
 
-    # If 7∤C as well, Table 3.5 gives conductor exponent 2 or 3 at 7.
     even_7_unit = sorted(label for label in even if exponent7(label) in {2, 3})
-    if even_7_unit != manifest["branch_filters"]["even_branch_7_unit"][
-        "low_level_survivors"
-    ]:
+    if even_7_unit != branches["even_branch_7_unit"]["low_level_survivors"]:
         raise CertificateError(f"even 7-unit low-level set mismatch: {even_7_unit}")
-    return survivors, odd, even, even_7_unit
+
+    even_7_divides = sorted(label for label in even if exponent7(label) == 1)
+    if even_7_divides != branches["even_branch_7_divides_C"]["low_level_survivors"]:
+        raise CertificateError(f"even 7-divisible low-level set mismatch: {even_7_divides}")
+
+    return survivors, global_noncm, odd, even, even_7_unit, even_7_divides
 
 
-def validate() -> tuple[list[str], list[str], list[str], list[str]]:
+def validate() -> tuple[list[str], list[str], list[str], list[str], list[str], list[str]]:
     inventory = load_json(INVENTORY)
     records = validate_inventory(inventory)
     return validate_filter(load_json(FILTER), inventory, records)
@@ -271,31 +306,32 @@ def self_test() -> None:
     else:
         raise RuntimeError("checker accepted a weakened survivor set")
 
-    mutated_inventory = copy.deepcopy(inventory)
-    for level in mutated_inventory["levels"]:
-        for record in level["records"]:
-            if record["label"] == "3.3.49.1-1323.1-c":
-                record["hecke_polynomial"] = "x^2 + 2*x"
-    mutated_inventory["certificate_sha256"] = canonical_sha256(mutated_inventory)
-    mutated_records = validate_inventory(mutated_inventory)
-    mutated_manifest = copy.deepcopy(manifest)
-    mutated_manifest["scope"]["inventory_sha256"] = mutated_inventory[
-        "certificate_sha256"
-    ]
-    mutated_manifest["residual_filter"]["survivors"].append(
-        "3.3.49.1-1323.1-c"
-    )
-    mutated_manifest["residual_filter"]["survivors"].sort()
-    mutated_manifest["residual_filter"]["survivor_count"] = 5
-    mutated_manifest["certificate_sha256"] = canonical_sha256(mutated_manifest)
+    mutated = copy.deepcopy(manifest)
+    mutated["global_noncm_filter"]["survivors"].append("3.3.49.1-729.1-b")
+    mutated["global_noncm_filter"]["survivors"].sort()
+    mutated["global_noncm_filter"]["count"] = 3
+    mutated["certificate_sha256"] = canonical_sha256(mutated)
     try:
-        validate_filter(mutated_manifest, mutated_inventory, mutated_records)
+        validate_filter(mutated, inventory, records)
     except CertificateError:
         pass
     else:
-        raise RuntimeError("checker accepted a non-rational low-level survivor")
+        raise RuntimeError("checker accepted a CM packet after the global non-CM theorem")
 
-    duplicate = '{"schema_version":1,"schema_version":1}'
+    mutated = copy.deepcopy(manifest)
+    mutated["branch_filters"]["odd_branch"]["low_level_survivors"] = [
+        "3.3.49.1-729.1-b"
+    ]
+    mutated["branch_filters"]["odd_branch"]["count"] = 1
+    mutated["certificate_sha256"] = canonical_sha256(mutated)
+    try:
+        validate_filter(mutated, inventory, records)
+    except CertificateError:
+        pass
+    else:
+        raise RuntimeError("checker accepted the obsolete nonempty odd frontier")
+
+    duplicate = '{"schema_version":2,"schema_version":2}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -318,13 +354,15 @@ def main() -> int:
     if args.self_test:
         self_test()
         return 0
-    all_survivors, odd, even, even_7_unit = validate()
+    all_survivors, noncm_survivors, odd, even, even_7_unit, even_7_divides = validate()
     print("LMFDB-complete levels: 8")
     print(f"packets: 14 -> {len(all_survivors)} after a_P=0 mod 5")
-    print("survivors:", ", ".join(all_survivors))
-    print("odd branch low-level frontier:", ", ".join(odd))
+    print(f"non-CM packets: {len(all_survivors)} -> {len(noncm_survivors)}")
+    print("global non-CM survivors:", ", ".join(noncm_survivors))
+    print("odd branch low-level frontier: empty")
     print("even branch low-level frontier:", ", ".join(even))
     print("even branch with 7∤C:", ", ".join(even_7_unit))
+    print("even branch with 7|C:", ", ".join(even_7_divides))
     return 0
 
 
