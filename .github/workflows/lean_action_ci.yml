@@ -20,8 +20,8 @@ jobs:
         with:
           fetch-depth: 0
       - run: python3 scripts/check_research_checkpoints.py
-      - run: python3 -m pip install --disable-pip-version-check psycopg2-binary
-      - name: Fetch LMFDB-covered signature-357 levels
+      - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+      - name: Fetch LMFDB API low-level frontier
         continue-on-error: true
         run: python3 scripts/fetch_signature_357_lmfdb.py > lmfdb-low-levels.json 2> lmfdb-low-levels.err
       - uses: actions/upload-artifact@v4
@@ -30,6 +30,16 @@ jobs:
           path: |
             lmfdb-low-levels.json
             lmfdb-low-levels.err
+          if-no-files-found: error
+      - name: Fetch LMFDB SQL-mirror low-level frontier
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_lmfdb_sql.py > lmfdb-low-levels-sql.json 2> lmfdb-low-levels-sql.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-low-levels-sql
+          path: |
+            lmfdb-low-levels-sql.json
+            lmfdb-low-levels-sql.err
           if-no-files-found: error
       - name: Probe fixed-7 LMFDB level
         continue-on-error: true
