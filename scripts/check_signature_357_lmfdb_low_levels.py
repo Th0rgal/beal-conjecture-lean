@@ -4,7 +4,8 @@
 The pinned inventory is the canonical response from LMFDB's documented complete
 degree-three range (level norm <=2059). This offline checker verifies the
 14-packet enumeration, applies the norm-8 residual congruence, composes the
-global non-CM certificate, and derives the branch-local survivor sets.
+global non-CM certificate and the even-7-unit local-type certificate, and derives
+the branch-local survivor sets.
 
 It does not assert that levels above 2059 are empty and does not prove the
 (3,5,7) equation.
@@ -20,6 +21,7 @@ import re
 import tempfile
 from typing import Any
 
+import check_signature_357_mod5_even_7unit as even7
 import check_signature_357_mod5_noncm as noncm
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -184,13 +186,13 @@ def validate_filter(
         manifest,
         {
             "schema_version", "status", "scope", "residual_filter",
-            "global_noncm_filter", "branch_filters", "source_dependencies",
-            "certificate_sha256",
+            "global_noncm_filter", "even_7unit_local_type_filter",
+            "branch_filters", "source_dependencies", "certificate_sha256",
         },
         "filter manifest",
     )
-    if manifest["schema_version"] != 2:
-        raise CertificateError("filter schema_version must equal 2")
+    if manifest["schema_version"] != 3:
+        raise CertificateError("filter schema_version must equal 3")
     if canonical_sha256(manifest) != manifest["certificate_sha256"]:
         raise CertificateError("filter certificate hash mismatch")
 
@@ -201,7 +203,8 @@ def validate_filter(
             "equation", "field", "residual_characteristic",
             "complete_level_norm_bound", "candidate_level_norms",
             "inventory_path", "inventory_sha256", "global_noncm_path",
-            "global_noncm_sha256",
+            "global_noncm_sha256", "even_7unit_local_type_path",
+            "even_7unit_local_type_sha256",
         },
         "scope",
     )
@@ -210,13 +213,19 @@ def validate_filter(
     if scope["candidate_level_norms"] != inventory["candidate_levels_within_bound"]:
         raise CertificateError("filter level list differs from inventory")
 
-    noncm_path = ROOT / scope["global_noncm_path"]
     try:
-        noncm_digest = noncm.validate(noncm.load_json(noncm_path))
+        noncm_digest = noncm.validate(noncm.load_json(ROOT / scope["global_noncm_path"]))
     except noncm.CertificateError as exc:
         raise CertificateError(f"global non-CM certificate failed: {exc}") from exc
     if noncm_digest != scope["global_noncm_sha256"]:
         raise CertificateError("global non-CM subcertificate digest mismatch")
+
+    try:
+        even7_digest = even7.validate(even7.load_json(ROOT / scope["even_7unit_local_type_path"]))
+    except even7.CertificateError as exc:
+        raise CertificateError(f"even 7-unit local-type certificate failed: {exc}") from exc
+    if even7_digest != scope["even_7unit_local_type_sha256"]:
+        raise CertificateError("even 7-unit local-type subcertificate digest mismatch")
 
     survivors = sorted(
         label for label, record in records.items()
@@ -252,14 +261,25 @@ def validate_filter(
     ):
         raise CertificateError("global non-CM low-level filter mismatch")
 
+    local_manifest = manifest["even_7unit_local_type_filter"]
+    removed_local = local_manifest["packet_removed"]
+    if removed_local not in global_noncm:
+        raise CertificateError("local-type packet is not in the non-CM frontier")
+    post_local = sorted(set(global_noncm) - {removed_local})
+    if (
+        removed_local != "3.3.49.1-1323.1-a"
+        or post_local != local_manifest["survivors"]
+        or local_manifest["count"] != len(post_local)
+        or "order 5" not in local_manifest["reason"]
+    ):
+        raise CertificateError("even 7-unit local-type filter mismatch")
+
     exponent3 = lambda label: int(records[label]["exponent_pair"][0])
     exponent7 = lambda label: int(records[label]["exponent_pair"][1])
     branches = manifest["branch_filters"]
 
-    # Before the non-CM theorem, the only odd-branch packet is the level-729 CM
-    # packet. The global non-CM theorem removes it, closing the complete range.
     odd_pre = sorted(label for label in survivors if exponent3(label) in {2, 3})
-    odd = sorted(label for label in global_noncm if exponent3(label) in {2, 3})
+    odd = sorted(label for label in post_local if exponent3(label) in {2, 3})
     odd_manifest = branches["odd_branch"]
     if (
         odd_pre != odd_manifest["pre_noncm_survivors"]
@@ -269,20 +289,36 @@ def validate_filter(
     ):
         raise CertificateError("odd-branch low-level closure mismatch")
 
-    # In the even branch, 3|C gives special local type at 3 with exponent 1 or 2.
-    even = sorted(label for label in global_noncm if exponent3(label) in {1, 2})
-    if even != branches["even_branch"]["low_level_survivors"]:
+    even_pre = sorted(label for label in global_noncm if exponent3(label) in {1, 2})
+    even = sorted(label for label in post_local if exponent3(label) in {1, 2})
+    even_manifest = branches["even_branch"]
+    if (
+        even_pre != even_manifest["pre_7unit_local_type_survivors"]
+        or even != even_manifest["low_level_survivors"]
+        or even_manifest["count"] != len(even)
+    ):
         raise CertificateError(f"even-branch low-level set mismatch: {even}")
 
+    even_7_unit_pre = sorted(label for label in even_pre if exponent7(label) in {2, 3})
     even_7_unit = sorted(label for label in even if exponent7(label) in {2, 3})
-    if even_7_unit != branches["even_branch_7_unit"]["low_level_survivors"]:
+    unit_manifest = branches["even_branch_7_unit"]
+    if (
+        even_7_unit_pre != unit_manifest["pre_local_type_survivors"]
+        or even_7_unit != unit_manifest["low_level_survivors"]
+        or unit_manifest["count"] != 0
+        or unit_manifest["conclusion"] != "the complete LMFDB low-level even 7-unit branch is empty"
+    ):
         raise CertificateError(f"even 7-unit low-level set mismatch: {even_7_unit}")
 
     even_7_divides = sorted(label for label in even if exponent7(label) == 1)
-    if even_7_divides != branches["even_branch_7_divides_C"]["low_level_survivors"]:
+    divides_manifest = branches["even_branch_7_divides_C"]
+    if (
+        even_7_divides != divides_manifest["low_level_survivors"]
+        or divides_manifest["count"] != len(even_7_divides)
+    ):
         raise CertificateError(f"even 7-divisible low-level set mismatch: {even_7_divides}")
 
-    return survivors, global_noncm, odd, even, even_7_unit, even_7_divides
+    return survivors, post_local, odd, even, even_7_unit, even_7_divides
 
 
 def validate() -> tuple[list[str], list[str], list[str], list[str], list[str], list[str]]:
@@ -319,19 +355,29 @@ def self_test() -> None:
         raise RuntimeError("checker accepted a CM packet after the global non-CM theorem")
 
     mutated = copy.deepcopy(manifest)
-    mutated["branch_filters"]["odd_branch"]["low_level_survivors"] = [
-        "3.3.49.1-729.1-b"
-    ]
-    mutated["branch_filters"]["odd_branch"]["count"] = 1
+    mutated["even_7unit_local_type_filter"]["packet_removed"] = "3.3.49.1-189.1-a"
     mutated["certificate_sha256"] = canonical_sha256(mutated)
     try:
         validate_filter(mutated, inventory, records)
     except CertificateError:
         pass
     else:
-        raise RuntimeError("checker accepted the obsolete nonempty odd frontier")
+        raise RuntimeError("checker accepted elimination of the wrong local packet")
 
-    duplicate = '{"schema_version":2,"schema_version":2}'
+    mutated = copy.deepcopy(manifest)
+    mutated["branch_filters"]["even_branch_7_unit"]["low_level_survivors"] = [
+        "3.3.49.1-1323.1-a"
+    ]
+    mutated["branch_filters"]["even_branch_7_unit"]["count"] = 1
+    mutated["certificate_sha256"] = canonical_sha256(mutated)
+    try:
+        validate_filter(mutated, inventory, records)
+    except CertificateError:
+        pass
+    else:
+        raise RuntimeError("checker accepted the obsolete nonempty even 7-unit frontier")
+
+    duplicate = '{"schema_version":3,"schema_version":3}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -354,14 +400,14 @@ def main() -> int:
     if args.self_test:
         self_test()
         return 0
-    all_survivors, noncm_survivors, odd, even, even_7_unit, even_7_divides = validate()
+    all_survivors, final_survivors, odd, even, even_7_unit, even_7_divides = validate()
     print("LMFDB-complete levels: 8")
     print(f"packets: 14 -> {len(all_survivors)} after a_P=0 mod 5")
-    print(f"non-CM packets: {len(all_survivors)} -> {len(noncm_survivors)}")
-    print("global non-CM survivors:", ", ".join(noncm_survivors))
+    print(f"after non-CM and local-type filters: {len(final_survivors)}")
+    print("final complete-range survivor:", ", ".join(final_survivors))
     print("odd branch low-level frontier: empty")
     print("even branch low-level frontier:", ", ".join(even))
-    print("even branch with 7∤C:", ", ".join(even_7_unit))
+    print("even branch with 7∤C: empty")
     print("even branch with 7|C:", ", ".join(even_7_divides))
     return 0
 
