@@ -1,0 +1,21 @@
+{
+  "additional_conclusions": [
+    "the fixed-7 reducibility character is psi_(2,0)",
+    "41 does not divide B"
+  ],
+  "certificate_sha256": "c86107ef5919629c2ce66703cf7448508ad986608ceb20c746d0d4d539fbfe81",
+  "equation": "A^3+B^5=C^7",
+  "forced_divisor_of_C": 15257190,
+  "inputs": {
+    "Dahmen_Siksek_even_branch": "30 divides C",
+    "global_fixed7_path": "Research/Signature357/fixed7_global_reducibility_sieve.json",
+    "global_fixed7_sha256": "82ecb0e373c8b604c30690aeb9d2d2ddc3b8e0d8d14ed60d95c2f55513f93cc7",
+    "rational_two_frey_path": "Research/Signature357/even_rational_two_frey_sieve.json",
+    "rational_two_frey_sha256": "e5cb118804cf1fadcd8d1c19b7a2feaa235ef759423550e31b84ca26408da3ad"
+  },
+  "nonclaim": "non-rational coefficient-field packets require polynomial-gcd rather than rational-trace tests; this is not a proof of the full signature",
+  "prime_factors_for_C": [2,3,5,13,19,29,71],
+  "schema_version": 1,
+  "scope": "hypothetical primitive solutions in the even branch whose lowered mod-5 Hilbert packet has rational Hecke field",
+  "status": "composed-even-branch-rational-global-divisibility-certificate"
+}
