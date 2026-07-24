@@ -3,8 +3,18 @@
 
 Each requested level is submitted independently. A failed or timed-out level is
 retained as an explicit error record and is never interpreted as an empty space.
-Besides the marginal local filter, the producer applies the exact even-branch
-coupling at 13, 29 and 41.
+Besides the marginal local filter, the producer applies a coefficient-field-safe
+version of the exact even-branch coupling at 13, 29 and 41.
+
+The coupled regimes are determined on the fixed-7 side before inspecting the
+mod-5 Hecke field:
+
+* at 13 only u=0 or u=infinity can survive;
+* at 29 only generic u or u=0 can survive;
+* at 41 generic u, u=0 or u=infinity can survive.
+
+The stronger rational-trace consequences recorded elsewhere must not be applied
+to non-rational packets.
 """
 from __future__ import annotations
 import argparse, hashlib, html, http.cookiejar, json, pathlib, re, urllib.parse, urllib.request
@@ -69,7 +79,8 @@ PossibleAt := function(form,row)
 end function;
 PossibleEvenAt := function(form,row)
   l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
-  if l eq 13 or l eq 29 then return AnyCommon(Pfull,Z); end if;
+  if l eq 13 then return AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf); end if;
+  if l eq 29 then return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z); end if;
   if l eq 41 then return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf); end if;
   if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
   return Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1));
@@ -122,6 +133,6 @@ def main()->int:
             text=submit(code); record.update({'status':'completed','space_dimension':parse_int(text,'SPACE_DIMENSION'),'packet_count':parse_int(text,'PACKET_COUNT'),'packet_dimensions':parse_list(text,'PACKET_DIMS'),'norm8_survivors':parse_list(text,'NORM8_SURVIVORS'),'local_survivors':parse_list(text,'LOCAL_SURVIVORS'),'even_coupled_survivors':parse_list(text,'EVEN_COUPLED_SURVIVORS'),'output_tail':text[-1200:]})
         except Exception as exc: record.update({'status':'failed','error':f'{type(exc).__name__}: {exc}'})
         outputs.append(record)
-    body={'schema_version':2,'status':'public-Magma mod-5 high-level packet enumeration with marginal and even-coupled local filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'even_coupled_primes':[13,29,41],'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
+    body={'schema_version':3,'status':'public-Magma mod-5 high-level packet enumeration with marginal and coefficient-field-safe even-coupled local filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'even_coupled_primes':[13,29,41],'even_coupled_regimes':{'13':['zero','infinity'],'29':['generic','zero'],'41':['generic','zero','infinity']},'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
     result=dict(body); result['certificate_sha256']=canonical_sha256(body); print(json.dumps(result,sort_keys=True,indent=2)); return 0
 if __name__=='__main__': raise SystemExit(main())
