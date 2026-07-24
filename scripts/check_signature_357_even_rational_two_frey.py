@@ -64,10 +64,12 @@ def validate(data:dict[str,Any],mod5:dict[str,Any],ray:dict[str,Any])->str:
             matches={str(value):[p for p in fixed[regime]['candidate_polynomials'] if evaluate(p,value)==0] for value in targets}
             if matches!=fixed[regime]['compatible_targets']:
                 raise CertificateError(f'fixed-7 polynomial replay mismatch at {prime}/{regime}')
+        if fixed['multiplicative']['target_traces_mod7']!=base:
+            raise CertificateError(f'fixed-7 multiplicative targets mismatch at {prime}')
         allowed=[]; trace_union=set()
         for ureg,treg in u_to_t.items():
             roots=mod5['primes'][str(prime)]['regimes'][ureg]['base_trace_roots_mod5']
-            compatible=True if treg=='multiplicative' else any(fixed[treg]['compatible_targets'][str(v)] for v in fixed[treg]['target_traces_mod7'])
+            compatible=fixed[treg]['compatible'] if treg=='multiplicative' else any(fixed[treg]['compatible_targets'][str(v)] for v in fixed[treg]['target_traces_mod7'])
             expected=entry['coupled_u_regimes'][ureg]
             if roots!=expected['mod5_rational_trace_roots'] or treg!=expected['fixed7_regime'] or compatible!=expected['fixed7_compatible']:
                 raise CertificateError(f'coupled regime mismatch at {prime}/{ureg}')
@@ -95,6 +97,8 @@ def self_test()->None:
     expect_rejection(bad,mod5,ray,'a generic prime-13 branch')
     bad=copy.deepcopy(data); bad['conclusion']['forced_divisibility']='13 divides C'
     expect_rejection(bad,mod5,ray,'the weakened divisibility conclusion')
+    bad=copy.deepcopy(data); bad['primes']['13']['fixed7_regimes']['multiplicative']['compatible']=False
+    expect_rejection(bad,mod5,ray,'an incompatible multiplicative regime')
     with tempfile.NamedTemporaryFile('w',delete=False) as f: f.write('{"x":1,"x":2}'); path=pathlib.Path(f.name)
     try:
         try: load(path)
