@@ -7,6 +7,7 @@ import BealUnified.CyclotomicCofactor
 import BealUnified.ExponentNormalization
 import BealUnified.ModEight
 import BealUnified.Research.BR20
+import BealUnified.Research.BR128
 import BealUnified.PrimitiveDivisors
 import BealUnified.ABC
 
