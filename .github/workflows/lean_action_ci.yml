@@ -41,6 +41,31 @@ jobs:
             lmfdb-survivor-traces.json
             lmfdb-survivor-traces.err
           if-no-files-found: error
+      - name: Fetch pinned fixed-7 candidate polynomials
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_fixed7_inputs.py > fixed7-Data.txt 2> fixed7-Data.err
+      - name: Query all four fixed-7 Hilbert spaces
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_fixed7_lmfdb_sql.py > fixed7-hmf.json 2> fixed7-hmf.err
+      - name: Replay all four fixed-7 levels
+        continue-on-error: true
+        run: >-
+          python3 scripts/check_signature_357_fixed7_lmfdb.py
+          --data fixed7-Data.txt
+          --hmf fixed7-hmf.json
+          > fixed7-all-levels.json
+          2> fixed7-all-levels.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-all-levels
+          path: |
+            fixed7-Data.txt
+            fixed7-Data.err
+            fixed7-hmf.json
+            fixed7-hmf.err
+            fixed7-all-levels.json
+            fixed7-all-levels.err
+          if-no-files-found: error
       - name: Probe fixed-7 LMFDB level
         continue-on-error: true
         run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json 2> lmfdb-level18225.err
