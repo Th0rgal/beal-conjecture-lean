@@ -3,9 +3,13 @@
 
 At 11 and 23 the unique prime of K7 is fixed by Gal(K7/Q), so semilinear
 Galois symmetry forces the residual trace into F5. Both primes split in the
-quadratic cyclotomic untwist, hence the twisted packet trace is unchanged.
-The local trace-union polynomial is therefore intersected with X^5-X before
+quadratic cyclotomic untwist, hence the twisted packet trace is unchanged. The
+local trace-union polynomial is therefore intersected with X^5-X before
 comparison with the residual Hecke module.
+
+The generated Magma code is first routed through the guarded fast repair, so it
+never reintroduces the redundant ``SetRationalBasis`` conversion or the manual
+stable-subspace coordinate construction.
 """
 from __future__ import annotations
 
@@ -14,6 +18,7 @@ import json
 import pathlib
 from typing import Any
 
+import run_signature_357_magma_mod5_residual_fast as fast
 import run_signature_357_magma_mod5_residual_spaces as base
 
 PRIMES = [11, 23]
@@ -21,11 +26,24 @@ LEVEL_PAIRS = [(2, 1), (3, 0), (3, 1)]
 
 
 def scalar_code(e3: int, e7: int, row: tuple[Any, ...]) -> str:
-    code = base.make_code(e3, e7, row)
-    code = code.replace(
-        "  return P;\nend function;",
-        "  P:=GreatestCommonDivisor(P,X^5-X);\n  return P;\nend function;",
+    code = fast.repaired_code(e3, e7, row)
+    old = "  return P;\nend function;"
+    new = (
+        "  P:=GreatestCommonDivisor(P,X^5-X);\n"
+        "  return P;\nend function;"
     )
+    count = code.count(old)
+    if count != 1:
+        raise base.ResearchError(
+            f"expected one local-union return fragment, got {count}"
+        )
+    code = code.replace(old, new, 1)
+    if "SetRationalBasis(M);" in code:
+        raise base.ResearchError("generated inert code still contains SetRationalBasis")
+    if "TS := Restrict(T,S);" not in code:
+        raise base.ResearchError("generated inert code lacks native restriction")
+    if "GreatestCommonDivisor(P,X^5-X)" not in code:
+        raise base.ResearchError("generated inert code lacks scalar-trace filter")
     return code
 
 
@@ -51,8 +69,11 @@ def main() -> int:
     row = base.candidate_row(local, args.prime)
     code = scalar_code(e3, e7, row)
     record: dict[str, Any] = {
-        "schema_version": 1,
-        "status": "twisted odd mod-5 inert-prime residual Hecke-module test",
+        "schema_version": 2,
+        "status": (
+            "twisted odd mod-5 inert-prime residual Hecke-module test with "
+            "guarded fast repair"
+        ),
         "calculator": base.CALCULATOR_URL,
         "field": "K7=Q(zeta_7)^+",
         "source_local_data_sha256": local["certificate_sha256"],
@@ -63,6 +84,12 @@ def main() -> int:
         "cyclotomic_untwist_value": 1,
         "input_bytes": len(code.encode("utf-8")),
         "local_union_policy": "gcd with X^5-X",
+        "rational_basis_policy": (
+            "parallel weight 2 and NewSubspace already fix a rational basis; "
+            "SetRationalBasis is removed exactly once"
+        ),
+        "restriction_method": "Magma Restrict(T,S)",
+        "repair_guards": True,
         "soundness": (
             "gcd degree zero eliminates every norm-8 twisted residual eigensystem; "
             "positive degree is only a necessary survivor"
