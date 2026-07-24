@@ -5,14 +5,15 @@
     "equation": "A^3+B^5=C^7",
     "field": "K7=Q(zeta_7)^+",
     "prime": 2,
+    "residual_characteristic": 5,
     "residue_field": "F8",
-    "claim": "four explicit rational Hilbert-newform packets are filtered by the exact B-odd prime-2 trace"
+    "claim": "four explicit rational Hilbert-newform packets are filtered by the residual B-odd prime-2 trace"
   },
   "source": {
     "number_field_label": "3.3.49.1",
     "number_field_polynomial": "x^3-x^2-2*x+1",
     "curve_form_correspondence": "LMFDB elliptic-curve isogeny class related Hilbert modular form",
-    "base_change_formula": "for residue degree 3, a_P=a_2^3-3*2*a_2"
+    "base_change_formula": "over the degree-2 cyclotomic extension, Tr(Frob_P^2)=a_P^2-2*N(P)"
   },
   "finite_field": {
     "characteristic": 2,
@@ -22,16 +23,13 @@
     "generator_polynomial_relation": "a^3+a^2+1=0",
     "field_size": 8
   },
-  "branch_conditions": {
-    "formula": "Tr(Frob_P^2)=a_P^2-2*N(P), with N(P)=8",
-    "C_even": {
-      "full_extension_trace": 9,
-      "allowed_K7_hecke_eigenvalues": [-5, 5]
-    },
-    "A_even": {
-      "full_extension_trace": -16,
-      "allowed_K7_hecke_eigenvalues": [0]
-    }
+  "residual_condition": {
+    "norm_P": 8,
+    "C_even_full_trace": 9,
+    "A_even_full_trace": -16,
+    "common_full_trace_mod5": 4,
+    "equation_mod5": "4=a_P^2-16 (mod 5)",
+    "required_hecke_eigenvalue_mod5": 0
   },
   "packets": [
     {
@@ -42,7 +40,8 @@
       "ainvs_F8": [0, 1, 1, 0, 1],
       "expected_point_count": 13,
       "expected_hecke_eigenvalue": -4,
-      "classification": "eliminated in both B-odd parity branches"
+      "expected_hecke_eigenvalue_mod5": 1,
+      "classification": "eliminated by the residual prime-2 trace"
     },
     {
       "hmf_label": "3.3.49.1-49.1-a",
@@ -52,7 +51,8 @@
       "ainvs_F8": [1, 1, 0, 0, 1],
       "expected_point_count": 14,
       "expected_hecke_eigenvalue": -5,
-      "classification": "compatible only with the C-even branch"
+      "expected_hecke_eigenvalue_mod5": 0,
+      "classification": "survives the residual prime-2 trace"
     },
     {
       "hmf_label": "3.3.49.1-729.1-b",
@@ -62,7 +62,8 @@
       "ainvs_F8": [0, 0, 6, 0, 2],
       "expected_point_count": 9,
       "expected_hecke_eigenvalue": 0,
-      "classification": "compatible only with the A-even branch"
+      "expected_hecke_eigenvalue_mod5": 0,
+      "classification": "survives the residual prime-2 trace"
     },
     {
       "hmf_label": "3.3.49.1-1323.1-b",
@@ -72,16 +73,16 @@
       "ainvs_F8": [0, 1, 1, 0, 1],
       "expected_point_count": 13,
       "expected_hecke_eigenvalue": -4,
-      "classification": "eliminated in both B-odd parity branches"
+      "expected_hecke_eigenvalue_mod5": 1,
+      "classification": "eliminated by the residual prime-2 trace"
     }
   ],
   "summary": {
     "explicit_packets_checked": 4,
-    "eliminated_in_both": 2,
-    "C_even_only": 1,
-    "A_even_only": 1,
-    "allowed_trace_union": [-5, 0, 5]
+    "eliminated": 2,
+    "surviving": 2,
+    "surviving_packets": ["3.3.49.1-49.1-a", "3.3.49.1-729.1-b"]
   },
-  "nonclaim": "the four packets are not claimed to be a complete enumeration of all Hilbert newforms at the sixteen possible levels",
-  "certificate_sha256": "1e293c16e00b5f71419cf5bc05718be58537f67d0acc1e7b207d2b72f9a61475"
+  "nonclaim": "the four packets are not claimed to be a complete enumeration of all Hilbert newforms at the twenty-four possible levels",
+  "certificate_sha256": "6c9e5f506f06564b413a2663161fcdfd604816dc832d0015e72f22d28f09d191"
 }
