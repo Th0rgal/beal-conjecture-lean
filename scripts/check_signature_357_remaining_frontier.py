@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay the final two-level automorphic frontier for signature (3,5,7)."""
+"""Replay the final two-level automorphic and fixed-7 pairing frontier."""
 from __future__ import annotations
 
 import argparse
@@ -110,6 +110,26 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
     if norms != odd["remaining_level_norms"] or norms != [35721, 964467]:
         raise CertificateError("remaining level-norm mismatch")
 
+    pairing = odd["fixed7_pairing"]
+    first = pairing["e3_2"]
+    if first["closed_level"] != [2, 2] or first["remaining_level"] != [2, 3]:
+        raise CertificateError("e3=2 fixed-7 level pairing mismatch")
+    if first["remaining_packets"] != [24, 28]:
+        raise CertificateError("e3=2 fixed-7 packet frontier mismatch")
+
+    second = pairing["e3_3"]
+    closure = load(ROOT / second["closure_path"])
+    if digest(closure) != closure.get("certificate_sha256"):
+        raise CertificateError("fixed-7 level-(3,2) closure digest mismatch")
+    if closure["certificate_sha256"] != second["closure_sha256"]:
+        raise CertificateError("frontier not bound to the level-(3,2) closure")
+    if second["closed_level"] != [3, 2] or second["remaining_level"] != [3, 3]:
+        raise CertificateError("e3=3 fixed-7 level pairing mismatch")
+    if closure["public_magma"]["non_cm_superspecial_survivors"] != []:
+        raise CertificateError("fixed-7 level (3,2) is not closed")
+    if closure["public_magma"]["superspecial_survivors"] != [65, 78]:
+        raise CertificateError("fixed-7 level (3,2) superspecial list changed")
+
     compression = data["compression"]
     if compression["final_remaining_level_norms"] != norms:
         raise CertificateError("compressed final norm list mismatch")
@@ -122,6 +142,10 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
     removed |= set(compression["odd_levels_removed_by_exact_e7"])
     if old - removed != set(norms):
         raise CertificateError("frontier set subtraction does not replay")
+    if "packets 24 and 28" not in data["next_computation"]["level_35721"]:
+        raise CertificateError("level-35721 packet pairing missing")
+    if "fixed-7 level (3,2) is closed" not in data["next_computation"]["level_964467"]:
+        raise CertificateError("level-964467 closure dependency missing")
     if "does not prove" not in data["nonclaim"]:
         raise CertificateError("explicit nonclaim missing")
     return data["certificate_sha256"], norms
@@ -142,15 +166,24 @@ def self_test() -> None:
         raise RuntimeError("checker accepted an obsolete odd e7 value")
 
     mutated = copy.deepcopy(source)
-    mutated["compression"]["final_remaining_level_norms"].append(5103)
-    mutated["compression"]["final_remaining_level_count"] = 3
+    mutated["branch_status"]["odd"]["fixed7_pairing"]["e3_2"]["remaining_packets"] = [24]
     mutated["certificate_sha256"] = digest(mutated)
     try:
         validate(mutated)
     except CertificateError:
         pass
     else:
-        raise RuntimeError("checker accepted the removed odd level 5103")
+        raise RuntimeError("checker accepted an incomplete level-(2,3) packet list")
+
+    mutated = copy.deepcopy(source)
+    mutated["branch_status"]["odd"]["fixed7_pairing"]["e3_3"]["remaining_level"] = [3, 2]
+    mutated["certificate_sha256"] = digest(mutated)
+    try:
+        validate(mutated)
+    except CertificateError:
+        pass
+    else:
+        raise RuntimeError("checker restored the closed fixed-7 level (3,2)")
 
     duplicate = '{"schema_version":1,"schema_version":1}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
@@ -176,9 +209,11 @@ def main() -> int:
         self_test()
         return 0
     certificate, norms = validate(load(MANIFEST))
-    print("signature-357 two-level remaining frontier valid")
+    print("signature-357 two-level paired frontier valid")
     print("  even branch: closed")
     print("  odd mod-5 levels:", ", ".join(map(str, norms)))
+    print("  e3=2 pairs only with fixed-7 packets 24 and 28 at level (2,3)")
+    print("  e3=3 pairs only with the unresolved fixed-7 level (3,3)")
     print(f"  certificate sha256: {certificate}")
     return 0
 
