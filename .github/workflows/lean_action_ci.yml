@@ -66,6 +66,19 @@ jobs:
             fixed7-all-levels.json
             fixed7-all-levels.err
           if-no-files-found: error
+      - name: Replay level-(2,3) on the public Magma calculator
+        continue-on-error: true
+        run: >-
+          python3 scripts/run_signature_357_magma_calculator.py
+          > fixed7-level23-online.json
+          2> fixed7-level23-online.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-level23-online
+          path: |
+            fixed7-level23-online.json
+            fixed7-level23-online.err
+          if-no-files-found: error
       - name: Probe fixed-7 LMFDB level
         continue-on-error: true
         run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json 2> lmfdb-level18225.err
