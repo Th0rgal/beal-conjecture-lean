@@ -10,6 +10,8 @@ import pathlib
 import tempfile
 from typing import Any
 
+from check_signature_357_fixed7_prime2_trace import validate as validate_trace_correction
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "Research" / "Signature357" / "odd_irreducibility.json"
 
@@ -68,6 +70,7 @@ def validate(data: dict[str, Any]) -> str:
     correction = data["trace_correction"]
     dependency_path = ROOT / correction["path"]
     dependency = load(dependency_path)
+    validate_trace_correction(dependency)
     if digest(dependency) != dependency.get("certificate_sha256"):
         raise CertificateError("trace-correction dependency digest is invalid")
     if dependency["certificate_sha256"] != correction["sha256"]:
