@@ -1,11 +1,12 @@
-# Signature (3,5,7): fixed-7 modular frontier
+# Signature (3,5,7): fixed-prime modular frontier
 
 ## Status
 
 The signature `(3,5,7)` remains open. This directory turns the public
 Pacetti--Villagra Torcomian `(5,p,3)` computation into an explicit fixed-`p=7`
-frontier and adds an independently replayed local certificate at the residual
-prime itself.
+frontier, adds an independently replayed local certificate at the residual prime,
+and records an independent mod-`5` Frey system whose residual representation is
+absolutely irreducible throughout the unit-at-`3` branch.
 
 A hypothetical Beal solution
 
@@ -27,6 +28,8 @@ The primary sources are:
 - Dahmen--Siksek, *On the generalized Fermat equation x^5+y^3=z^7*, working
   paper dated July 2024, Theorem 1;
 - Pacetti--Villagra Torcomian, arXiv `2512.17845`;
+- Golfieri--Pacetti, arXiv `2412.08804`, for the compatible hypergeometric
+  system used by the second Frey representation;
 - the pinned computation `lucasvillagra/GFE-5p3` commit
   `e88f914c577ab6cf9a45e5cdd82c1993477fb423`, file
   `Outputs/TheoremA.txt`, blob
@@ -65,10 +68,11 @@ primitive solution in the even branch
   => the associated residual mod-7 representation is reducible.
 ```
 
-This is a substantial compression, but it is not an exclusion of the branch.
-The remaining mathematical target is now explicit: prove residual mod-`7`
-irreducibility for the Frey representation in this valuation branch, or classify
-and eliminate every reducible case.
+This is a substantial compression, but it is not yet an unconditional exclusion
+of the even branch. The remaining mathematical target is to prove residual
+mod-`7` irreducibility in this valuation branch, or classify and eliminate every
+reducible case. The parity-free auxiliary-prime sieve recorded in the frontier
+audit reduces this further outside an explicitly large divisor of `C`.
 
 ## Odd branch: exact prime-7 local certificate
 
@@ -132,10 +136,124 @@ fully replayed numerical family digest is
 ```
 
 The source paper's auxiliary-prime resultant elimination did not impose this
-residual-prime local condition. The most direct next computation is therefore to
+residual-prime local condition. The direct next computation is therefore to
 filter every fixed-`7` survivor by the corresponding nonordinary local type.
-This requires an explicit local-global compatibility theorem at the residual
-prime; ordinary away-from-`7` trace congruences are not enough.
+This requires explicit local-global compatibility at the residual prime;
+ordinary away-from-`7` trace congruences are not enough.
+
+The odd branch also has a source-backed fixed-`7` irreducibility certificate:
+
+```bash
+python3 scripts/check_signature_357_odd_irreducibility.py --self-test
+python3 scripts/check_signature_357_odd_irreducibility.py
+```
+
+It validates the exact arithmetic around the auxiliary-prime obstruction
+`6084=2^2*3^2*13^2`, the Beal-to-paper orientation, and `7 ∤ 6084`. The source
+implication from reducibility to divisibility by that obstruction remains an
+explicit literature dependency.
+
+## Second Frey system: complete mod-5 irreducibility at 3
+
+Use the independent plus compatible system for signature `(7,5,3)` over
+
+```text
+K_7 = Q(zeta_7)^+,
+```
+
+with orientation
+
+```text
+(a,b,c)=(-C,B,A)
+```
+
+and parameter
+
+```text
+u = C^7/A^3.
+```
+
+Assume `3 ∤ A*B*C`. Exact enumeration of the primitive unit equation modulo `9`
+shows
+
+```text
+u mod 9 ∈ {2,5,8}.
+```
+
+The local-type table in Pacetti--Villagra assigns:
+
+| `u mod 9` | local type at `3` | inertia order bound |
+|---:|---|---:|
+| `2` | ramified-quadratic supercuspidal | `12` |
+| `5` | unramified-quadratic supercuspidal | `4` |
+| `8` | ramified-quadratic supercuspidal | `12` |
+
+The rational prime `3` has order `6` modulo `7`, hence residue degree `3` in the
+real cubic field `K_7`. The local base change is therefore unramified cubic. It
+cannot contain the unramified quadratic extension used by the order-`4` type,
+and the ramified-quadratic type is unaffected by unramified base change.
+Consequently all three rows remain supercuspidal over `K_7`.
+
+The finite inertia orders `4` and `12` are prime to both the source congruence
+characteristic `7` and the target residual characteristic `5`. The cited
+local-type compatibility therefore transfers the type from the Darmon curve to
+the compatible system and then to its `5`-adic member; reduction modulo `5`
+preserves the distinct inducing characters. Thus:
+
+```text
+3 ∤ A*B*C
+  => the independent residual mod-5 representation is absolutely irreducible.
+```
+
+Run:
+
+```bash
+python3 scripts/check_signature_357_mod5_irreducibility.py --self-test
+python3 scripts/check_signature_357_mod5_irreducibility.py
+```
+
+The checker independently verifies the finite arithmetic, including the exact
+modulo-`9` enumeration, residue degree, absence of an unramified quadratic
+subfield, prime-to-`5`/`7` inertia orders, metadata, and canonical digest:
+
+```text
+df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e
+```
+
+It does not reprove the cited compatible-system or local-type theorems. This
+certificate remains outside `BealUnified.Trusted`.
+
+This closes the five classes
+
+```text
+47,74,101,209,380 mod 441
+```
+
+that remained in the earlier polynomial-irreducibility sieve. They are not true
+exceptions: at `3` their exact supercuspidal type already forces residual
+irreducibility. In particular, the Dahmen--Siksek odd branch now has two
+independent absolutely irreducible residual representations, modulo `7` and
+modulo `5`.
+
+The two parameters are coupled exactly. For the first representation let
+
+```text
+t_7 = -B^5/A^3,
+```
+
+while the second uses `u=C^7/A^3`. The Beal equation gives
+
+```text
+u + t_7 = 1.
+```
+
+Therefore the next two-Frey calculation must use the joint trace graph
+
+```text
+{ (tr rho_5(u), tr rho_7(1-u)) : u in F_l \ {0,1} },
+```
+
+not the Cartesian product of two marginal trace sets.
 
 ## Fixed-7 newform extraction
 
@@ -182,7 +300,7 @@ python3 scripts/check_signature_357_fixed7.py \
 
 ## The two missing public reruns
 
-The exact fixed-7 survivor sets at the other levels require per-form output:
+The exact fixed-`7` survivor sets at the other levels require per-form output:
 
 ```magma
 TheoremA(2,3,Data : flag := true);
@@ -200,7 +318,8 @@ the unflagged summaries.
 
 ## Next certificate format
 
-For a proof-grade fixed-7 computation, every form/prime certificate should store:
+For a proof-grade fixed-prime computation, every form/prime certificate should
+store:
 
 ```text
 level
@@ -211,43 +330,32 @@ candidate trace polynomials
 all integer resultants
 their gcd across candidates and auxiliary primes
 the prime divisors of that gcd
-local type at the prime over 7
+local type at the residual prime
+joint trace pairs under u+t_7=1
 ```
 
-A standard-library checker can replay the polynomial resultants, gcds, point
-counts and local-type predicates. Magma remains a producer of newform and trace
-data, not the trusted verifier.
+A standard-library checker can replay polynomial resultants, gcds, point counts,
+local-type predicates, and joint trace membership. Magma remains a producer of
+newform and trace data, not the trusted verifier.
 
 ## Most promising mathematical attack
 
-1. Prove residual mod-`7` irreducibility in the even branch. This would eliminate
-   that entire half of the Dahmen--Siksek dichotomy.
-2. Finish the two flagged reruns and obtain the exact survivor set across all four
-   levels.
-3. Compute the local type at the prime over `7` for each survivor and apply the
-   certified condition `a_p ≡ 0` in the odd branch.
-4. Separate CM packets, ghost packets and genuinely non-CM survivors.
-5. Apply the ghost incompatibility theorem whenever its valuation hypothesis
-   (`3 ∤ A` in Beal orientation) is available.
-6. For any non-CM survivors, add an independent Frey or hypergeometric
-   representation and intersect the two residual trace constraints.
+1. Finish the two flagged mod-`7` reruns and obtain the exact survivor set across
+   all four levels.
+2. Compute the local type at the prime over `7` for each survivor and apply the
+   certified superspecial/nonordinary condition in the odd branch.
+3. Separate CM packets, ghost packets and genuinely non-CM survivors; apply the
+   ghost incompatibility theorem when `3 ∤ A`.
+4. Enumerate the relevant Hilbert newforms over `Q(zeta_7)^+` for the now-proved
+   irreducible mod-`5` system.
+5. Use `u+t_7=1` to run a simultaneous joint trace-pair elimination rather than
+   intersecting two independent marginal survivor lists.
+6. Prove mod-`7` irreducibility in the remaining even-branch exceptional support
+   case, or classify its reducible ray-class characters directly.
 7. Retain exact certificate data for every elimination; never infer `p=7` from
    the paper's asymptotic exceptional-set theorem.
 
 The public papers and transcripts are infrastructure, not a proof of `(3,5,7)`.
-The new local certificate turns the odd branch into a concrete nonordinary
-fixed-`7` filtering problem, while the even branch is reduced to one explicit
-irreducibility problem.
-
-## Repeated-left frontier
-
-The independently audited cyclotomic reduction shows that a primitive solution
-of `X^p+Y^p=C^n` with odd prime `p` forces at least two prime divisors of `C` and
-a nonexceptional prime of multiplicity at least `n`. Combined with the current
-solved-signature survey, `(5,5,11)` is the first unresolved unit-coefficient
-repeated-left prime signature by exponent sum.
-
-The current version of Bartolome--Mihailescu, arXiv `2108.08572v4`, proves only
-the equal-exponent cofactor equation with right exponent `p`; it must not be used
-as a theorem for a distinct exponent `q`. The specific diagnosis of superseded
-proof text remains outside this certificate until independently audited.
+The new mod-`5` theorem removes the last local irreducibility exceptions in the
+odd branch and turns the remaining task into a finite two-Frey/newform
+cross-elimination problem.
