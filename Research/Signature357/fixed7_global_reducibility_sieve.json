@@ -1,0 +1,91 @@
+{
+  "candidate_products_mod7": {
+    "11_plus": {
+      "prime": 11,
+      "products_G_0_inf_1": [[5,0],[3,0],[4,0],[0,0]],
+      "psi": [1,0]
+    },
+    "13_minus": {
+      "prime": 13,
+      "products_G_0_inf_1": [[2,0],[4,0],[0,0],[0,0]],
+      "psi": [6,0]
+    },
+    "17_i": {
+      "prime": 17,
+      "products_G_0_inf_1": [[4,5],[6,0],[6,0],[4,0]],
+      "psi": [0,1]
+    },
+    "17_minus_i": {
+      "prime": 17,
+      "products_G_0_inf_1": [[4,2],[6,0],[6,0],[4,0]],
+      "psi": [0,6]
+    },
+    "19_minus": {
+      "prime": 19,
+      "products_G_0_inf_1": [[1,0],[1,0],[5,0],[0,0]],
+      "psi": [6,0]
+    },
+    "19_plus": {
+      "prime": 19,
+      "products_G_0_inf_1": [[5,0],[1,0],[5,0],[0,0]],
+      "psi": [1,0]
+    },
+    "71_minus": {
+      "prime": 71,
+      "products_G_0_inf_1": [[1,0],[5,0],[4,0],[0,0]],
+      "psi": [6,0]
+    }
+  },
+  "certificate_sha256": "82ecb0e373c8b604c30690aeb9d2d2ddc3b8e0d8d14ed60d95c2f55513f93cc7",
+  "conclusion": {
+    "additional_divisibility": "13 divides A*C",
+    "even_branch_corollary": "every even-branch solution has 19*71 dividing C and 13 dividing A*C because its fixed-7 representation is reducible",
+    "forced_divisibility": "19*71 divides C",
+    "unique_reducibility_character": "psi_(2,0)"
+  },
+  "deduction_steps": [
+    "prime 17 excludes every character with a odd, so a is 0 or 2",
+    "prime 19 excludes generic, zero and infinity for both possible values; hence 19 divides C",
+    "at t7=1 the nodal splitting character is -1 at both primes above 19, so a=2",
+    "at the primes above 11 the same splitting character is -1; this excludes b=1 and forces b=0",
+    "with psi=psi_(2,0), prime 71 only permits t7=1, so 71 divides C",
+    "with psi=psi_(2,0), prime 13 permits only t7=infinity or t7=1, so 13 divides A*C"
+  ],
+  "equation": "A^3+B^5=C^7",
+  "nodal_splitting_character": {
+    "all_listed_residues_nonsquares": true,
+    "element": "d=3*(phi+2)=3*sqrt(5)*phi",
+    "norm": 45,
+    "prime11_residues": [8,7],
+    "prime19_residues": [2,13]
+  },
+  "nonclaim": "the ray-class classification, semisimplified reducible shape and local multiplicative-sign criterion are imported; the finite ray coordinates, square classes and candidate products are replayed",
+  "orientation": "(a,b,c)=(B,-C,A), t7=-B^5/A^3",
+  "ray_coordinates": {
+    "11a": {"coordinate":[3,1],"generator":"3+phi"},
+    "11b": {"coordinate":[1,1],"generator":"3+2*phi"},
+    "13": {"coordinate":[1,0],"generator":"13"},
+    "17": {"coordinate":[3,0],"generator":"17"},
+    "19a": {"coordinate":[1,0],"generator":"4+phi"},
+    "19b": {"coordinate":[1,0],"generator":"4+3*phi"},
+    "71a": {"coordinate":[1,1],"generator":"8+phi"},
+    "71b": {"coordinate":[3,1],"generator":"8+7*phi"}
+  },
+  "reducible_shape": {
+    "a_values": [0,1,2,3],
+    "b_values": [0,1],
+    "characters": "psi_(a,b)(u,v)=i^(a*u)*(-1)^(b*v)",
+    "ray_group": "C4 x C2",
+    "semisimplification": "psi*chi_7 direct_sum psi^(-1)"
+  },
+  "schema_version": 1,
+  "source": {
+    "commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423",
+    "git_blob_sha1": "9c96357834f2298b4d91ab97812c38e84b8ef7a2",
+    "path": "Outputs/Data.txt",
+    "ray_control_path": "Research/Signature357/fixed7_ray_character_control.json",
+    "ray_control_sha256": "a1c779c4ce53e445aab3b041745d7df87e72cf0059c28e760776f2a987e5e28a",
+    "repository": "lucasvillagra/GFE-5p3"
+  },
+  "status": "finite-global-fixed7-reducibility-sieve"
+}
