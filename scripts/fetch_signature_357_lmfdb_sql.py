@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Query the public LMFDB SQL mirror for the complete low-level HMF frontier.
 
-This is an internet-facing research producer.  It queries the three underlying
+This is an internet-facing research producer. It queries the three underlying
 LMFDB tables directly so that API rate limiting or browser challenges cannot
 silently turn a complete enumeration into an empty response.
 
 The only non-stdlib dependency is psycopg 3, installed by the dedicated research
-workflow.  The emitted JSON is canonical and includes a SHA-256 digest; a later
+workflow. The emitted JSON is canonical and includes a SHA-256 digest; a later
 offline checker must validate any modular elimination based on it.
 """
 
@@ -22,9 +22,10 @@ import psycopg
 
 FIELD_LABEL = "3.3.49.1"
 COMPLETENESS_BOUND = 2059
+# The inversion isomorphism lowers the global conductor frontier to p3^3*p7^3.
 LEVELS = sorted(
     (27**a * 7**b, a, b)
-    for a in range(6)
+    for a in range(4)
     for b in range(4)
     if 27**a * 7**b <= COMPLETENESS_BOUND
 )
@@ -157,7 +158,7 @@ def main() -> int:
 
     body = normalize(
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "status": (
                 "LMFDB public-mirror complete-range inventory; database data, "
                 "not a standalone nonexistence theorem"
@@ -168,6 +169,7 @@ def main() -> int:
                 "field_label": FIELD_LABEL,
                 "parallel_weight": 2,
                 "documented_degree3_completeness_bound": COMPLETENESS_BOUND,
+                "global_level_bound": "p3^3*p7^3",
             },
             "prime_ordering": {
                 "norm8_index_zero_based": norm8_index,
