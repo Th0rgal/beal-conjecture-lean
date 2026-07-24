@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "dahmen_siksek": {
+      "title": "On the generalized Fermat equation x^5 + y^3 = z^7",
+      "url": "https://few.vu.nl/~sdn249/GFE357.pdf",
+      "theorem": "Theorem 1",
+      "orientation": "x=B, y=A, z=C for A^3+B^5=C^7"
+    },
+    "pacetti_villagra": {
+      "arxiv": "2512.17845",
+      "frey_model": "y^2 + y*(x^3+B) = 2*B*x^3 + 3*A*x + B^2"
+    }
+  },
+  "branch_audit": {
+    "even": {
+      "necessary_conditions": [
+        "30|C",
+        "7∤A*B"
+      ],
+      "pvt_orientation": [
+        "a=B",
+        "b=-C",
+        "c=A",
+        "p=7"
+      ],
+      "forced_level_exponents": [
+        2,
+        2
+      ],
+      "fixed7_survivors": [
+        3,
+        9,
+        12
+      ],
+      "certified_conclusion": "an even-branch primitive solution can exist only if the associated residual mod-7 representation is reducible"
+    },
+    "odd": {
+      "necessary_conditions": [
+        "C odd",
+        "3∤A*B*C",
+        "5∤A*C",
+        "7|A"
+      ],
+      "completed_square_variable": "Y=2*y+x^3+B",
+      "integral_model": "Y^2=x^6+10*B*x^3+12*A*x+5*B^2",
+      "reduced_model_mod_7": "Y^2=x^6+3*B*x^3+5*B^2",
+      "required_local_filter": "a_p ≡ 0 mod p at the unique prime p over 7 in Q(sqrt(5))"
+    }
+  },
+  "field_model": {
+    "prime": 7,
+    "quadratic_extension": "F_7[w]/(w^2+1)",
+    "points_at_infinity": 2,
+    "cartier_manin_exponents": [
+      5,
+      6,
+      12,
+      13
+    ]
+  },
+  "expected": {
+    "rows": [
+      {
+        "B_mod_7": 1,
+        "points_F7": 8,
+        "points_F49": 64,
+        "weil_polynomial": [1, 0, 7, 0, 49],
+        "rm_constituent_trace_at_prime_over_7": -7
+      },
+      {
+        "B_mod_7": 2,
+        "points_F7": 8,
+        "points_F49": 22,
+        "weil_polynomial": [1, 0, -14, 0, 49],
+        "rm_constituent_trace_at_prime_over_7": 14
+      },
+      {
+        "B_mod_7": 3,
+        "points_F7": 8,
+        "points_F49": 64,
+        "weil_polynomial": [1, 0, 7, 0, 49],
+        "rm_constituent_trace_at_prime_over_7": -7
+      },
+      {
+        "B_mod_7": 4,
+        "points_F7": 8,
+        "points_F49": 64,
+        "weil_polynomial": [1, 0, 7, 0, 49],
+        "rm_constituent_trace_at_prime_over_7": -7
+      },
+      {
+        "B_mod_7": 5,
+        "points_F7": 8,
+        "points_F49": 22,
+        "weil_polynomial": [1, 0, -14, 0, 49],
+        "rm_constituent_trace_at_prime_over_7": 14
+      },
+      {
+        "B_mod_7": 6,
+        "points_F7": 8,
+        "points_F49": 64,
+        "weil_polynomial": [1, 0, 7, 0, 49],
+        "rm_constituent_trace_at_prime_over_7": -7
+      }
+    ],
+    "family_sha256": "65f0cc94575f0b048e28e60c328b9bed02938af2ecd0de8e9e73a4105bf716d9"
+  }
+}
