@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "signature": [3, 5, 7],
+  "residual_prime": 5,
+  "source_congruence_prime": 7,
+  "source": {
+    "paper_arxiv": "2512.17845v1",
+    "compatible_system_arxiv": "2412.08804v1",
+    "results": [
+      "Pacetti--Villagra Torcomian, Proposition 3.2",
+      "Pacetti--Villagra Torcomian, Table 3.1 and Corollary 3.6",
+      "Pacetti--Villagra Torcomian, Remark 3.8",
+      "Golfieri--Pacetti, Theorem 2.9 and Theorem 6.2"
+    ]
+  },
+  "orientation": {
+    "beal_equation": "A^3+B^5=C^7",
+    "paper_equation": "a^7+b^5+c^3=0",
+    "paper_variables": ["a=-C", "b=B", "c=A", "q=7", "p=5", "r=3"],
+    "parameter": "u=C^7/A^3",
+    "hypothesis": "3 does not divide A*B*C"
+  },
+  "base_field": {
+    "label": "3.3.49.1",
+    "name": "Q(zeta_7)^+",
+    "degree": 3,
+    "defining_polynomial": "x^3-x^2-2*x+1",
+    "local_prime": 3,
+    "order_of_3_mod_7": 6,
+    "real_residue_degree": 3,
+    "local_extension": "unramified cubic over Q_3"
+  },
+  "unit_parameter_classes_mod_9": [2, 5, 8],
+  "local_types": [
+    {
+      "u_mod_9": 2,
+      "e": 12,
+      "type": "supercuspidal",
+      "quadratic_extension": "ramified",
+      "prime_to_5_inertia_bound": 12
+    },
+    {
+      "u_mod_9": 5,
+      "e": 4,
+      "type": "supercuspidal",
+      "quadratic_extension": "unramified",
+      "inducing_character_order": 4,
+      "prime_to_5_inertia_bound": 4
+    },
+    {
+      "u_mod_9": 8,
+      "e": 12,
+      "type": "supercuspidal",
+      "quadratic_extension": "ramified",
+      "prime_to_5_inertia_bound": 12
+    }
+  ],
+  "transfer": {
+    "quadratic_twist_allowed": true,
+    "unramified_base_degree": 3,
+    "unramified_quadratic_contained": false,
+    "orders_prime_to_congruence_prime": [4, 12],
+    "orders_prime_to_residual_prime": [4, 12],
+    "principle": "prime-to-7 local type survives the mod-7 congruence; compatibility transfers the local type to the 5-adic member; prime-to-5 reduction preserves the distinct inducing characters"
+  },
+  "conclusion": "if 3 does not divide A*B*C, the independent residual mod-5 Frey representation over Q(zeta_7)^+ is absolutely irreducible",
+  "certificate_sha256": "df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e"
+}
