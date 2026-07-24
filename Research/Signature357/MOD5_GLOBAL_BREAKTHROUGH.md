@@ -5,12 +5,18 @@
 This note records a literature-assisted reduction, not a proof of `(3,5,7)` and
 not a theorem in `BealUnified.Trusted`.
 
-The new conclusion is:
+The current conclusion is:
 
 ```text
 every hypothetical primitive positive A^3+B^5=C^7 solution
   carries an absolutely irreducible residual mod-5 plus HGM representation
-  over K7 = Q(zeta_7)^+.
+  over K7 = Q(zeta_7)^+,
+```
+
+and the prime-to-`5` level of the lowered Hilbert newform divides
+
+```text
+p3^3 * p7^3.
 ```
 
 The finite arithmetic is replayed by standard-library Python checkers. The
@@ -26,8 +32,14 @@ Use the plus compatible system for
 A^3+B^5+(-C)^7=0
 ```
 
-with parameter `u=C^7/A^3` over `K7=Q(zeta_7)^+` and residual characteristic
-`5`.
+with the two inverse parameters
+
+```text
+t=A^3/C^7,
+u=t^(-1)=C^7/A^3
+```
+
+over `K7=Q(zeta_7)^+` and residual characteristic `5`.
 
 For a primitive solution there are exactly three parity patterns:
 
@@ -50,8 +62,8 @@ cyclotomic trace is
 ### `C` even
 
 Use `u` without inversion. The two Jacobi sums are non-rational separately, but
-their sum reduces exactly to the rational integer `-9` in
-`Z[zeta_21]`. After the same normalization the full cyclotomic trace is
+their sum reduces exactly to the rational integer `-9` in `Z[zeta_21]`. After
+the same normalization the full cyclotomic trace is
 
 ```text
 9 = 4 mod 5.
@@ -99,10 +111,10 @@ odd:  C odd, 3 does not divide A*B*C, 5 does not divide A*C, 7 divides A.
 ```
 
 In the even branch, `C` is even and pairwise primitivity forces `A,B` odd. Hence
-`B` is odd and the new prime-2 theorem applies.
+`B` is odd and the prime-2 theorem applies.
 
-In the odd branch, `3` does not divide `A*B*C`; the previously certified
-supercuspidal local type at `3` gives absolute irreducibility modulo `5`.
+In the odd branch, `3` does not divide `A*B*C`; the certified supercuspidal local
+type at `3` gives absolute irreducibility modulo `5`.
 
 Therefore every hypothetical primitive solution has an absolutely irreducible
 mod-`5` HGM representation.
@@ -114,47 +126,63 @@ python3 scripts/check_signature_357_mod5_global.py --self-test
 python3 scripts/check_signature_357_mod5_global.py
 ```
 
-Certificate digest:
+Updated certificate digest:
 
 ```text
-3ffd34b812498338af63108981cee5aa21d17d3600af2227d4e9bac1403ea29b
+7b337264f729be16a31b4561bfdbdc0e2ec16e8511956fad5989cc773b35ece0
 ```
 
-## 3. Finite automorphic frontier
+## 3. New conductor breakthrough: optimize locally by parameter inversion
 
-Golfieri--Pacetti's plus family is modular for the orientation above. Combining
-absolute irreducibility, finite flatness at `5`, residual ramification control,
-and standard Hilbert level lowering reduces the representation to a
-parallel-weight `(2,2,2)` Hilbert newform over `K7`.
-
-The exact wild-prime bounds must use Theorem 7.4, not only the coarser
-prime-to-base branch of Corollary 7.5:
-
-- at the prime over `3`, the even Dahmen--Siksek branch can have negative
-  parameter valuation not divisible by `3`, so the safe global exponent bound is
-  `5`;
-- at the prime over `7`, the odd branch has positive valuation divisible by `3`
-  and the even branch has either unit valuation or negative valuation divisible
-  by `7`; the exceptional `q+2` cases do not occur, so the bound is `3`.
-
-Thus the prime-to-`5` level divides
+Golfieri--Pacetti equation (15) gives an isomorphism
 
 ```text
-p3^5 * p7^3.
+H((a,b),(c,d)|t) ~= H((c,d),(a,b)|t^(-1)).
 ```
 
-Here `3` is inert in `K7`, so `N(p3)=27`, while `7` is totally ramified and
-`N(p7)=7`. Consequently:
+The conductor is therefore the same in the `t` and `u=t^(-1)` presentations.
+The two presentations may be chosen separately at the primes above `3` and `7`
+when applying Theorem 7.4.
+
+The Beal equation gives
 
 ```text
-maximum level norm = 27^5 * 7^3 = 4,921,675,101;
-possible exponent pairs = (e3,e7) with 0 <= e3 <= 5 and 0 <= e7 <= 3;
-number of level divisors = 24.
+u-1 = B^5/A^3,
+t-1 = -B^5/C^7.
 ```
 
-This is still a finite modular-form problem. The current certificate does not
-enumerate those spaces. The earlier provisional `p3^3*p7^3` bound was too
-optimistic and has been removed from the checker.
+The Dahmen--Siksek branches then give the following exact valuation choices.
+
+| branch/place | chosen parameter | valuation pattern |
+|---|---|---|
+| even at `3` | `u` | `v3(u)>0`, `v3(u-1)=0` |
+| odd at `3` | `u` | `v3(u)=v3(u-1)=0` |
+| even at `7` | `u` | `v7(u)>=0`, `v7(u-1)=0` |
+| odd at `7` | `t=u^(-1)` | `v7(t)>0`, `v7(t-1)=0` |
+
+In every row the chosen parameter is integral, and the valuation of
+`parameter*(parameter-1)` is either zero or greater than one. Neither exceptional
+clause of Theorem 7.4 occurs. The `otherwise` bound therefore gives conductor
+exponent at most `3` at both wild primes.
+
+Consequently the lowered prime-to-`5` level divides
+
+```text
+p3^3 * p7^3,
+```
+
+not merely the earlier safe bound `p3^5*p7^3`.
+
+Here `N(p3)=27` and `N(p7)=7`, so
+
+```text
+maximum level norm = 27^3 * 7^3 = 6,751,269;
+possible exponent pairs = (e3,e7), 0 <= e3,e7 <= 3;
+number of level divisors = 16.
+```
+
+This reduces the maximum norm by a factor of `729` and the number of candidate
+levels from `24` to `16`.
 
 ## 4. Residual prime-2 Hecke filter
 
@@ -178,12 +206,9 @@ and hence
 a_P = 0 mod 5.
 ```
 
-It does **not** force the exact characteristic-zero values `0` or `+/-5`. The
-initial branch-specific exact-value interpretation was too strong and has been
-removed.
+It does **not** force an exact characteristic-zero value.
 
-A standard-library point counter over `F_8` checks four explicit rational
-Hilbert-newform packets:
+A standard-library point counter checks four explicit rational packets:
 
 | packet | `a_P` | `a_P mod 5` | result |
 |---|---:|---:|---|
@@ -205,14 +230,14 @@ Certificate digest:
 6c9e5f506f06564b413a2663161fcdfd604816dc832d0015e72f22d28f09d191
 ```
 
-These four packets are examples, not a complete enumeration of the 24 levels.
+These four packets are examples, not a complete enumeration of the 16 levels.
 
 ## 5. Exact remaining task
 
 The global problem has been reduced to the following finite program:
 
-1. enumerate the parallel-weight-two Hilbert newforms over `K7` at the 24 levels
-   dividing `p3^5*p7^3`;
+1. enumerate the parallel-weight-two Hilbert newforms over `K7` at the 16 levels
+   dividing `p3^3*p7^3`;
 2. apply the exact residual condition `a_P=0 mod 5`;
 3. attach the fixed-`7` form on `Q(sqrt(5))`;
 4. use the exact parameter relation
@@ -225,6 +250,6 @@ The global problem has been reduced to the following finite program:
 5. eliminate every remaining pair with replayable resultant and local-type
    certificates.
 
-The new result removes residual irreducibility as a global obstruction on the
-mod-`5` side. What remains is finite automorphic enumeration and two-Frey
-cross-elimination.
+The new result removes residual irreducibility as a global obstruction and cuts
+the automorphic level frontier from 24 to 16 levels. What remains is finite
+Hilbert-newform enumeration and two-Frey cross-elimination.
