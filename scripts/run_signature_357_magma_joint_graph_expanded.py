@@ -58,7 +58,7 @@ E5:=HeckeEigenvalue(f5,P5ideal);B5:=MinimalPolynomial(E5);U5:=E5;f5k:=InertiaDeg
 printf "PRIME=%o\n",ell;
 for packet in [24,28] do
  f7:=Eigenform(D7[packet]);E7:=HeckeEigenvalue(f7,P7ideal);B7:=MinimalPolynomial(E7);U7:=E7;f7k:=InertiaDegree(P7ideal);f7f:=InertiaDegree(Factorisation(ell*OF15)[1][1]);if f7f/f7k eq 2 then U7:=E7^2-2*ell^f7k;end if;Full7:=MinimalPolynomial(U7);q7:=Integers()!Norm(P7ideal);Mult7:=Common7(B7,x-(q7+1)) or Common7(B7,x+(q7+1));
- G:=0;for row in Generic do if Common5(B5,row[3]) and Common7(B7,row[4]) then G+:=1;end if;end for;
+ G:=0;for row in Generic do if Common5(Full5,row[3]) and Common7(Full7,row[4]) then G+:=1;end if;end for;
  ZZ:=Any5(Full5,Z5) and Any7(Full7,Z7);MI:=Mult5 and Any7(Full7,Inf7);IM:=Any5(Full5,Inf5) and Mult7;Alive:=G gt 0 or ZZ or MI or IM;
  printf "PAIR|%o|%o|%o|%o|%o|%o\n",packet,G,Integers()!ZZ,Integers()!MI,Integers()!IM,Integers()!Alive;
 end for;
