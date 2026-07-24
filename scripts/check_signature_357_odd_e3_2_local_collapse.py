@@ -79,7 +79,7 @@ def eta7(prime: int) -> int:
 
 
 def validate(data: dict[str, Any]) -> str:
-    if data.get("schema_version") != 1:
+    if data.get("schema_version") != 2:
         raise CertificateError("schema version mismatch")
     if canonical_sha256(data) != data.get("certificate_sha256"):
         raise CertificateError("certificate digest mismatch")
@@ -153,11 +153,22 @@ def validate(data: dict[str, Any]) -> str:
     if at13["forced_fixed7_trace_polynomial"] != "x":
         raise CertificateError("prime-13 fixed-7 trace target changed")
 
+    at43 = data["auxiliary_primes"]["43"]
+    if at43["forced_fixed7_full_trace_polynomial"] != "x+3698":
+        raise CertificateError("prime-43 zero polynomial changed")
+    norm43 = 43**2
+    full_trace = -3698
+    if full_trace != -2 * norm43:
+        raise CertificateError("prime-43 full trace no longer equals -2*N")
+    base_trace_square = (full_trace + 2 * norm43) % 7
+    if base_trace_square != 0 or at43["forced_fixed7_trace_polynomial"] != "x":
+        raise CertificateError("prime-43 base trace is not forced to zero")
+
     conclusion = data["conclusion"]
     if conclusion["forced_divisibility"] != "29 divides C and 41*43 divides B":
         raise CertificateError("forced divisibility conclusion mismatch")
-    if "packets 24 and 28" not in conclusion["decisive_remaining_test"]:
-        raise CertificateError("decisive packet test missing")
+    if "both inert primes above 13 and 43" not in conclusion["decisive_remaining_test"]:
+        raise CertificateError("two-prime decisive packet test missing")
     if "imported research inputs" not in data["nonclaim"]:
         raise CertificateError("trust-boundary nonclaim missing")
     return data["certificate_sha256"]
@@ -179,6 +190,10 @@ def self_test() -> None:
     mutated = copy.deepcopy(base)
     mutated["auxiliary_primes"]["13"]["corrected_row_evaluations_at_trace2_mod5"][1]["value"] = 0
     expect_rejection(mutated, "a second prime-13 parameter")
+
+    mutated = copy.deepcopy(base)
+    mutated["auxiliary_primes"]["43"]["forced_fixed7_full_trace_polynomial"] = "x+3697"
+    expect_rejection(mutated, "the wrong prime-43 full trace")
 
     mutated = copy.deepcopy(base)
     mutated["auxiliary_primes"]["41"]["forced_regime"] = "generic"
@@ -213,8 +228,8 @@ def main() -> int:
     value = validate(load(MANIFEST))
     print("odd e3=2 local-collapse certificate valid")
     print("  29 divides C; 41*43 divides B")
-    print("  u=2 mod 13, so fixed-7 trace at the inert prime over 13 is 0 mod 7")
-    print("  remaining test: packets 24 and 28 at one prime")
+    print("  fixed-7 traces at the inert primes 13 and 43 are both 0 mod 7")
+    print("  remaining test: packets 24 and 28 at two inert primes")
     print(f"  certificate sha256: {value}")
     return 0
 
