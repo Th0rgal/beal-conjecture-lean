@@ -42,17 +42,20 @@ def main() -> None:
     for x, y, z in itertools.product(range(1, BOUND + 1), repeat=3):
         d1 = gcd3(x, y, z)
         delta2 = gcd3(x * y, x * z, y * z)
-        assert delta2 % d1 == 0
+        if delta2 % d1 != 0:
+            raise RuntimeError(("nonintegral invariant factor", x, y, z))
         d2 = delta2 // d1
         for n in MODULI:
             observed_cokernel = n * n // image_size(x, y, z, n)
             predicted_cokernel = gcd(n, d1) * gcd(n, d2)
-            assert observed_cokernel == predicted_cokernel, (x, y, z, n)
+            if observed_cokernel != predicted_cokernel:
+                raise RuntimeError(("cokernel mismatch", x, y, z, n))
             cyclic_cases += 1
         for p in PRIMES:
             observed_rank = rank_over_prime(x, y, z, p)
             predicted_rank = 2 if delta2 % p else (1 if d1 % p else 0)
-            assert observed_rank == predicted_rank, (x, y, z, p)
+            if observed_rank != predicted_rank:
+                raise RuntimeError(("rank mismatch", x, y, z, p))
             field_cases += 1
     print(json.dumps({
         "claim": "BR-128 F1 finite shadows for [[x,0,-z],[0,y,-z]]",
