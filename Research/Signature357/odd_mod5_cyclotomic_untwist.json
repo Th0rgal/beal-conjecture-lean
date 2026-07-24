@@ -1,0 +1,111 @@
+{
+  "certificate_sha256": "0612b49a472b51b85416ea63e2f75ba2c6e8dd2528b250510372fb6f9502d84d",
+  "conclusion": "the odd branch can be studied through an absolutely irreducible cyclotomic quadratic twist whose lowered mod-5 level is one of 5103, 19683 or 137781",
+  "cyclotomic_character": {
+    "character": "eta_7",
+    "degree": 2,
+    "extension": "Q(zeta_7)/K7",
+    "finite_ramification_support": [
+      7
+    ],
+    "full_trace_field": "F21=Q(zeta_21)",
+    "local_at_prime_above_7": "ramified quadratic",
+    "reason": "Q_7(zeta_7)/Q_7 is totally ramified of degree 6 and K7 at 7 is its degree-3 real subfield",
+    "trivial_on_full_trace_field": true
+  },
+  "equation": "A^3+B^5=C^7",
+  "level_compression": {
+    "low_level_norm_eliminated": 729,
+    "maximum_norm_after": 137781,
+    "maximum_norm_before": 964467,
+    "maximum_norm_reduction_factor": 7,
+    "remaining_twisted_level_norms": [
+      5103,
+      19683,
+      137781
+    ],
+    "twisted_exponent_pairs": [
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        3,
+        1
+      ]
+    ],
+    "twisted_level_norms": [
+      729,
+      5103,
+      19683,
+      137781
+    ],
+    "untwisted_exponent_pairs": [
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        2
+      ]
+    ],
+    "untwisted_level_norms": [
+      35721,
+      964467
+    ]
+  },
+  "local_untwist": {
+    "original_residual_conductor_exponent": 2,
+    "original_type_at_7": "special twisted by a ramified quadratic character",
+    "quadratic_square_class_fact": "the product of two ramified quadratic characters of an odd local field is unramified",
+    "twisted_residual_conductor_exponents": [
+      0,
+      1
+    ],
+    "twisted_type_at_7": "special with an unramified quadratic character, with possible residual monodromy drop"
+  },
+  "nonclaim": "the local-type identification, automorphic twisting and level lowering are imported theorems; the three remaining twisted levels are not all eliminated, so this is not a proof of the full signature",
+  "preserved_properties": {
+    "absolute_irreducibility": true,
+    "determinant": "cyclotomic, since eta_7^2=1",
+    "finite_flatness_at_5": true,
+    "full_cyclotomic_local_trace_polynomials": "unchanged because eta_7 is trivial on G_F21",
+    "non_CM_property": "invariant under finite-order character twist",
+    "norm8_zero_trace_filter": "unchanged",
+    "prime3_conductor_exponents": [
+      2,
+      3
+    ]
+  },
+  "schema_version": 1,
+  "scope": {
+    "branch": "Dahmen--Siksek odd branch",
+    "conditions": [
+      "3 does not divide A*B*C",
+      "7 divides A",
+      "7 does not divide B*C"
+    ],
+    "field": "K7=Q(zeta_7)^+",
+    "representation": "independent plus hypergeometric residual representation",
+    "residual_characteristic": 5
+  },
+  "source_dependencies": {
+    "automorphic_twist": "finite-order Hecke-character twists preserve Hilbert modularity and parallel weight",
+    "local_type": "Pacetti--Villagra Torcomian Proposition 3.10, Remark 3.12 and Proposition 3.14 after parameter inversion",
+    "low_level_filter_path": "Research/Signature357/lmfdb_low_level_filter.json",
+    "low_level_filter_sha256": "fadf1a219227b97ed0a7265dfd64249563a84ac1b7796f6c5512bbe20b546673",
+    "odd_prime7_type_path": "Research/Signature357/odd_p7_twist.json",
+    "odd_prime7_type_sha256": "1ac352af8ce0d9d324112c6741bebef06124734d4708e9737bace6804c5931fc",
+    "semistable_twist": "Cazorla Garcia--Villagra Torcomian Corollary 5.5: twisting by a local uniformizer gives semistable reduction"
+  },
+  "status": "literature-assisted-cyclotomic-quadratic-untwist"
+}
