@@ -91,8 +91,12 @@ def validate(data: dict[str, Any]) -> str:
         raise CertificateError("monodromy basis mismatch")
     for a in range(1, 31):
         v_delta = 3 * a
-        twice_depth = 2 * ((6 * v_delta - 14) // 4)
-        # The displayed relative depth can be half-integral; 2*n is integral.
+        # Corollary 3.5(6) gives n=(6*v_delta-14)/4.  The displayed
+        # relative depth may be half-integral, while the graph edge length
+        # entering the integral monodromy pairing is exactly 2*n.
+        twice_depth = (6 * v_delta - 14) // 2
+        if 2 * (6 * v_delta - 14) % 4 != 0:
+            raise CertificateError(f"twice-depth integrality failed at a={a}")
         if twice_depth != 9 * a - 7:
             raise CertificateError(f"twin length mismatch at a={a}")
         matrix = [
