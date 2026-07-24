@@ -1,0 +1,69 @@
+name: Signature 357 expanded exact two-Frey graph
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/produce_signature_357_joint_graph_expanded.py"
+      - "scripts/run_signature_357_magma_joint_graph_expanded.py"
+      - ".github/workflows/signature357_expanded_joint_graph.yml"
+  pull_request:
+    paths:
+      - "scripts/produce_signature_357_joint_graph_expanded.py"
+      - "scripts/run_signature_357_magma_joint_graph_expanded.py"
+      - ".github/workflows/signature357_expanded_joint_graph.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  graph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/signature-345-357-certificates
+          fetch-depth: 0
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce the expanded parameter-labelled graph
+        run: >-
+          python3 scripts/produce_signature_357_joint_graph_expanded.py
+          > /tmp/joint-expanded.json
+      - name: Test the two modular pairs at every graph prime
+        run: >-
+          python3 scripts/run_signature_357_magma_joint_graph_expanded.py
+          --joint-data /tmp/joint-expanded.json
+          > /tmp/joint-expanded-result.json
+      - name: Require a complete result and retain it
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          value=json.loads(pathlib.Path('/tmp/joint-expanded-result.json').read_text())
+          if value.get('status')!='complete' or value.get('surviving_modular_pairs') is None:
+              raise SystemExit('expanded graph result is incomplete')
+          pathlib.Path('Research/Signature357/odd_e3_2_expanded_joint_graph.json').write_text(
+              json.dumps(value,sort_keys=True,indent=2)+'\n'
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-expanded-joint-graph
+          path: |
+            /tmp/joint-expanded.json
+            /tmp/joint-expanded-result.json
+          if-no-files-found: error
+      - name: Commit the produced frontier
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/odd_e3_2_expanded_joint_graph.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record expanded odd e3=2 two-Frey graph"
+          git pull --rebase origin agent/signature-345-357-certificates
+          git push origin HEAD:agent/signature-345-357-certificates
