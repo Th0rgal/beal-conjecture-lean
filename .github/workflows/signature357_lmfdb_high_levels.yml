@@ -7,6 +7,10 @@ on:
     paths:
       - "scripts/fetch_signature_357_lmfdb_high_levels.py"
       - ".github/workflows/signature357_lmfdb_high_levels.yml"
+  pull_request:
+    paths:
+      - "scripts/fetch_signature_357_lmfdb_high_levels.py"
+      - ".github/workflows/signature357_lmfdb_high_levels.yml"
   workflow_dispatch:
 
 permissions:
