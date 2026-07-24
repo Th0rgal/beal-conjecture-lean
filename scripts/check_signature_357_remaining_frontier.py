@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay the final two-level automorphic and fixed-7 pairing frontier."""
+"""Replay the exact twisted odd-branch automorphic/fixed-7 frontier."""
 from __future__ import annotations
 
 import argparse
@@ -19,12 +19,12 @@ class CertificateError(ValueError):
 
 
 def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
+    out: dict[str, Any] = {}
     for key, value in pairs:
-        if key in result:
+        if key in out:
             raise CertificateError(f"duplicate JSON key: {key}")
-        result[key] = value
-    return result
+        out[key] = value
+    return out
 
 
 def load(path: pathlib.Path) -> dict[str, Any]:
@@ -49,108 +49,149 @@ def digest(data: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def bound_source(path: str, expected: str, label: str) -> dict[str, Any]:
+    source = load(ROOT / path)
+    if digest(source) != source.get("certificate_sha256"):
+        raise CertificateError(f"{label} source digest mismatch")
+    if source["certificate_sha256"] != expected:
+        raise CertificateError(f"frontier is not bound to the {label} source")
+    return source
+
+
 def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
-    expected = {
+    expected_keys = {
         "schema_version",
         "status",
         "equation",
         "branch_status",
         "compression",
-        "next_computation",
         "conclusion",
+        "next_computation",
         "nonclaim",
         "certificate_sha256",
     }
-    if set(data) != expected:
+    if set(data) != expected_keys:
         raise CertificateError("manifest keys differ from schema")
-    if data["schema_version"] != 1:
-        raise CertificateError("schema_version must equal 1")
-    if digest(data) != data["certificate_sha256"]:
-        raise CertificateError("frontier certificate digest mismatch")
-    if data["equation"] != "A^3+B^5=C^7":
+    if data.get("schema_version") != 2 or digest(data) != data.get("certificate_sha256"):
+        raise CertificateError("schema or frontier digest mismatch")
+    if data.get("equation") != "A^3+B^5=C^7":
         raise CertificateError("equation mismatch")
 
     branches = data["branch_status"]
     even = branches["even"]
-    even_manifest = load(ROOT / even["certificate_path"])
-    if digest(even_manifest) != even_manifest.get("certificate_sha256"):
-        raise CertificateError("even-branch certificate digest mismatch")
-    if even_manifest["certificate_sha256"] != even["certificate_sha256"]:
-        raise CertificateError("frontier not bound to the even-branch certificate")
-    if even_manifest["conclusion"] != (
+    even_source = bound_source(
+        even["certificate_path"], even["certificate_sha256"], "even-branch closure"
+    )
+    if even_source["conclusion"] != (
         "there is no primitive positive solution in the Dahmen--Siksek even branch"
-    ):
+    ) or even["conclusion"] != "empty":
         raise CertificateError("even branch is not closed")
-    if even["conclusion"] != "empty":
-        raise CertificateError("even branch status mismatch")
 
     odd = branches["odd"]
-    irreducibility = load(ROOT / odd["global_mod5_irreducibility_path"])
-    if digest(irreducibility) != irreducibility.get("certificate_sha256"):
-        raise CertificateError("mod-5 irreducibility certificate digest mismatch")
-    if irreducibility["certificate_sha256"] != odd[
-        "global_mod5_irreducibility_sha256"
-    ]:
-        raise CertificateError("mod-5 irreducibility dependency mismatch")
+    if odd["allowed_e3"] != [2, 3]:
+        raise CertificateError("odd e3 range mismatch")
+    irreducibility = bound_source(
+        odd["global_mod5_irreducibility_path"],
+        odd["global_mod5_irreducibility_sha256"],
+        "mod-5 irreducibility",
+    )
     if "absolutely irreducible" not in irreducibility["conclusion"]:
         raise CertificateError("odd mod-5 irreducibility conclusion missing")
+    untwist = bound_source(
+        odd["cyclotomic_untwist_path"],
+        odd["cyclotomic_untwist_sha256"],
+        "cyclotomic untwist",
+    )
+    if untwist["conclusion"]["twisted_prime7_conductor_bound"] != "e7_twisted<=1":
+        raise CertificateError("untwisted prime-7 conductor bound mismatch")
+    monodromy = bound_source(
+        odd["exact_monodromy_path"],
+        odd["exact_monodromy_sha256"],
+        "exact monodromy",
+    )
+    if monodromy["exact_conductor"]["cases"] != [
+        {"e7_twisted": 0, "valuation_class": "v7(A)=3 mod 5"},
+        {"e7_twisted": 1, "valuation_class": "v7(A)!=3 mod 5"},
+    ]:
+        raise CertificateError("exact monodromy split mismatch")
 
-    twist = load(ROOT / odd["exact_prime7_conductor_path"])
-    if digest(twist) != twist.get("certificate_sha256"):
-        raise CertificateError("odd prime-7 twist certificate digest mismatch")
-    if twist["certificate_sha256"] != odd["exact_prime7_conductor_sha256"]:
-        raise CertificateError("frontier not bound to odd prime-7 certificate")
-    if twist["local_conclusion"]["odd_branch_residual_conductor_exponent_at_7"] != 2:
-        raise CertificateError("odd e7 is not exactly 2")
+    split = odd["valuation_split"]
+    zero = split["v7A_congruent_3_mod5"]
+    nonzero = split["other_v7A_classes"]
+    if zero != {
+        "twisted_e7": 0,
+        "candidate_pairs": [[2, 0], [3, 0]],
+        "candidate_level_norms": [729, 19683],
+        "closed_level_norms": [729],
+        "remaining_pairs": [[3, 0]],
+        "remaining_level_norms": [19683],
+    }:
+        raise CertificateError("valuation-3 mod-5 block mismatch")
+    if nonzero != {
+        "twisted_e7": 1,
+        "candidate_pairs": [[2, 1], [3, 1]],
+        "candidate_level_norms": [5103, 137781],
+        "closed_level_norms": [],
+        "remaining_pairs": [[2, 1], [3, 1]],
+        "remaining_level_norms": [5103, 137781],
+    }:
+        raise CertificateError("nonzero-monodromy block mismatch")
 
-    if odd["allowed_e3"] != [2, 3] or odd["exact_e7"] != 2:
-        raise CertificateError("odd conductor exponent metadata mismatch")
-    pairs = sorted((e3, odd["exact_e7"]) for e3 in odd["allowed_e3"])
-    if pairs != [tuple(pair) for pair in odd["remaining_exponent_pairs"]]:
+    candidate_pairs = zero["candidate_pairs"] + nonzero["candidate_pairs"]
+    candidate_norms = [27**e3 * 7**e7 for e3, e7 in candidate_pairs]
+    if candidate_norms != [729, 19683, 5103, 137781]:
+        raise CertificateError("candidate-level arithmetic mismatch")
+    remaining_pairs = sorted(zero["remaining_pairs"] + nonzero["remaining_pairs"])
+    remaining_norms = sorted(zero["remaining_level_norms"] + nonzero["remaining_level_norms"])
+    if remaining_pairs != odd["remaining_exponent_pairs"]:
         raise CertificateError("remaining exponent-pair mismatch")
-    norms = [27**e3 * 7**e7 for e3, e7 in pairs]
-    if norms != odd["remaining_level_norms"] or norms != [35721, 964467]:
+    if remaining_norms != odd["remaining_level_norms"] or remaining_norms != [5103, 19683, 137781]:
         raise CertificateError("remaining level-norm mismatch")
+    if monodromy["automorphic_frontier"]["remaining_level_norms"] != remaining_norms:
+        raise CertificateError("frontier disagrees with exact monodromy source")
 
     pairing = odd["fixed7_pairing"]
     first = pairing["e3_2"]
     if first["closed_level"] != [2, 2] or first["remaining_level"] != [2, 3]:
-        raise CertificateError("e3=2 fixed-7 level pairing mismatch")
+        raise CertificateError("e3=2 fixed-7 pairing mismatch")
     if first["remaining_packets"] != [24, 28]:
-        raise CertificateError("e3=2 fixed-7 packet frontier mismatch")
-
+        raise CertificateError("e3=2 packet frontier mismatch")
     second = pairing["e3_3"]
-    closure = load(ROOT / second["closure_path"])
-    if digest(closure) != closure.get("certificate_sha256"):
-        raise CertificateError("fixed-7 level-(3,2) closure digest mismatch")
-    if closure["certificate_sha256"] != second["closure_sha256"]:
-        raise CertificateError("frontier not bound to the level-(3,2) closure")
+    closure = bound_source(
+        second["closure_path"], second["closure_sha256"], "fixed-7 level-(3,2) closure"
+    )
     if second["closed_level"] != [3, 2] or second["remaining_level"] != [3, 3]:
-        raise CertificateError("e3=3 fixed-7 level pairing mismatch")
+        raise CertificateError("e3=3 fixed-7 pairing mismatch")
     if closure["public_magma"]["non_cm_superspecial_survivors"] != []:
         raise CertificateError("fixed-7 level (3,2) is not closed")
-    if closure["public_magma"]["superspecial_survivors"] != [65, 78]:
-        raise CertificateError("fixed-7 level (3,2) superspecial list changed")
 
     compression = data["compression"]
-    if compression["final_remaining_level_norms"] != norms:
-        raise CertificateError("compressed final norm list mismatch")
-    if compression["final_remaining_level_count"] != 2:
-        raise CertificateError("final level count must equal two")
-    if compression["maximum_level_norm"] != max(norms):
-        raise CertificateError("maximum level norm mismatch")
-    old = set(compression["previous_branch_specific_level_norms"])
-    removed = set(compression["even_branch_levels_removed_by_complete_closure"])
-    removed |= set(compression["odd_levels_removed_by_exact_e7"])
-    if old - removed != set(norms):
-        raise CertificateError("frontier set subtraction does not replay")
-    if "packets 24 and 28" not in data["next_computation"]["level_35721"]:
-        raise CertificateError("level-35721 packet pairing missing")
-    if "fixed-7 level (3,2) is closed" not in data["next_computation"]["level_964467"]:
-        raise CertificateError("level-964467 closure dependency missing")
+    if compression != {
+        "obsolete_untwisted_odd_levels": [35721, 964467],
+        "twisted_candidate_level_norms": [729, 5103, 19683, 137781],
+        "low_level_norms_closed": [729],
+        "final_remaining_level_count": 3,
+        "final_remaining_level_norms": [5103, 19683, 137781],
+        "maximum_level_norm": 137781,
+        "maximum_norm_reduction_from_untwisted_frontier": 7,
+    }:
+        raise CertificateError("compression metadata mismatch")
+    if "packets 24 and 28" not in data["next_computation"]["level_5103"]:
+        raise CertificateError("level-5103 fixed-7 pairing missing")
+    if "+/-8 mod 5" not in data["next_computation"]["level_19683"]:
+        raise CertificateError("removed-prime trace condition missing")
     if "does not prove" not in data["nonclaim"]:
         raise CertificateError("explicit nonclaim missing")
-    return data["certificate_sha256"], norms
+    return data["certificate_sha256"], remaining_norms
+
+
+def expect_rejection(data: dict[str, Any], label: str) -> None:
+    data["certificate_sha256"] = digest(data)
+    try:
+        validate(data)
+    except CertificateError:
+        return
+    raise RuntimeError(f"checker accepted {label}")
 
 
 def self_test() -> None:
@@ -158,36 +199,18 @@ def self_test() -> None:
     validate(source)
 
     mutated = copy.deepcopy(source)
-    mutated["branch_status"]["odd"]["exact_e7"] = 1
-    mutated["certificate_sha256"] = digest(mutated)
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted an obsolete odd e7 value")
+    mutated["branch_status"]["odd"]["valuation_split"]["v7A_congruent_3_mod5"]["twisted_e7"] = 1
+    expect_rejection(mutated, "the wrong monodromy-drop exponent")
 
     mutated = copy.deepcopy(source)
     mutated["branch_status"]["odd"]["fixed7_pairing"]["e3_2"]["remaining_packets"] = [24]
-    mutated["certificate_sha256"] = digest(mutated)
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted an incomplete level-(2,3) packet list")
+    expect_rejection(mutated, "an incomplete packet list")
 
     mutated = copy.deepcopy(source)
-    mutated["branch_status"]["odd"]["fixed7_pairing"]["e3_3"]["remaining_level"] = [3, 2]
-    mutated["certificate_sha256"] = digest(mutated)
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker restored the closed fixed-7 level (3,2)")
+    mutated["compression"]["final_remaining_level_norms"].append(964467)
+    expect_rejection(mutated, "an obsolete untwisted level")
 
-    duplicate = '{"schema_version":1,"schema_version":1}'
+    duplicate = '{"schema_version":2,"schema_version":2}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -200,7 +223,7 @@ def self_test() -> None:
             raise RuntimeError("checker accepted duplicate JSON keys")
     finally:
         path.unlink(missing_ok=True)
-    print("signature-357 remaining-frontier negative fixtures passed")
+    print("signature-357 exact remaining-frontier negative fixtures passed")
 
 
 def main() -> int:
@@ -211,11 +234,11 @@ def main() -> int:
         self_test()
         return 0
     certificate, norms = validate(load(MANIFEST))
-    print("signature-357 two-level paired frontier valid")
+    print("signature-357 exact twisted paired frontier valid")
     print("  even branch: closed")
     print("  odd mod-5 levels:", ", ".join(map(str, norms)))
-    print("  e3=2 pairs only with fixed-7 packets 24 and 28 at level (2,3)")
-    print("  e3=3 pairs only with the unresolved fixed-7 level (3,3)")
+    print("  e3=2 pairs only with fixed-7 packets 24 and 28")
+    print("  e3=3 pairs only with fixed-7 level (3,3)")
     print(f"  certificate sha256: {certificate}")
     return 0
 
