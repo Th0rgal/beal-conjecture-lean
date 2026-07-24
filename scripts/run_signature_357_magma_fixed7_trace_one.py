@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
-"""Read one decisive Hecke trace for fixed-7 packet 24 or 28.
+"""Read and filter one decisive Hecke trace for fixed-7 packet 24 or 28.
 
-The previous all-eight trace request crossed the public calculator budget after
-three rows. Splitting by packet and auxiliary prime makes every request
-independent and fail closed. Both the base-field trace polynomial and the
-F15/K5 degree-two Frobenius transform are retained through coefficient records
-that cannot be corrupted by Magma's pretty-printer line wrapping.
+The request emits both trace polynomials through coefficient records. At rational
+primes inert in ``Q(sqrt(5))`` (13 and 43 in the selected set), semilinear Galois
+trace symmetry additionally requires the residual trace to lie in ``F_7``. The
+producer therefore records ``gcd(P mod 7, X^7-X)`` directly.
+
+Every packet-prime request is independent and fail closed.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 from typing import Any
 
 import run_signature_357_magma_fixed7_24_28_traces as base
+
+INERT_PRIMES = {13, 43}
 
 
 def make_code(packet: int, prime: int) -> str:
@@ -22,6 +26,7 @@ _<x> := PolynomialRing(Rationals());
 K<z> := NumberField(x^2-5); OK := Integers(K);
 I5 := Factorisation(5*OK)[1][1];
 F15 := NumberField(CyclotomicPolynomial(15)); OF15 := Integers(F15);
+F7 := GF(7); R7<X> := PolynomialRing(F7);
 M := HilbertCuspForms(K,3^2*I5^3);
 decomp := NewformDecomposition(NewSubspace(M));
 if #decomp ne 35 then error "unexpected packet count"; end if;
@@ -38,7 +43,25 @@ for c in Eltseq(Pbase) do printf "|%o",c; end for;
 printf "\nFULL_COEFFS";
 for c in Eltseq(Pfull) do printf "|%o",c; end for;
 printf "\nTRACE_END\n";
+P7 := R7![F7!Coefficient(Pbase,i) : i in [0..Degree(Pbase)]];
+Gscalar := GreatestCommonDivisor(P7,X^7-X);
+printf "SCALAR_GCD_DEGREE=%o\n",Degree(Gscalar);
+printf "SCALAR_GCD_COEFFS";
+for c in Eltseq(Gscalar) do printf "|%o",Integers()!c; end for;
+printf "\n";
 '''
+
+
+def parse_scalar(output: str) -> tuple[int, list[int]]:
+    degree_match = re.search(r"SCALAR_GCD_DEGREE=(\d+)", output)
+    coeff_match = re.search(r"SCALAR_GCD_COEFFS\|([^\n]+)", output)
+    if degree_match is None or coeff_match is None:
+        raise base.ResearchError("output lacked scalar gcd record")
+    degree = int(degree_match.group(1))
+    coefficients = [int(value.strip()) for value in coeff_match.group(1).split("|")]
+    if len(coefficients) != degree + 1:
+        raise base.ResearchError("scalar gcd coefficient count mismatch")
+    return degree, coefficients
 
 
 def main() -> int:
@@ -49,14 +72,19 @@ def main() -> int:
 
     code = make_code(args.packet, args.prime)
     record: dict[str, Any] = {
-        "schema_version": 3,
-        "status": "public-Magma single fixed-7 packet trace read",
+        "schema_version": 4,
+        "status": "public-Magma single fixed-7 packet trace with inert scalar filter",
         "calculator": base.CALCULATOR_URL,
         "level_exponents": [2, 3],
         "level_norm": 10125,
         "packet": args.packet,
         "prime": args.prime,
+        "rational_prime_inert_in_K5": args.prime in INERT_PRIMES,
         "input_bytes": len(code.encode("utf-8")),
+        "soundness": (
+            "at an inert rational prime, scalar_gcd_degree zero eliminates this "
+            "packet under the imported semilinear Galois trace symmetry"
+        ),
         "nonclaim": "a failed request leaves this packet-prime pair unresolved",
     }
     output = ""
@@ -68,11 +96,17 @@ def main() -> int:
         row = rows[0]
         if (row["packet"], row["prime"]) != (args.packet, args.prime):
             raise base.ResearchError("trace packet/prime mismatch")
+        scalar_degree, scalar_coefficients = parse_scalar(output)
         record.update(
             {
                 "request_status": "completed",
                 **row,
-                "output_tail": output[-4000:],
+                "scalar_gcd_degree": scalar_degree,
+                "scalar_gcd_coefficients_low_to_high": scalar_coefficients,
+                "inert_scalar_compatible": (
+                    True if args.prime not in INERT_PRIMES else scalar_degree > 0
+                ),
+                "output_tail": output[-5000:],
             }
         )
     except Exception as exc:
