@@ -1,6 +1,13 @@
 name: Signature 357 LMFDB research fetch
 
 on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/fetch_signature_357_lmfdb_high_levels.py"
+      - "scripts/fetch_signature_357_rational_base_change.py"
+      - ".github/workflows/signature357_lmfdb_research.yml"
   workflow_dispatch:
 
 permissions:
@@ -32,6 +39,16 @@ jobs:
         with:
           name: signature357-lmfdb-high-levels
           path: signature357-lmfdb-high-levels.json
+          if-no-files-found: error
+
+      - name: Enumerate rational elliptic source newforms for possible base change
+        run: >-
+          python3 scripts/fetch_signature_357_rational_base_change.py
+          > signature357-rational-base-change.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-rational-base-change
+          path: signature357-rational-base-change.json
           if-no-files-found: error
 
       - name: Fetch pinned fixed-7 candidate polynomials
