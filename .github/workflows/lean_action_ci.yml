@@ -47,6 +47,12 @@ jobs:
       - run: python3 scripts/check_signature_357_mod5_prime2.py
       - run: python3 scripts/check_signature_357_prime7_local.py --self-test
       - run: python3 scripts/check_signature_357_prime7_local.py
+      - run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lmfdb-level18225
+          path: lmfdb-level18225-summary.json
+          if-no-files-found: error
       - uses: leanprover/lean-action@v1
       # docgen-action@v1 only builds and deploys docs on push events, and its
       # Pages deployment 404s while GitHub Pages is disabled on this repo.
