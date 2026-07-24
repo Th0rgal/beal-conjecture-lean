@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Produce mod-5 HGM zero-specialization traces at 19 and 71.
+"""Produce mod-5 HGM zero traces at 19, 71, 79, 89 and 131.
 
-The fixed-7 global reducibility sieve forces 19*71 to divide C in the
-Dahmen--Siksek even branch.  For u=C^7/A^3 this means u=0 at both primes.
-Only the zero-specialization trace polynomials are therefore needed.
+The strengthened fixed-7 ray-character sieve forces 19*71*79*89*131 to divide C
+in the Dahmen--Siksek even branch. For u=C^7/A^3 this means u=0 at all five
+primes. Only the zero-specialization trace polynomials are needed.
 
-PARI/GP is an external research producer.  A downstream Magma computation uses
-these polynomials as necessary conditions; the source theorem forcing the
-prime divisors remains an explicit research dependency.
+PARI/GP is an external research producer. A downstream Magma computation uses
+these polynomials as necessary conditions; the source theorem forcing the prime
+divisors remains an explicit research dependency.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ SOURCE_URL = (
     "e88f914c577ab6cf9a45e5cdd82c1993477fb423/Codes/GPcode.gp"
 )
 EXPECTED_GIT_BLOB = "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2"
-PRIMES = [19, 71]
+PRIMES = [19, 71, 79, 89, 131]
 
 
 class ProducerError(RuntimeError):
@@ -92,7 +92,7 @@ def main() -> int:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=1200,
+            timeout=1800,
             check=False,
         )
     if process.returncode:
@@ -129,8 +129,8 @@ def main() -> int:
         )
 
     body = {
-        "schema_version": 1,
-        "status": "even-branch forced-zero mod-5 HGM producer output",
+        "schema_version": 2,
+        "status": "even-branch strengthened forced-zero mod-5 HGM producer output",
         "source": {
             "repository": "lucasvillagra/GFE-5p3",
             "commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423",
@@ -146,7 +146,8 @@ def main() -> int:
         },
         "fixed7_reducibility_input": {
             "manifest": "Research/Signature357/fixed7_global_reducibility_sieve.json",
-            "conclusion": "19*71 divides C in the even branch",
+            "manifest_sha256": "d09fafd74cb4513067372721b15327e23d386e26a87933fee744240458cdd46d",
+            "conclusion": "19*71*79*89*131 divides C in the even branch",
         },
         "motive": "H((1/7,-1/7),(1/3,-1/3)|u)",
         "parameter": "u=C^7/A^3",
