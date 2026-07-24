@@ -1,10 +1,13 @@
 {
-  "certificate_sha256": "53666b313bc6f203604772e11cce4953c3812c9b381ee95a6953baa121a65175",
+  "certificate_sha256": "d5e4315c09a4d41de6ccafbf2d72531b590a1ae07e5212916bab377d22c74d9b",
   "equation": "A^3+B^5=C^7",
   "finite_replay": {
     "derived_gcd": 42,
     "euler_phi_343": 294,
     "roots_X6_minus_1_mod49": [1, 18, 19, 30, 31, 48],
+    "saturation_failure_count": 0,
+    "saturation_parameter_count": 1764,
+    "saturation_sample_modulus": 16807,
     "seventh_power_image_size_mod49": 6,
     "solution_pair_count_mod343": 294,
     "unit_count_mod343": 294
