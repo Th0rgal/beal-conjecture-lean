@@ -1,0 +1,54 @@
+name: Signature 357 odd e3=2 zero-test closure
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "Research/Signature357/fixed7_packets_24_28_zero_tests.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  close-or-record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/signature-345-357-certificates
+          fetch-depth: 0
+      - run: python3 scripts/check_signature_357_fixed7_24_28_zero_tests.py
+      - name: Compose the e3=2 frontier
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          source_path=pathlib.Path('Research/Signature357/fixed7_packets_24_28_zero_tests.json')
+          source=json.loads(source_path.read_text())
+          survivors=source['surviving_packets']
+          body={
+            'schema_version':1,
+            'status':'literature-assisted odd-e3=2 fixed-7 closure' if not survivors else 'odd-e3=2 fixed-7 residual frontier',
+            'equation':'A^3+B^5=C^7',
+            'scope':'Dahmen--Siksek odd branch with e3=2',
+            'source_path':str(source_path),
+            'source_sha256':source['certificate_sha256'],
+            'input_reduction':'all other fixed-7 packets are eliminated; only packets 24 and 28 require trace zero at inert primes 13 and 43',
+            'surviving_packets':survivors,
+            'conclusion':'the odd e3=2 block is closed' if not survivors else f'the odd e3=2 block retains packets {survivors}',
+            'nonclaim':'the fixed-prime modularity, level-lowering, packet reduction and semilinear trace implications remain imported research inputs',
+          }
+          encoded=json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+          result=dict(body);result['certificate_sha256']=hashlib.sha256(encoded).hexdigest()
+          pathlib.Path('Research/Signature357/odd_e3_2_zero_test_frontier.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          PY
+      - name: Commit composed frontier
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/odd_e3_2_zero_test_frontier.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record odd e3=2 fixed-7 zero-test frontier"
+          git pull --rebase origin agent/signature-345-357-certificates
+          git push origin HEAD:agent/signature-345-357-certificates
