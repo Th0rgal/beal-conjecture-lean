@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Fetch the LMFDB-covered candidate mod-5 levels for signature (3,5,7).
+"""Inventory the LMFDB-covered mod-5 levels for signature (3,5,7).
 
-This internet-facing script is a research producer, not a trusted checker.  The
-global conductor certificate leaves 24 levels p3^a*p7^b.  LMFDB documents
-complete degree-three Hilbert-newform coverage through level norm 2059, which
-contains exactly eight candidate norms.  This first-stage producer fetches only
-the complete form inventory; Hecke enrichment is intentionally separate so an
-API/schema failure cannot hide the basic finite enumeration.
+The legacy public web API is now protected by an interactive CAPTCHA.  LMFDB's
+read-only PostgreSQL mirror remains its documented machine interface (and is the
+backend of the official LMFDB MCP server).  This research producer queries that
+mirror directly.  It is not a trusted theorem checker.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sys
-import urllib.parse
-import urllib.request
+from decimal import Decimal
 from typing import Any
 
-BASE = "https://www.lmfdb.org/api/hmf_forms/"
+import psycopg2
+import psycopg2.extras
+
 FIELD_LABEL = "3.3.49.1"
 COMPLETENESS_BOUND = 2059
 LEVELS = sorted(
@@ -26,101 +26,67 @@ LEVELS = sorted(
     for b in range(4)
     if 27**a * 7**b <= COMPLETENESS_BOUND
 )
-FIELDS = (
-    "label",
-    "level_norm",
-    "level_ideal",
-    "dimension",
-    "is_CM",
-    "is_base_change",
-    "parallel_weight",
-)
-USER_AGENT = (
-    "beal-conjecture-lean-research/1.0 "
-    "(+https://github.com/Th0rgal/beal-conjecture-lean)"
-)
+DB_CONFIG = {
+    "host": os.environ.get("LMFDB_HOST", "devmirror.lmfdb.xyz"),
+    "port": int(os.environ.get("LMFDB_PORT", "5432")),
+    "dbname": os.environ.get("LMFDB_DBNAME", "lmfdb"),
+    "user": os.environ.get("LMFDB_USER", "lmfdb"),
+    "password": os.environ.get("LMFDB_PASSWORD", "lmfdb"),
+    "connect_timeout": 30,
+    "sslmode": os.environ.get("LMFDB_SSLMODE", "require"),
+}
 
 
-class FetchError(RuntimeError):
-    pass
+def json_default(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        return int(value) if value == value.to_integral() else str(value)
+    raise TypeError(f"cannot encode {type(value).__name__}")
 
 
 def canonical_sha256(value: Any) -> str:
     encoded = json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        default=json_default,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
 
-def fetch_json(url: str) -> dict[str, Any]:
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
-    )
-    with urllib.request.urlopen(request, timeout=90) as response:
-        raw = response.read()
-        status = response.status
-        content_type = response.headers.get("Content-Type", "")
-        final_url = response.geturl()
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        preview = raw[:600].decode("utf-8", errors="replace").replace("\n", "\\n")
-        raise FetchError(
-            "LMFDB returned non-JSON data: "
-            f"status={status}, content_type={content_type!r}, "
-            f"requested={url!r}, final={final_url!r}, preview={preview!r}"
-        ) from exc
-    if not isinstance(payload, dict):
-        raise FetchError(f"LMFDB JSON root is not an object at {url}")
-    return payload
-
-
-def fetch_level(level_norm: int) -> tuple[list[dict[str, Any]], list[str]]:
-    params = {
-        "field_label": FIELD_LABEL,
-        "level_norm": f"i{level_norm}",
-        "parallel_weight": "i2",
-        "_format": "json",
-        "_fields": ",".join(FIELDS),
-    }
-    url = BASE + "?" + urllib.parse.urlencode(params)
-    records: list[dict[str, Any]] = []
-    urls: list[str] = []
-    while url:
-        urls.append(url)
-        payload = fetch_json(url)
-        if not isinstance(payload.get("data"), list):
-            raise FetchError(f"unexpected LMFDB API response for level {level_norm}")
-        for value in payload["data"]:
-            if not isinstance(value, dict):
-                raise FetchError("LMFDB record must be an object")
-            missing = set(FIELDS) - set(value)
-            if missing:
-                raise FetchError(
-                    f"level {level_norm} record lacks fields: {sorted(missing)}"
-                )
-            records.append({field: value[field] for field in FIELDS})
-        next_url = payload.get("next")
-        if next_url is None:
-            break
-        if not isinstance(next_url, str):
-            raise FetchError("LMFDB next link is not a string")
-        url = urllib.parse.urljoin(BASE, next_url)
-    records.sort(key=lambda record: record["label"])
-    return records, urls
-
-
 def main() -> int:
+    norms = [level for level, _a, _b in LEVELS]
+    sql = """
+        SELECT label, level_norm, level_ideal, dimension,
+               is_CM, is_base_change, parallel_weight
+          FROM hmf_forms
+         WHERE field_label = %s
+           AND level_norm = ANY(%s)
+           AND parallel_weight = 2
+         ORDER BY level_norm, label
+    """
+    conn = psycopg2.connect(**DB_CONFIG)
+    conn.autocommit = True
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+            cursor.execute("SET statement_timeout = 120000")
+            cursor.execute(sql, (FIELD_LABEL, norms))
+            rows = [dict(row) for row in cursor.fetchall()]
+    finally:
+        conn.close()
+
+    by_norm: dict[int, list[dict[str, Any]]] = {norm: [] for norm in norms}
+    for row in rows:
+        norm = int(row["level_norm"])
+        if norm not in by_norm:
+            raise RuntimeError(f"database returned unexpected level norm {norm}")
+        by_norm[norm].append(row)
+
     levels: list[dict[str, Any]] = []
-    query_urls: list[str] = []
-    total_records = 0
     total_dimension = 0
     for level_norm, exponent_3, exponent_7 in LEVELS:
-        records, urls = fetch_level(level_norm)
-        query_urls.extend(urls)
+        records = by_norm[level_norm]
         dimension_sum = sum(int(record["dimension"]) for record in records)
-        total_records += len(records)
         total_dimension += dimension_sum
         levels.append(
             {
@@ -131,26 +97,27 @@ def main() -> int:
                 "records": records,
             }
         )
+
     body = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "LMFDB complete-range form inventory, not a nonexistence theorem",
         "source": {
-            "database": "LMFDB",
+            "database": "LMFDB read-only PostgreSQL mirror",
             "table": "hmf_forms",
             "field_label": FIELD_LABEL,
             "parallel_weight": 2,
             "documented_degree3_completeness_bound": COMPLETENESS_BOUND,
-            "query_urls": sorted(set(query_urls)),
+            "query": "SELECT forms over 3.3.49.1 of parallel weight 2 at the eight candidate level norms <=2059",
         },
-        "candidate_levels_within_bound": [level for level, _a, _b in LEVELS],
+        "candidate_levels_within_bound": norms,
         "level_count": len(LEVELS),
-        "total_record_count": total_records,
+        "total_record_count": len(rows),
         "total_coefficient_field_dimension": total_dimension,
         "levels": levels,
     }
     output = dict(body)
     output["certificate_sha256"] = canonical_sha256(body)
-    json.dump(output, sys.stdout, sort_keys=True, indent=2)
+    json.dump(output, sys.stdout, sort_keys=True, indent=2, default=json_default)
     sys.stdout.write("\n")
     return 0
 
