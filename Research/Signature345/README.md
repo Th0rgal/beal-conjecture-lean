@@ -1,8 +1,8 @@
-# Signature (3,4,5): Edwards identity certificate
+# Signature (3,4,5): Edwards and source-index certificates
 
 ## Status
 
-This directory contains the first replayable stage of a certified proof pipeline
+This directory contains the first replayable stages of a certified proof pipeline
 for the mathematically solved signature `(3,4,5)`.
 
 The source is Siksek--Stoll, *Partial descent on hyperelliptic curves and the
@@ -18,7 +18,7 @@ a^2 + b^3 + c^5 = 0
 and prints 27 binary dodecics `h_i`. It derives degree-20 and degree-30
 covariants `g_i` and `f_i`, then adds 22 sign variants, producing 49 triples.
 
-## What is now independently checked
+## Edwards identity certificate
 
 Run:
 
@@ -32,7 +32,7 @@ It:
 
 1. rejects duplicate JSON keys and non-canonical rational coefficients;
 2. reconstructs each binary dodecic as
-   `Σ binom(12,i) α_i u^i v^(12-i)`;
+   `sum binom(12,i) alpha_i u^i v^(12-i)`;
 3. derives `g = (h_uu*h_vv - h_uv^2) / 132^2`;
 4. derives `f = (h_u*g_v - h_v*g_u) / 240`;
 5. verifies that `f`, `g`, and `h` have integral coefficients and homogeneous
@@ -50,28 +50,59 @@ ec797c0014e827874da79765196c42209899fd6501109266f4b0c65956bba387
 This is an independent replay of the algebraic heart of the Edwards table. It
 removes Magma from this stage of the certification chain.
 
-## Important source-audit finding: case labels are not yet certified
+## Exact source-index finding for Sections 6.2--6.4
 
-A literal reconstruction of Table 1 and the printed differential formulas
-produces factorization fingerprints that do not line up directly with the case
-labels used later in Section 6.
+The earlier audit noticed that the later printed factorizations did not align
+with the literal same-numbered Table-1 covariants. This has now been converted
+from an observation into an exact replayable certificate.
 
-For example:
+Run:
 
-- the covariant derived from printed `h_1` is the negative of the polynomial
-  displayed later as `f_2`;
-- printed `h_2` gives the factorization displayed later for `f_3`;
-- printed `h_3` gives the factorization displayed later for `f_5`.
+```bash
+python3 scripts/check_signature_345_published_factorizations.py --self-test
+python3 scripts/check_signature_345_published_factorizations.py
+```
 
-This may be an indexing, sign, or projective-change convention inherited from
-the original Edwards parametrization. It is not treated here as a mathematical
-error. It does mean that a **separate, explicit index-map certificate** is
-required before later claims such as “curve `C_15` has empty partial Selmer set”
-can be attached to one of the reconstructed Table-1 triples.
+The checker rebuilds, coefficient for coefficient, the three factorizations
+printed in Sections 6.2, 6.3, and 6.4 and compares them against all reconstructed
+Edwards polynomials. It proves the exact equalities:
 
-The present checker therefore certifies the 49 algebraic triples as a family,
-but deliberately does not claim that a raw Table-1 ID has already been matched
-to every later curve label.
+```text
+printed Section-6 f_2 = reconstructed Edwards form 28
+printed Section-6 f_3 = reconstructed Edwards form 2
+printed Section-6 f_5 = reconstructed Edwards form 3
+```
+
+The literal same-ID equalities are false for all three labels. In particular:
+
+- reconstructed form 28 is the sign variant `-f_1`, and equals the polynomial
+  printed later as `f_2`;
+- reconstructed form 2 equals the polynomial printed later as `f_3`;
+- reconstructed form 3 equals the polynomial printed later as `f_5`.
+
+The full Edwards triple hashes are also checked, not merely the factor degrees.
+The mapping digest is:
+
+```text
+adf38f8a8011cbc15cd7eba511e5299cb527c585c9451ab88c397281d2464e83
+```
+
+This does not by itself determine whether the discrepancy is a table-label
+convention, a later-section relabelling, or a source erratum. It does establish
+that a formal proof must not attach the published rational-point computation for
+`C_2`, `C_3`, or `C_5` to the literal same-numbered reconstructed form without an
+explicit correspondence certificate.
+
+The practical gain is that the three low-genus quotient computations now have
+unambiguous polynomial targets:
+
+- `Y^2 = X^5 + 20736` attaches to reconstructed form 28;
+- `Y^2 = X^3 + 25` attaches to reconstructed form 2;
+- the genus-1 quotient built from the seven-factor decomposition attaches to
+  reconstructed form 3.
+
+A complete source-index manifest for all 49 labels is still required before the
+local and Selmer computations can be assembled into one theorem.
 
 ## What remains before `(3,4,5)` can enter `BealUnified.Trusted`
 
@@ -81,16 +112,18 @@ Formalize or source-audit the implication:
 
 ```text
 primitive a^2+b^3+c^5=0
-  ⇒ one of the 49 reconstructed triples evaluated at coprime (u,v).
+  => one of the 49 reconstructed triples evaluated at coprime (u,v).
 ```
 
 The identity checker proves that every listed triple produces a solution. It
-does not prove that the list is exhaustive.
+does not prove that the list is exhaustive. The paper cites Edwards' original
+parametrization for this step.
 
-### Stage 2 — curve-index and local certificates
+### Stage 2 — complete curve-index and local certificates
 
-Produce an explicit permutation/projective-transform manifest connecting the
-49 reconstructed triples to the paper's `C_i` labels. Then independently replay:
+Extend the new three-entry factorization certificate to an explicit
+permutation/sign/projective-transform manifest connecting all reconstructed
+forms to every later `C_i` label. Then independently replay:
 
 - the 16 curves with no `Q_2` point;
 - the two curves with no `Q_3` point;
@@ -121,8 +154,8 @@ including:
 - `Y^2 = X^3 + 25`;
 - the genus-1 curves whose Jacobians have rank zero in the final five cases.
 
-These certificates must include the Mordell--Weil group/rank evidence and the
-map back to each genus-14 curve.
+The certificates must include Mordell--Weil group/rank evidence and the maps back
+to the correctly indexed genus-14 curves.
 
 ### Stage 5 — Lean assembly
 
