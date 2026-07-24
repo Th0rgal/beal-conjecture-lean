@@ -1,0 +1,96 @@
+{
+  "branch": {
+    "conditions": [
+      "30 divides C",
+      "7 does not divide A*B",
+      "gcd(A,B,C)=1"
+    ],
+    "fixed7_consequence": "the level-(2,2) CM/special-local-type argument forces the residual mod-7 representation to be reducible",
+    "hasse_consequence": "7 divides C",
+    "low_level_norm_closed": 189,
+    "mod5_level_norms_before_low_level_closure": [
+      189,
+      5103
+    ],
+    "name": "Dahmen--Siksek even branch",
+    "only_remaining_level_exponents": [
+      2,
+      1
+    ],
+    "only_remaining_level_norm": 5103
+  },
+  "certificate_sha256": "35393d1f430cf80982abe6d55e71b5ec8a8167ad7d630b4d216b475857b73996",
+  "conclusion": "there is no primitive positive solution in the Dahmen--Siksek even branch",
+  "equation": "A^3+B^5=C^7",
+  "impact": "the full (3,5,7) problem is reduced to the odd branch",
+  "nonclaim": "the public-Magma Hecke computations and the cited modular, level-lowering, local-type and Hasse implications are imported research inputs; this certificate does not by itself prove Beal",
+  "public_magma": {
+    "artifact_id": 8602997281,
+    "artifact_name": "signature357-mod5-magma-5103",
+    "artifact_sha256": "e50e069b349eb6a4f82e67656439f153bf288a18892664cd79a5998464f7f0cd",
+    "calculator": "https://magma.maths.usyd.edu.au/calc/",
+    "coefficient_field_safe_even_coupled_survivors": [],
+    "coupled_primes": [
+      13,
+      29,
+      41
+    ],
+    "coupled_regimes": {
+      "13": [
+        "zero",
+        "infinity"
+      ],
+      "29": [
+        "generic",
+        "zero"
+      ],
+      "41": [
+        "generic",
+        "zero",
+        "infinity"
+      ]
+    },
+    "level_exponents": [
+      2,
+      1
+    ],
+    "level_norm": 5103,
+    "magma_version": "V2.29-8",
+    "marginal_local_survivors": [
+      1
+    ],
+    "norm8_survivors": [
+      1
+    ],
+    "output_certificate_sha256": "3fddd62def7f5f63d2c9a0872b93b0332323fcd50ac500256f52b9241d7dd271",
+    "packet_count": 10,
+    "packet_dimensions": [
+      1,
+      2,
+      3,
+      3,
+      6,
+      6,
+      6,
+      6,
+      6,
+      12
+    ],
+    "space_dimension": 73,
+    "workflow_head_sha": "1f3037002af96788fa165b575f3a3c73a12769c9",
+    "workflow_run_id": 30109225690
+  },
+  "schema_version": 1,
+  "sources": {
+    "branch_frontier_path": "Research/Signature357/branch_specific_level_frontier.json",
+    "branch_frontier_sha256": "963e1e0d1b7a399d3cd823aff75c5d0f8a6c0154bec0b5ac8934040902c14aa4",
+    "fixed7_global_path": "Research/Signature357/fixed7_global_reducibility_sieve.json",
+    "fixed7_global_sha256": "d09fafd74cb4513067372721b15327e23d386e26a87933fee744240458cdd46d",
+    "fixed7_hasse_path": "Research/Signature357/fixed7_prime7_hasse_obstruction.json",
+    "fixed7_hasse_sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1",
+    "low_level_closure_path": "Research/Signature357/low_level_complete_closure.json",
+    "low_level_closure_sha256": "8386331173c63f51a2fb9357216e0fb5098ff5c3104d7df706bd05c677ea7575",
+    "mod5_local_producer_certificate_sha256": "c20e4d0d046df579a94e6e344e20a3bf2a87a563eb31d8ab7c58351b1d242e34"
+  },
+  "status": "literature-assisted-complete-even-branch-closure"
+}
