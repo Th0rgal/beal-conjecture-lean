@@ -2,16 +2,19 @@
 """Intersect the odd-branch mod-5 residual Hecke conditions level by level.
 
 The cyclotomic untwist reduces the odd branch to Hilbert levels 5103, 19683 and
-137781 over K7=Q(zeta_7)^+.  A rational specialization imposes more than a
-marginal trace condition: at inert rational primes its trace is scalar in F5,
-and at split primes the three conjugate traces form a Frobenius orbit.  This
-producer intersects those semilinear relations with the complete local HGM
-trace-polynomial unions directly in the residual Hecke module.
+137781 over ``K7=Q(zeta_7)^+``.  A rational specialization imposes both the
+local HGM trace-polynomial condition and semilinear Galois relations among the
+conjugate Hecke operators.
 
-A zero final dimension is a fail-closed elimination of all residual eigensystems
-at that level, conditional on the imported compatible-system, local-trace,
-semilinear-descent and level-lowering theorems.  A nonzero dimension is only a
-necessary survivor space.
+Generic local polynomials are evaluated in the base Hecke operator.  Only the
+zero and infinity specialization polynomials use the degree-two
+full-cyclotomic transform when that transform is required.  Parallel-weight-2
+newspaces already have a fixed rational basis, so the producer deliberately
+avoids the redundant ``SetRationalBasis`` conversion.
+
+A zero final dimension eliminates the level conditional on the imported
+compatible-system, local-trace, semilinear-descent and level-lowering theorems.
+A nonzero dimension is only a necessary survivor space.
 """
 from __future__ import annotations
 
@@ -28,7 +31,6 @@ from typing import Any
 
 CALCULATOR_URL = "https://magma.maths.usyd.edu.au/calc/"
 LEVEL_PAIRS = [(2, 1), (3, 0), (3, 1)]
-# Put inert primes first, then completely split primes.
 INERT_PRIMES = [11, 23]
 SPLIT_PRIMES = [13, 29, 41, 43]
 PRIMES = INERT_PRIMES + SPLIT_PRIMES
@@ -41,9 +43,10 @@ class ResearchError(RuntimeError):
 
 
 def digest(value: Any) -> str:
-    return hashlib.sha256(
-        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
-    ).hexdigest()
+    encoded = json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def form_metadata(page: str) -> tuple[str, dict[str, str]]:
@@ -160,24 +163,28 @@ UnionMatrix := function(T,row)
   l:=row[1]; n:=Nrows(T); Id:=IdentityMatrix(F5,n); U:=T;
   if row[6]/row[5] eq 2 then U:=T*T-F5!(2*l^row[5])*Id; end if;
   A:=Id;
-  for P in row[2] do A:=A*EvalMatrix(Red(P),U); end for;
+  for P in row[2] do A:=A*EvalMatrix(Red(P),T); end for;
   for P in row[3] do A:=A*EvalMatrix(Red(P),U); end for;
   for P in row[4] do A:=A*EvalMatrix(Red(P),U); end for;
   q:=Integers()!Norm(Factorisation(l*OK)[1][1]);
   A:=A*(T-F5!(q+1)*Id)*(T+F5!(q+1)*Id);
   return A;
 end function;
+printf "PHASE=space-start\n";
 M0:=HilbertCuspForms(K,I3^{e3}*I7^{e7});
-M:=NewSubspace(M0); SetRationalBasis(M);
+M:=NewSubspace(M0);
 n:=Dimension(M); V:=VectorSpace(F5,n);
 printf "LEVEL_PAIR=[{e3},{e7}]\n";
 printf "LEVEL_NORM=%o\n",27^{e3}*7^{e7};
 printf "NEW_DIM=%o\n",n;
+printf "PHASE=T2-start\n";
 T2:=Matrix(F5,HeckeOperator(M,I2));
+printf "PHASE=T2-ready\n";
 S:=V meet Kernel(T2);
 printf "NORM8_DIM=%o\n",Dimension(S);
 for row in Rows do
   l:=row[1]; fac:=Factorisation(l*OK);
+  printf "PHASE=prime-%o-start\n",l;
   T1:=Matrix(F5,HeckeOperator(M,fac[1][1]));
   S:=S meet Kernel(UnionMatrix(T1,row));
   if #fac eq 1 then
@@ -190,6 +197,7 @@ for row in Rows do
     S:=S meet Kernel(T1^125-T1);
   end if;
   printf "DIM_AFTER_%o=%o\n",l,Dimension(S);
+  if Dimension(S) eq 0 then break; end if;
 end for;
 printf "FINAL_DIM=%o\n",Dimension(S);
 '''
@@ -224,8 +232,12 @@ def main() -> int:
     rows.update(rows_from(split, SPLIT_PRIMES))
     e3, e7 = args.pair
     code = magma_code(e3, e7, rows)
+    if "SetRationalBasis" in code:
+        raise ResearchError("generated code unexpectedly contains SetRationalBasis")
+    if "EvalMatrix(Red(P),T)" not in code:
+        raise ResearchError("generated code lacks base-coordinate generic trace evaluation")
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "combined odd mod-5 residual HGM and semilinear Hecke sieve",
         "calculator": CALCULATOR_URL,
         "field": "K7=Q(zeta_7)^+",
@@ -236,21 +248,30 @@ def main() -> int:
         "split_local_sha256": split.get("certificate_sha256"),
         "inert_local_sha256": inert.get("certificate_sha256"),
         "input_bytes": len(code.encode()),
-        "soundness": "final dimension zero eliminates every norm-8 semilinear residual eigensystem; positive dimension is only necessary",
+        "generic_coordinate": "base Hecke trace T",
+        "specialization_coordinate": "full-cyclotomic transform U when degree ratio is two",
+        "rational_basis_policy": "native parallel-weight-2 newspace basis; no redundant conversion",
+        "early_zero_exit": True,
+        "soundness": (
+            "final dimension zero eliminates every norm-8 semilinear residual "
+            "eigensystem; positive dimension is only necessary"
+        ),
     }
+    output = ""
     try:
         output = submit(code)
+        dimensions = {
+            prime: int(dimension)
+            for prime, dimension in re.findall(r"DIM_AFTER_(\d+)=(\d+)", output)
+        }
         body.update(
             {
                 "request_status": "completed",
                 "new_dimension": parse_int(output, "NEW_DIM"),
                 "norm8_dimension": parse_int(output, "NORM8_DIM"),
-                "dimensions_after_primes": {
-                    str(prime): parse_int(output, f"DIM_AFTER_{prime}")
-                    for prime in PRIMES
-                },
+                "dimensions_after_primes": dimensions,
                 "final_dimension": parse_int(output, "FINAL_DIM"),
-                "output_tail": output[-2200:],
+                "output_tail": output[-5000:],
             }
         )
     except Exception as exc:
@@ -258,6 +279,7 @@ def main() -> int:
             {
                 "request_status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
+                "output_tail": output[-8000:],
             }
         )
     result = dict(body)
