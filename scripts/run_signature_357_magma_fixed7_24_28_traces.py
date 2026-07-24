@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Read the decisive Hecke data of fixed-7 packets 24 and 28.
+"""Read decisive Hecke data for fixed-7 packets 24 and 28.
 
 The odd e3=2 block has already been reduced to packets 24 and 28 at Hilbert
-level (2,3).  The corrected reciprocal-coordinate two-Frey analysis only needs
-four auxiliary primes.  This public-Magma producer records both the base-field
-Hecke polynomial and the polynomial after the degree-two F15/K5 Frobenius
-transformation used at the zero/infinity specializations.
+level (2,3). The corrected reciprocal-coordinate two-Frey analysis needs a
+small set of auxiliary-prime traces. This public-Magma producer emits minimal
+polynomial coefficients through explicit one-line records, avoiding Magma's
+pretty-printer line wrapping.
 
 Failed requests remain explicit and are never interpreted as elimination.
 """
@@ -112,16 +112,94 @@ for index in [24,28] do
     Efull := Eig;
     if fF/fK eq 2 then Efull := Eig^2-2*l^fK; end if;
     Pfull := MinimalPolynomial(Efull);
-    printf "TRACE|%o|%o|%o|%o|%o|%o\n",index,l,fK,fF,Pbase,Pfull;
+    printf "TRACE_START|%o|%o|%o|%o|%o|%o\n",index,l,fK,fF,Degree(Pbase),Degree(Pfull);
+    printf "BASE_COEFFS";
+    for c in Eltseq(Pbase) do printf "|%o",c; end for;
+    printf "\nFULL_COEFFS";
+    for c in Eltseq(Pfull) do printf "|%o",c; end for;
+    printf "\nTRACE_END\n";
   end for;
 end for;
 '''
 
 
+def parse_coefficients(line: str, marker: str, degree: int) -> list[int]:
+    prefix = marker + "|"
+    if not line.startswith(prefix):
+        raise ResearchError(f"expected {marker} line")
+    values = [int(value.strip()) for value in line[len(prefix) :].split("|")]
+    if len(values) != degree + 1:
+        raise ResearchError(
+            f"{marker} expected {degree + 1} coefficients, got {len(values)}"
+        )
+    return values
+
+
+def polynomial_string(coefficients: list[int]) -> str:
+    terms: list[str] = []
+    for degree, coefficient in enumerate(coefficients):
+        if coefficient == 0:
+            continue
+        if degree == 0:
+            monomial = str(abs(coefficient))
+        elif degree == 1:
+            monomial = "x" if abs(coefficient) == 1 else f"{abs(coefficient)}*x"
+        else:
+            monomial = (
+                f"x^{degree}"
+                if abs(coefficient) == 1
+                else f"{abs(coefficient)}*x^{degree}"
+            )
+        if not terms:
+            terms.append(("-" if coefficient < 0 else "") + monomial)
+        else:
+            terms.append((" - " if coefficient < 0 else " + ") + monomial)
+    return "".join(terms) if terms else "0"
+
+
+def parse_rows(output: str) -> list[dict[str, Any]]:
+    lines = [line.strip() for line in output.splitlines() if line.strip()]
+    rows: list[dict[str, Any]] = []
+    index = 0
+    header = re.compile(r"TRACE_START\|(24|28)\|(13|29|41|43)\|(\d+)\|(\d+)\|(\d+)\|(\d+)$")
+    while index < len(lines):
+        match = header.fullmatch(lines[index])
+        if match is None:
+            index += 1
+            continue
+        if index + 3 >= len(lines):
+            raise ResearchError("truncated trace record")
+        packet, prime, degree_k, degree_f, base_degree, full_degree = map(
+            int, match.groups()
+        )
+        base_coefficients = parse_coefficients(
+            lines[index + 1], "BASE_COEFFS", base_degree
+        )
+        full_coefficients = parse_coefficients(
+            lines[index + 2], "FULL_COEFFS", full_degree
+        )
+        if lines[index + 3] != "TRACE_END":
+            raise ResearchError("trace record lacks TRACE_END")
+        rows.append(
+            {
+                "packet": packet,
+                "prime": prime,
+                "residue_degree_K5": degree_k,
+                "residue_degree_F15": degree_f,
+                "base_trace_coefficients_low_to_high": base_coefficients,
+                "full_trace_coefficients_low_to_high": full_coefficients,
+                "base_trace_polynomial": polynomial_string(base_coefficients),
+                "full_trace_polynomial": polynomial_string(full_coefficients),
+            }
+        )
+        index += 4
+    return rows
+
+
 def main() -> int:
     code = make_code()
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "public-Magma decisive fixed-7 packet trace read",
         "calculator": CALCULATOR_URL,
         "level_exponents": [2, 3],
@@ -132,35 +210,24 @@ def main() -> int:
         "rows": [],
         "nonclaim": "failed output leaves both packets unresolved",
     }
+    output = ""
     try:
         output = submit(code)
         count_match = re.search(r"PACKET_COUNT=(\d+)", output)
         if count_match is None or int(count_match.group(1)) != 35:
             raise ResearchError("unexpected packet count")
-        pattern = re.compile(
-            r"TRACE\|(24|28)\|(13|29|41|43)\|(\d+)\|(\d+)\|([^|\n]+)\|([^|\n]+)"
-        )
-        rows = []
-        for match in pattern.finditer(output):
-            packet, prime, degree_k, degree_f = map(int, match.groups()[:4])
-            rows.append(
-                {
-                    "packet": packet,
-                    "prime": prime,
-                    "residue_degree_K5": degree_k,
-                    "residue_degree_F15": degree_f,
-                    "base_trace_polynomial": match.group(5).strip(),
-                    "full_trace_polynomial": match.group(6).strip(),
-                }
-            )
+        rows = parse_rows(output)
         if len(rows) != len(PACKETS) * len(PRIMES):
             raise ResearchError(f"expected 8 trace rows, got {len(rows)}")
+        expected_pairs = {(packet, prime) for packet in PACKETS for prime in PRIMES}
+        if {(row["packet"], row["prime"]) for row in rows} != expected_pairs:
+            raise ResearchError("trace packet/prime coverage mismatch")
         body.update(
             {
                 "request_status": "completed",
                 "packet_count": 35,
                 "rows": rows,
-                "output_tail": output[-2400:],
+                "output_tail": output[-3200:],
             }
         )
     except Exception as exc:
@@ -168,6 +235,7 @@ def main() -> int:
             {
                 "request_status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
+                "output_tail": output[-4000:],
             }
         )
     result = dict(body)
