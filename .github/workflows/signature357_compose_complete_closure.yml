@@ -45,10 +45,10 @@ jobs:
           even=load_checked(even_path)
           even_closed='no primitive positive solution' in even.get('conclusion','')
           fixed_route=False;fixed_sources={}
-          e32_path=root/'odd_e3_2_zero_test_frontier.json'; level33_path=root/'fixed7_level33_combined_frontier.json'
+          e32_path=root/'fixed7_packets_24_28_zero_tests.json'; level33_path=root/'fixed7_level33_combined_residual.json'
           if e32_path.exists() and level33_path.exists():
               e32=load_checked(e32_path);level33=load_checked(level33_path)
-              fixed_route=(e32.get('conclusion')=='the odd e3=2 block is closed' and level33.get('conclusion')=='fixed-7 level (3,3) is eliminated')
+              fixed_route=(e32.get('surviving_packets')==[] and level33.get('final_dimension')==0)
               fixed_sources={'e3_2_path':str(e32_path),'e3_2_sha256':e32.get('certificate_sha256'),'level33_path':str(level33_path),'level33_sha256':level33.get('certificate_sha256')}
           mod5_route=False;mod5_sources={}
           mod5_path=root/'odd_mod5_combined_residual_frontier.json'

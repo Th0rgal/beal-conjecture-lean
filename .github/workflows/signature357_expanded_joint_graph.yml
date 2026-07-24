@@ -25,7 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: agent/signature-345-357-certificates
           fetch-depth: 0
       - name: Install PARI/GP
         run: |

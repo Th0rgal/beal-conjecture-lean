@@ -5,6 +5,7 @@ import argparse,copy,hashlib,json,pathlib,tempfile
 from typing import Any
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 MANIFEST=ROOT/'Research/Signature357/odd_e3_2_expanded_joint_graph.json'
+PRIMES=[11,13,17,19,23,29,31,41,43,59,61,71]
 class CertificateError(ValueError):pass
 
 def reject(pairs:list[tuple[str,Any]])->dict[str,Any]:
@@ -29,7 +30,7 @@ def validate(data:dict[str,Any])->tuple[str,list[list[int]]]:
     if data.get('status')!='complete':raise CertificateError('expanded graph run is incomplete')
     if data.get('level_pairs')!={'mod5':[2,1],'fixed7':[2,3]} or data.get('mod5_packet')!=1 or data.get('fixed7_packets')!=[24,28]:raise CertificateError('modular-pair metadata mismatch')
     primes=data.get('primes');records=data.get('records')
-    if not isinstance(primes,list) or not isinstance(records,list) or len(records)!=len(primes):raise CertificateError('prime record count mismatch')
+    if primes!=PRIMES or not isinstance(records,list) or len(records)!=len(PRIMES):raise CertificateError('prime schedule mismatch')
     seen=[];compatibility={24:True,28:True}
     for record in records:
         if record.get('request_status')!='completed':raise CertificateError('a prime request is incomplete')
@@ -63,6 +64,10 @@ def self_test()->None:
     try:validate(bad)
     except CertificateError:pass
     else:raise RuntimeError('checker accepted a forged compatibility flag')
+    bad=copy.deepcopy(base);bad['primes']=bad['primes'][:1];bad['records']=bad['records'][:1];bad['certificate_sha256']=digest(bad)
+    try:validate(bad)
+    except CertificateError:pass
+    else:raise RuntimeError('checker accepted a truncated prime schedule')
     print('expanded two-Frey graph negative fixtures rejected')
 
 def main()->int:
