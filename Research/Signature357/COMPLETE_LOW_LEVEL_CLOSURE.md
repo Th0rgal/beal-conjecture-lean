@@ -14,7 +14,7 @@ of norm at most 2059 over K7=Q(zeta_7)^+.
 ```
 
 Equivalently, the complete cubic-Hilbert-newform range currently covered by
-LMFDB is now empty for this modular program.
+LMFDB is empty for this modular program.
 
 ## 1. Frontier before the final auxiliary-prime argument
 
@@ -46,14 +46,9 @@ Let
 u=C^7/A^3.
 ```
 
-At the rational prime `41`, the packet has base trace
-
-```text
-a_41=2.
-```
-
-The prime has residue degree one in `K7`, while the residue degree doubles in
-`F21=Q(zeta_21)`. Hence the trace over the full cyclotomic field is
+At the rational prime `41`, the packet has base trace `a_41=2`. The prime has
+residue degree one in `K7`, while the residue degree doubles in
+`F21=Q(zeta_21)`. Hence the full-cyclotomic trace is
 
 ```text
 a_F = a_41^2 - 2*41 = -78 = 2 mod 5.
@@ -96,13 +91,7 @@ is
 u=1 mod 41.
 ```
 
-Since
-
-```text
-u-1=B^5/A^3,
-```
-
-primitivity gives
+Since `u-1=B^5/A^3`, primitivity gives
 
 ```text
 41 | B,
@@ -117,11 +106,7 @@ For the first Frey representation, use
 t7=-B^5/A^3.
 ```
 
-The preceding conclusion forces
-
-```text
-t7=0 mod 41.
-```
+The preceding conclusion forces `t7=0 mod 41`.
 
 In the Dahmen--Siksek even branch, the fixed-7 level is `(2,2)`. Its exact
 fixed-7 computation leaves only CM packets `3,9,12`, while the specialization
@@ -157,14 +142,12 @@ At `x=2 mod 7`, their evaluations are
 4, 2, 4, 1, 2,
 ```
 
-with product `1 mod 7`. None can supply the reducible trace. This contradicts
-the even-branch reducibility conclusion.
-
-Therefore `3.3.49.1-189.1-a` cannot arise.
+with product `1 mod 7`. None supplies the reducible trace. This contradicts the
+even-branch reducibility conclusion, so `3.3.49.1-189.1-a` cannot arise.
 
 ## 4. Certified conclusion
 
-Combining the schema-3 filter and the prime-41 coupled obstruction gives
+The exact reduction is
 
 ```text
 14 complete-range packets
@@ -190,16 +173,16 @@ Research/Signature357/low_level_complete_closure.json
 with digest
 
 ```text
-8c84d73b5fd8c242ffe265a49615794c436ea725d33b1f312a74454af387dde4.
+8b3d99f39e68860710cb7649ffda01f8e40456f21c340289fd2e15033bedfa17.
 ```
 
-The checker replays all polynomial evaluations with Python's standard library,
+The checker replays every polynomial evaluation with Python's standard library,
 binds the result to the pinned schema-3 low-level filter, and rejects mutations
 that reintroduce either a mod-5 local regime or the fixed-7 reducible trace.
 
 ## 5. Remaining frontier
 
-The optimized global level bound is still
+The optimized global level bound remains
 
 ```text
 p3^3*p7^3.
@@ -213,16 +196,11 @@ The eight candidate norms above the documented LMFDB completeness bound are
 
 Those spaces remain to be computed or removed by sharper local-conductor
 arguments. The present theorem closes the entire publicly complete low-level
-range; it does not assert that any of the eight higher spaces is empty.
+range; it does not assert that any higher space is empty.
 
 ## Trust boundary
 
-The finite polynomial arithmetic is independently replayed. The following
-implications remain explicit literature inputs:
-
-1. the Dahmen--Siksek branch theorem;
-2. the level-`(2,2)` CM/special-local-type reduction on the fixed-7 side;
-3. the reducible Frobenius trace criterion;
-4. the degree-doubling trace transformation.
-
-No part of this certificate is silently promoted into `BealUnified.Trusted`.
+The finite arithmetic is independently replayed. The Dahmen--Siksek branch
+theorem, the fixed-7 level-`(2,2)` CM/special-local-type implication, the
+reducible Frobenius trace criterion and the degree-doubling trace transformation
+remain explicit literature inputs outside `BealUnified.Trusted`.
