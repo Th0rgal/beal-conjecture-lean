@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "residual_prime": 7,
+  "auxiliary_prime": 2,
+  "source": {
+    "paper_arxiv": "2512.17845v1",
+    "result": "Corollary 7.7 and equation (34)",
+    "lines": "the reducible case forces p to divide the local-factor resultant product; for ell=2 this product is 6084",
+    "solution_hypothesis": "ell does not divide b"
+  },
+  "orientation": {
+    "beal_equation": "A^3+B^5=C^7",
+    "paper_variables": ["a=B", "b=-C", "c=A", "p=7"],
+    "odd_branch_condition": "C odd",
+    "derived_auxiliary_condition": "2 does not divide b"
+  },
+  "resultant_product": 6084,
+  "prime_factorization": {
+    "2": 2,
+    "3": 2,
+    "13": 2
+  },
+  "conclusion": "the residual mod-7 representation attached to every odd-branch primitive solution is absolutely irreducible",
+  "certificate_sha256": "f33e22b8c31d7bacf08cc88d23ce769a04437e421bde6684a9f52cb75d19e7e2"
+}
