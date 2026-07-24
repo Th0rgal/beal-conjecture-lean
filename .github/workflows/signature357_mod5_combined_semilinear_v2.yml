@@ -1,5 +1,9 @@
 name: Signature 357 odd mod5 combined semilinear residual sieve v2
 
+concurrency:
+  group: signature357-mod5-combined-v2-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -22,6 +26,7 @@ jobs:
   combined:
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - {e3: 2, e7: 1, norm: 5103}
