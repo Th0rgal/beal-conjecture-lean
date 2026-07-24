@@ -1,0 +1,46 @@
+name: Signature 357 publish fixed7 combined residual 33
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - ".github/workflows/signature357_fixed7_combined_publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/signature-345-357-certificates
+          fetch-depth: 0
+      - name: Run combined residual sieve
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_combined_residual.py
+          > /tmp/fixed7-combined.json
+      - name: Require a complete producer response
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          value=json.loads(pathlib.Path('/tmp/fixed7-combined.json').read_text())
+          if value.get('request_status')!='completed' or 'final_dimension' not in value:
+              raise SystemExit('combined public-Magma request was incomplete')
+          pathlib.Path('Research/Signature357/fixed7_level33_combined_residual.json').write_text(
+              json.dumps(value,sort_keys=True,indent=2)+'\n'
+          )
+          PY
+      - name: Commit produced result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/fixed7_level33_combined_residual.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record combined fixed-7 level-(3,3) residual result"
+          git pull --rebase origin agent/signature-345-357-certificates
+          git push origin HEAD:agent/signature-345-357-certificates
