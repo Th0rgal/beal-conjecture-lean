@@ -287,6 +287,23 @@ def self_test() -> None:
             fixture_path.unlink(missing_ok=True)
     print("registry negative fixtures rejected every malformed field type and audit date")
 
+    duplicate_key = REGISTRY.read_text(encoding="utf-8").replace(
+        '"schema_version": 1,', '"schema_version": 1,\n  "schema_version": 1,', 1)
+    with tempfile.NamedTemporaryFile("w", suffix=".json", dir=ROOT, delete=False) as fixture:
+        fixture.write(duplicate_key)
+        fixture_path = pathlib.Path(fixture.name)
+    try:
+        try:
+            validate(fixture_path)
+        except ValueError as exc:
+            if "duplicate JSON key" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("registry accepted a duplicate JSON key")
+    finally:
+        fixture_path.unlink(missing_ok=True)
+    print("registry negative fixture rejected duplicate JSON keys")
+
 
 if __name__ == "__main__":
     try:
