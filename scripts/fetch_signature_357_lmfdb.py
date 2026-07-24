@@ -53,8 +53,10 @@ def canonical_sha256(value: Any) -> str:
 
 
 def fetch_level(level_norm: int) -> tuple[list[dict[str, Any]], list[str]]:
+    # LMFDB's public API uses raw text for string equality and the i-prefix for
+    # integer equality (as in the repository's already working level-18225 probe).
     params = {
-        "field_label": "s" + FIELD_LABEL,
+        "field_label": FIELD_LABEL,
         "level_norm": f"i{level_norm}",
         "parallel_weight": "i2",
         "_format": "json",
