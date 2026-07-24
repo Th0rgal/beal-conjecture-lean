@@ -32,7 +32,7 @@
     "modularity_hypothesis_check": "r=7 does not divide the coefficient 1 of A^3",
     "finite_flat_source": "arXiv:2412.08804v2, Theorem 4.3",
     "residual_unramified_source": "arXiv:2412.08804v2, Theorem 4.2",
-    "conductor_bound_source": "arXiv:2412.08804v2, Corollary 7.5",
+    "conductor_bound_source": "arXiv:2412.08804v2, Theorem 7.4 and Corollary 7.5",
     "level_lowering_dependency": "standard Hilbert modular level lowering for finite-flat absolutely irreducible residual representations",
     "original_parameter": "t=A^3/C^7",
     "inverted_parameter": "u=t^(-1)=C^7/A^3",
@@ -44,7 +44,7 @@
       "splitting": "inert in K7",
       "residue_degree": 3,
       "norm": 27,
-      "maximum_exponent": 3
+      "maximum_exponent": 5
     },
     "prime_7": {
       "splitting": "totally ramified in K7",
@@ -52,18 +52,20 @@
       "norm": 7,
       "maximum_exponent": 3
     },
-    "maximum_level": "p3^3*p7^3",
-    "maximum_level_norm": 6751269,
+    "maximum_level": "p3^5*p7^3",
+    "maximum_level_norm": 4921675101,
     "possible_exponent_pairs": [
       [0,0], [0,1], [0,2], [0,3],
       [1,0], [1,1], [1,2], [1,3],
       [2,0], [2,1], [2,2], [2,3],
-      [3,0], [3,1], [3,2], [3,3]
+      [3,0], [3,1], [3,2], [3,3],
+      [4,0], [4,1], [4,2], [4,3],
+      [5,0], [5,1], [5,2], [5,3]
     ],
-    "possible_level_divisor_count": 16,
+    "possible_level_divisor_count": 24,
     "parallel_weight": [2, 2, 2]
   },
-  "finite_frontier": "enumerate the weight-(2,2,2) Hilbert newforms over K7 at levels dividing p3^3*p7^3, then run the joint mod-5/mod-7 trace graph using u+t7=1",
+  "finite_frontier": "enumerate the weight-(2,2,2) Hilbert newforms over K7 at levels dividing p3^5*p7^3, then run the joint mod-5/mod-7 trace graph using u+t7=1",
   "nonclaim": "this certificate does not enumerate the Hilbert newforms and does not prove nonexistence of (3,5,7) solutions",
-  "certificate_sha256": "14dd5302d3a790aa1b83cf7d41e81703236044c92ae581f5a1b1f8fc70992660"
+  "certificate_sha256": "3ffd34b812498338af63108981cee5aa21d17d3600af2227d4e9bac1403ea29b"
 }
