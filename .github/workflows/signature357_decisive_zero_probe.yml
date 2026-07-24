@@ -7,13 +7,17 @@ on:
     paths:
       - ".github/workflows/signature357_decisive_zero_probe.yml"
       - "scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py"
+  pull_request:
+    paths:
+      - ".github/workflows/signature357_decisive_zero_probe.yml"
+      - "scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: signature357-decisive-zero-probe
+  group: signature357-decisive-zero-probe-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -22,8 +26,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: research/signature357-lmfdb-probe-20260724
       - name: Run four decisive packet zero tests
         run: >-
           python3 scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py
