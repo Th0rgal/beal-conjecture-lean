@@ -26,10 +26,20 @@
       "signature": "(3,4,5)",
       "status": "open_source_audit_pending",
       "formal_declaration": null,
-      "assumptions": "none; no formal certificate is checked in this repository",
-      "literature_source": "Siksek–Stoll (2012) locator recorded in roadmap/ROADMAP.md; source audit pending",
-      "certificate_dependency": "pending independent certificate and replay design",
-      "last_audit": "2026-07-21"
+      "assumptions": "mathematically solved in the cited literature; no formal theorem or independently replayed certificate is checked in this repository",
+      "literature_source": "Siksek–Stoll, Partial descent on hyperelliptic curves and the generalized Fermat equation x^3+y^4+z^5=0, BLMS 44 (2012), DOI 10.1112/blms/bdr086",
+      "certificate_dependency": "pending exact source audit, certificate design, and independent replay",
+      "last_audit": "2026-07-24"
+    },
+    {
+      "id": "signature-3-5-7",
+      "signature": "(3,5,7)",
+      "status": "open_source_audit_pending",
+      "formal_declaration": null,
+      "assumptions": "open mathematical frontier; no formal declaration or complete external certificate is known",
+      "literature_source": "Wilcox–Grechuk, Generalised Fermat equation: a survey of solved cases, arXiv:2412.11933; frontier locator only",
+      "certificate_dependency": "none available; fixed-signature descent or modular elimination remains research work",
+      "last_audit": "2026-07-24"
     }
   ]
 }
