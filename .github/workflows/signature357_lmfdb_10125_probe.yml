@@ -1,0 +1,38 @@
+name: Signature 357 LMFDB level 10125 probe
+
+on:
+  push:
+    branches:
+      - research/signature357-lmfdb-probe-20260724
+    paths:
+      - ".github/workflows/signature357_lmfdb_10125_probe.yml"
+      - "scripts/probe_signature_357_lmfdb_10125.py"
+  pull_request:
+    paths:
+      - ".github/workflows/signature357_lmfdb_10125_probe.yml"
+      - "scripts/probe_signature_357_lmfdb_10125.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signature357-lmfdb-10125-probe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  query:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+      - name: Query current LMFDB level 10125
+        run: >-
+          python3 scripts/probe_signature_357_lmfdb_10125.py
+          > lmfdb-level10125.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-level10125-probe
+          path: lmfdb-level10125.json
+          if-no-files-found: error
