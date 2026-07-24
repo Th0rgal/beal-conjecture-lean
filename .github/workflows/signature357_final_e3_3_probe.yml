@@ -1,13 +1,17 @@
-name: Signature 357 final odd e3=3 probes
+name: Signature 357 final odd e3=3 low-memory probes
 
 on:
   push:
     branches:
       - research/signature357-final-e3-3-probe
     paths:
+      - "scripts/run_signature_357_magma_fixed7_prime11_marginal.py"
+      - "scripts/run_signature_357_magma_mod5_norm8_probe.py"
       - ".github/workflows/signature357_final_e3_3_probe.yml"
   pull_request:
     paths:
+      - "scripts/run_signature_357_magma_fixed7_prime11_marginal.py"
+      - "scripts/run_signature_357_magma_mod5_norm8_probe.py"
       - ".github/workflows/signature357_final_e3_3_probe.yml"
   workflow_dispatch:
 
@@ -15,60 +19,34 @@ permissions:
   contents: read
 
 concurrency:
-  group: signature357-final-e3-3-${{ github.ref }}
-  cancel-in-progress: false
+  group: signature357-final-e3-3-low-memory-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  fixed7-level33:
+  probes:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
-      - name: Intersect all fixed-7 superspecial and semilinear conditions
+      - name: Apply the cheapest fixed-7 level-(3,3) local obstruction
         run: >-
-          python3 scripts/run_signature_357_magma_fixed7_combined_residual.py
-          > fixed7-level33-combined.json
+          python3 scripts/run_signature_357_magma_fixed7_prime11_marginal.py
+          > fixed7-prime11-marginal-33.json
+      - name: Compute the level-19683 norm-8 residual kernel
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_norm8_probe.py
+          --pair "3,0"
+          > mod5-norm8-19683.json
+      - name: Compute the level-137781 norm-8 residual kernel
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_norm8_probe.py
+          --pair "3,1"
+          > mod5-norm8-137781.json
       - uses: actions/upload-artifact@v4
         with:
-          name: signature357-final-fixed7-level33
-          path: fixed7-level33-combined.json
-          if-no-files-found: error
-
-  mod5-e3-3:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {e7: 0, norm: 19683}
-          - {e7: 1, norm: 137781}
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install PARI/GP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pari-gp
-      - name: Produce split-prime local HGM traces
-        run: >-
-          python3 scripts/produce_signature_357_mod5_complete_local.py
-          > mod5-split-local.json
-      - name: Produce inert-prime local HGM traces
-        run: >-
-          python3 scripts/produce_signature_357_mod5_inert_local.py
-          > mod5-inert-local.json
-      - name: Intersect removed-prime, local and semilinear conditions
-        run: >-
-          python3 scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py
-          --split-data mod5-split-local.json
-          --inert-data mod5-inert-local.json
-          --pair "3,${{ matrix.e7 }}"
-          > "mod5-e3-3-${{ matrix.norm }}.json"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signature357-final-mod5-${{ matrix.norm }}
+          name: signature357-final-e3-3-low-memory-probes
           path: |
-            mod5-split-local.json
-            mod5-inert-local.json
-            mod5-e3-3-${{ matrix.norm }}.json
+            fixed7-prime11-marginal-33.json
+            mod5-norm8-19683.json
+            mod5-norm8-137781.json
           if-no-files-found: error
