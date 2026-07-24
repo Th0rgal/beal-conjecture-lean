@@ -5,6 +5,10 @@ Solved entries must name declarations in the *imported public trusted
 environment*, rather than merely names that happen to occur somewhere in the
 working tree.  The Lean command shared with the trusted-boundary gate checks
 their transitive axiom dependencies against the same allowlist.
+
+Non-formal statuses deliberately distinguish mathematical literature, the open
+frontier, conditional results, and bounded evidence.  None of those statuses may
+name a trusted Lean declaration.
 """
 import json
 import pathlib
@@ -20,7 +24,15 @@ AXIOM_AUDITOR = ROOT / "scripts" / "Axioms.lean"
 REQUIRED = {"id", "signature", "status", "formal_declaration", "assumptions",
             "literature_source", "certificate_dependency", "last_audit"}
 SOLVED_STATUSES = {"solved", "reduction-solved"}
-STATUSES = SOLVED_STATUSES | {"open_source_audit_pending"}
+NONFORMAL_STATUSES = {
+    "literature-solved-formalization-pending",
+    "open-frontier",
+    "conditional",
+    "experimental-evidence",
+    # Retained for compatibility with older checkpointed registry versions.
+    "open_source_audit_pending",
+}
+STATUSES = SOLVED_STATUSES | NONFORMAL_STATUSES
 STRING_FIELDS = REQUIRED - {"formal_declaration"}
 DATE = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
 DECLARATION = re.compile(
@@ -152,7 +164,7 @@ def validate(registry: pathlib.Path) -> int:
                 fail(f"{entry['status']} entry lacks a formal declaration: {entry['id']}")
             trusted_declarations.append((entry_id, signature, declaration))
         elif declaration is not None:
-            fail(f"open entry must not claim a formal declaration: {entry['id']}")
+            fail(f"non-formal entry must not claim a formal declaration: {entry['id']}")
     build_public_root()
     for entry_id, signature, declaration in trusted_declarations:
         audit_trusted_declaration(declaration)
@@ -215,6 +227,23 @@ def self_test() -> None:
         fixture_path.unlink(missing_ok=True)
     print("registry negative fixture rejected a changed signature with old declaration")
 
+    data = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    data["entries"][2]["formal_declaration"] = "BealUnified.beal_case_pow_three"
+    with tempfile.NamedTemporaryFile("w", suffix=".json", dir=ROOT, delete=False) as fixture:
+        json.dump(data, fixture)
+        fixture_path = pathlib.Path(fixture.name)
+    try:
+        try:
+            validate(fixture_path)
+        except ValueError as exc:
+            if "non-formal entry must not claim" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("registry accepted a formal declaration on a literature row")
+    finally:
+        fixture_path.unlink(missing_ok=True)
+    print("registry negative fixture rejected a declaration on a non-formal row")
+
     for field, malformed in [
         ("id", 7),
         ("signature", ["(3,3,3)"]),
@@ -276,11 +305,14 @@ def self_test() -> None:
     print("registry negative fixture rejected duplicate JSON keys")
 
 
-try:
-    count = validate(REGISTRY)
-    if "--self-test" in sys.argv:
-        self_test()
-    print(f"registry validation passed ({count} entries)")
-except (ValueError, RuntimeError) as exc:
-    print(f"registry validation failed: {exc}", file=sys.stderr)
-    sys.exit(1)
+if __name__ == "__main__":
+    try:
+        if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] != "--self-test"):
+            raise ValueError("usage: check_signature_registry.py [--self-test]")
+        count = validate(REGISTRY)
+        print(f"signature registry validated ({count} entries)")
+        if len(sys.argv) == 2:
+            self_test()
+    except (OSError, ValueError, RuntimeError) as exc:
+        print(f"signature registry check failed: {exc}", file=sys.stderr)
+        raise SystemExit(1)
