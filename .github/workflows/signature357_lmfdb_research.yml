@@ -18,7 +18,7 @@ jobs:
           ref: agent/signature-345-357-certificates
       - name: Install public-mirror client
         run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
-      - name: Query complete low-level HMF frontier
+      - name: Query complete low-level HMF and norm-8 Hecke frontier
         run: >-
           python3 scripts/fetch_signature_357_lmfdb_sql.py
           > Research/Signature357/lmfdb_low_levels.json
@@ -36,5 +36,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Research/Signature357/lmfdb_low_levels.json
-          git commit -m "Pin LMFDB-covered signature-357 levels"
+          git commit -m "Pin low-level signature-357 Hecke frontier"
           git push origin HEAD:agent/signature-345-357-certificates
