@@ -27,6 +27,16 @@ jobs:
           path: Research/Signature357/lmfdb_low_levels.json
           if-no-files-found: error
 
+      - name: Query every indexed packet at the seven open high levels
+        run: >-
+          python3 scripts/fetch_signature_357_lmfdb_high_levels.py
+          > signature357-lmfdb-high-levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-high-levels
+          path: signature357-lmfdb-high-levels.json
+          if-no-files-found: error
+
       - name: Fetch pinned fixed-7 candidate polynomials
         run: >-
           python3 scripts/fetch_signature_357_fixed7_inputs.py
