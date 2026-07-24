@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "5a3164674d94f800dbdd53f40a1a540357900f7404d5c8c3b55742fef0725882",
+  "certificate_sha256": "53666b313bc6f203604772e11cce4953c3812c9b381ee95a6953baa121a65175",
   "equation": "A^3+B^5=C^7",
   "finite_replay": {
     "derived_gcd": 42,
@@ -9,7 +9,20 @@
     "solution_pair_count_mod343": 294,
     "unit_count_mod343": 294
   },
-  "impact": "the odd branch forces B into the local seventh-power Kummer image and supplies a normalized cubic difference condition",
+  "impact": "the odd branch forces B into the local seventh-power Kummer image, supplies a normalized cubic difference condition, and is locally saturated at 7",
+  "local_saturation": {
+    "parameters": ["a>=1", "z in Z_7^*", "d in Z_7^*"],
+    "construction": [
+      "Y=z^5",
+      "C=Y+7^(3*a-1)*d^3",
+      "B=z^7",
+      "E=Phi_7(C,Y)/7 lies in 1+7*Z_7",
+      "e is the unique principal-unit cube root of E",
+      "A=7^a*d*e"
+    ],
+    "conclusion": "every parameter triple produces A^3+B^5=C^7 with v_7(A)=a, and every odd-branch local solution arises this way",
+    "strategic_consequence": "no standalone finite 7-adic congruence sieve can eliminate the odd branch"
+  },
   "nonclaim": "the p-adic structural lemmas are proved in the accompanying note; the checker replays finite consequences and mutation tests, and this result does not prove the odd branch",
   "proof_dependencies": [
     "the seventh-power map 1+7^n*Z_7 -> 1+7^(n+1)*Z_7 is bijective for n>=1",
@@ -22,7 +35,7 @@
     "hypotheses": ["7 divides A", "7 does not divide B*C"],
     "valuation": "a=v_7(A)>=1"
   },
-  "status": "elementary-odd-branch-7-adic-kummer-structure",
+  "status": "elementary-odd-branch-7-adic-kummer-structure-and-local-saturation",
   "theorem": {
     "cube_condition": "(C-z^5)/7^(3*a-1) is a cube in Z_7^*",
     "exact_valuations": {
