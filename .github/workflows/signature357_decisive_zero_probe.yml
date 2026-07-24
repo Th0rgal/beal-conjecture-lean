@@ -1,0 +1,35 @@
+name: Signature 357 decisive fixed7 zero probe
+
+on:
+  push:
+    branches:
+      - research/signature357-lmfdb-probe-20260724
+    paths:
+      - ".github/workflows/signature357_decisive_zero_probe.yml"
+      - "scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signature357-decisive-zero-probe
+  cancel-in-progress: false
+
+jobs:
+  zero-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: research/signature357-lmfdb-probe-20260724
+      - name: Run four decisive packet zero tests
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py
+          > fixed7-zero-tests.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-decisive-fixed7-zero-probe
+          path: fixed7-zero-tests.json
+          if-no-files-found: error
