@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Compute rigorous p-adic solubility profiles for reconstructed (3,4,5) curves.
+"""Compute rigorous p-adic solubility profiles for reconstructed `(3,4,5)` curves.
 
-For each affine projective chart of y^2=f(u,v), this diagnostic builds the tree
-of compatible solutions modulo p^k. A branch is certified soluble as soon as the
-multivariate Hensel inequality v_p(F)>2*v_p(gradient F) holds. A curve is
+For each affine projective chart of `y^2=f(u,v)`, this diagnostic builds the tree
+of compatible solutions modulo `p^k`. A branch is certified soluble as soon as
+the multivariate Hensel inequality `v_p(F)>2*v_p(gradient F)` holds. A curve is
 certified insoluble when both chart trees become empty at finite precision.
 
-The output uses reconstructed Edwards IDs only; it is intended to recover the
-missing correspondence with the paper's C_i labels.
+The output uses reconstructed Edwards IDs only; it does not identify those IDs
+with later paper `C_i` labels.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-import check_signature_345_local as local
+import signature345_local_utils as local
 
 
 @dataclass(frozen=True)
@@ -23,17 +23,6 @@ class Chart:
     coefficients: tuple[int, ...]
     restrict_x_divisible_by_p: bool
     name: str
-
-
-def derivative(coefficients: tuple[int, ...]) -> tuple[int, ...]:
-    return tuple(i * coefficients[i] for i in range(1, len(coefficients)))
-
-
-def eval_integer(coefficients: tuple[int, ...], x: int) -> int:
-    value = 0
-    for coefficient in reversed(coefficients):
-        value = value * x + coefficient
-    return value
 
 
 def vp(value: int, prime: int, infinity: int = 10**9) -> int:
@@ -48,9 +37,9 @@ def vp(value: int, prime: int, infinity: int = 10**9) -> int:
 
 
 def hensel_certified(coefficients: tuple[int, ...], x: int, y: int, prime: int) -> bool:
-    f_value = eval_integer(coefficients, x)
+    f_value = local.eval_integer(coefficients, x)
     equation = y * y - f_value
-    derivative_x = -eval_integer(derivative(coefficients), x)
+    derivative_x = -local.eval_integer(local.derivative(coefficients), x)
     derivative_y = 2 * y
     gradient_order = min(vp(derivative_x, prime), vp(derivative_y, prime))
     return vp(equation, prime) > 2 * gradient_order
@@ -60,7 +49,7 @@ def initial_nodes(chart: Chart, prime: int) -> set[tuple[int, int]]:
     nodes: set[tuple[int, int]] = set()
     x_values = [0] if chart.restrict_x_divisible_by_p else list(range(prime))
     for x in x_values:
-        f_value = eval_integer(chart.coefficients, x) % prime
+        f_value = local.eval_integer(chart.coefficients, x) % prime
         for y in range(prime):
             if (y * y - f_value) % prime == 0:
                 nodes.add((x, y))
@@ -90,7 +79,7 @@ def analyze_chart(chart: Chart, prime: int, maximum: int) -> dict[str, object]:
                 xx = x + a * modulus
                 if chart.restrict_x_divisible_by_p and xx % prime:
                     continue
-                f_value = eval_integer(chart.coefficients, xx)
+                f_value = local.eval_integer(chart.coefficients, xx)
                 for b in range(prime):
                     yy = y + b * modulus
                     if (yy * yy - f_value) % next_modulus == 0:
