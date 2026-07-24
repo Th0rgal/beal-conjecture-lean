@@ -1,21 +1,12 @@
 {
   "auxiliary_primes": {
     "13": {
-      "corrected_generic_u_values": [
-        2
-      ],
+      "corrected_generic_u_values": [2],
       "corrected_row_evaluations_at_trace2_mod5": [
-        {"u": 2, "value": 0},
-        {"u": 3, "value": 3},
-        {"u": 4, "value": 1},
-        {"u": 5, "value": 3},
-        {"u": 6, "value": 1},
-        {"u": 7, "value": 4},
-        {"u": 8, "value": 4},
-        {"u": 9, "value": 3},
-        {"u": 10, "value": 4},
-        {"u": 11, "value": 3},
-        {"u": 12, "value": 2}
+        {"u": 2, "value": 0}, {"u": 3, "value": 3}, {"u": 4, "value": 1},
+        {"u": 5, "value": 3}, {"u": 6, "value": 1}, {"u": 7, "value": 4},
+        {"u": 8, "value": 4}, {"u": 9, "value": 3}, {"u": 10, "value": 4},
+        {"u": 11, "value": 3}, {"u": 12, "value": 2}
       ],
       "eta7_value": -1,
       "fixed7_consequence": "the fixed-7 base trace at the inert prime over 13 must be 0 mod 7",
@@ -28,6 +19,7 @@
     "29": {
       "divisibility": "29 divides C",
       "eta7_value": 1,
+      "fixed7_consequence": "the fixed-7 base trace at a prime over 29 must be plus or minus 30 mod 7",
       "forced_regime": "zero",
       "original_hgm_trace_mod5": 2,
       "packet_trace": 2
@@ -35,6 +27,7 @@
     "41": {
       "divisibility": "41 divides B",
       "eta7_value": -1,
+      "fixed7_consequence": "the fixed-7 full-cyclotomic trace at v=0 must match a zero-specialization candidate",
       "forced_regime": "multiplicative",
       "original_hgm_trace_mod5": 2,
       "packet_trace": -2
@@ -42,21 +35,25 @@
     "43": {
       "divisibility": "43 divides B",
       "eta7_value": 1,
+      "fixed7_consequence": "the fixed-7 base trace at the inert prime over 43 must be 0 mod 7, because the zero-specialization full trace is -2*43^2",
+      "forced_fixed7_full_trace_polynomial": "x+3698",
+      "forced_fixed7_trace_polynomial": "x",
       "forced_regime": "multiplicative",
       "original_hgm_trace_mod5": 1,
-      "packet_trace": -4
+      "packet_trace": -4,
+      "trace_transform": "w=a^2-2*43^2; w=-3698 implies a^2=0"
     }
   },
-  "certificate_sha256": "23f26bc22892141315a1542d2b607e65dd146ddc8135b89d19bf932d73f1f8ef",
+  "certificate_sha256": "7231702f319124e106ef5efd0def8351e6eb046218ca2db9e21f16ff144e6e95",
   "conclusion": {
-    "decisive_remaining_test": "each of fixed-7 packets 24 and 28 must have base Hecke trace 0 mod 7 at the unique prime above 13",
+    "decisive_remaining_test": "each of fixed-7 packets 24 and 28 must have base Hecke trace 0 mod 7 at both inert primes above 13 and 43",
     "forced_divisibility": "29 divides C and 41*43 divides B",
-    "impact": "the complete odd e3=2 two-Frey block reduces to two scalar trace checks at one inert auxiliary prime",
+    "impact": "the complete odd e3=2 two-Frey block reduces to four scalar trace checks on two packets at two inert auxiliary primes",
     "prime13_parameter": "u=C^7/A^3=2 mod 13 and v=-B^5/A^3=12 mod 13"
   },
   "equation": "A^3+B^5=C^7",
   "nonclaim": "cyclic base change, automorphic twisting, level lowering and semilinear Galois trace symmetry are imported research inputs; the fixed-7 packet traces are still being computed, so this certificate does not yet close the e3=2 block or the full signature",
-  "schema_version": 1,
+  "schema_version": 2,
   "scope": {
     "branch": "Dahmen--Siksek odd branch",
     "prime3_conductor_exponent": 2,
@@ -69,6 +66,7 @@
     "corrected_joint_producer": "scripts/produce_signature_357_joint_hgm.py",
     "curve_ainvariants": [1, -1, 0, 9, 0],
     "cyclotomic_untwist_character": "eta_7 for Q(zeta_7)/K7; the original HGM trace equals eta_7 times the twisted packet trace",
+    "fixed7_prime43_zero_polynomial_source": "scripts/produce_signature_357_fixed7_complete_local.py",
     "mod5_regime_path": "Research/Signature357/mod5_rational_trace_regimes.json",
     "mod5_regime_sha256": "2cc5ced90006e274fabef257decde93fb80cf4356594e0d5ce7be6b8693939c8",
     "packet_identification": "the unique dimension-one packet at level 5103 is the cyclic base change of the rational elliptic isogeny class 63.a"
