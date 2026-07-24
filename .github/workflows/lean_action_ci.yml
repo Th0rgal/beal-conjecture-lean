@@ -20,6 +20,10 @@ jobs:
         with:
           fetch-depth: 0
       - run: python3 scripts/check_research_checkpoints.py
+      - run: python3 scripts/check_signature_345_edwards.py --self-test
+      - run: python3 scripts/check_signature_345_edwards.py
+      - run: python3 scripts/check_signature_357_fixed7.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7.py
       - uses: leanprover/lean-action@v1
       # docgen-action@v1 only builds and deploys docs on push events, and its
       # Pages deployment 404s while GitHub Pages is disabled on this repo.
