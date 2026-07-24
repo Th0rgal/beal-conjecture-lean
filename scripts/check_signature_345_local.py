@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""Replay the local eliminations in Section 5 of Siksek--Stoll.
+"""Replay the sequential local eliminations in Section 5 of Siksek--Stoll.
 
-The checker reconstructs all 49 Edwards triples through the independent
-standard-library checker, then verifies:
+The checker reconstructs all 49 Edwards triples and follows Lemma 5.1 in its
+printed order:
 
-- the 16 listed curves have no primitive square point modulo a sufficiently
-  large power of 2, hence no Q_2-point;
-- the two listed curves have no primitive square point modulo a sufficiently
-  large power of 3, hence no Q_3-point;
-- exactly the eight listed additional indices have empty U_i modulo 256, where
-  f_i(u,v) is a square but (f_i,g_i,h_i) is not entirely even;
-- the complement is exactly the 23-index set I printed in Lemma 5.1.
+1. eliminate the 16 listed curves with no Q_2-point;
+2. among the remaining curves, eliminate the two listed curves with no Q_3-point;
+3. among those still remaining, eliminate the eight listed indices whose U_i is
+   empty modulo 256;
+4. verify that the complement is exactly the printed 23-index set I.
 
 No CAS is used. Absence modulo p^k is a rigorous local obstruction because any
 Q_p-point on the weighted-projective curve can be scaled so u,v are p-integral
@@ -112,14 +110,12 @@ def eval_ascending(coefficients: tuple[int, ...], x: int, modulus: int) -> int:
 def evaluate_chart_v_unit(
     poly: ed.HomogeneousPolynomial, x: int, modulus: int
 ) -> int:
-    # f(x,1), with coefficients indexed by the exponent of u.
     return eval_ascending(integral_coefficients(poly), x, modulus)
 
 
 def evaluate_chart_u_unit(
     poly: ed.HomogeneousPolynomial, v: int, modulus: int
 ) -> int:
-    # f(1,v); reverse coefficients so the index is the exponent of v.
     return eval_ascending(tuple(reversed(integral_coefficients(poly))), v, modulus)
 
 
@@ -158,7 +154,8 @@ def has_primitive_square_point_mod(
 ) -> bool:
     modulus = prime**exponent
 
-    # Chart v a unit: scale to (u:v)=(x:1).
+    # Chart v a unit: scale to (u:v)=(x:1). Since deg(f)=30 is even,
+    # unit scaling changes f by a square.
     for x in range(modulus):
         if is_square_mod_prime_power(
             evaluate_chart_v_unit(f, x, modulus), prime, exponent
@@ -224,11 +221,13 @@ def primitive_modulus_set_nonempty(
         raise CertificateError("the audited primitive modulus must be 256")
 
     def admissible(values: tuple[int, int, int]) -> bool:
-        f_value, g_value, h_value = values
+        f_value, _g_value, _h_value = values
         return is_square_mod_prime_power(f_value, 2, 8) and not all(
             value % 2 == 0 for value in values
         )
 
+    # The two projective charts cover all pairs not both even. Pairs both even
+    # are automatically outside U_i because f,g,h are then all even.
     for x in range(modulus):
         if admissible(triple_values_chart_v_unit(triple, x, modulus)):
             return True
@@ -284,7 +283,7 @@ def validate_data(data: dict[str, Any]) -> tuple[dict[int, int], dict[int, int]]
     expected_u = set(expected["primitive_mod_256_empty"])
     expected_survivors = set(expected["surviving_indices"])
     if expected_q2 & expected_q3 or expected_q2 & expected_u or expected_q3 & expected_u:
-        raise CertificateError("the three elimination sets must be disjoint")
+        raise CertificateError("the printed sequential elimination sets must be disjoint")
     if expected_survivors != set(range(1, 50)) - expected_q2 - expected_q3 - expected_u:
         raise CertificateError("surviving_indices is not the exact complement")
 
@@ -293,38 +292,48 @@ def validate_data(data: dict[str, Any]) -> tuple[dict[int, int], dict[int, int]]
     q3_powers: dict[int, int] = {}
 
     actual_q2: set[int] = set()
-    actual_q3: set[int] = set()
     for form_id, (f, _g, _h) in triples.items():
         q2 = first_obstructing_power(f, 2, bounds["max_2_adic_power"])
         if q2 is not None:
             actual_q2.add(form_id)
             q2_powers[form_id] = q2
-        q3 = first_obstructing_power(f, 3, bounds["max_3_adic_power"])
-        if q3 is not None:
-            actual_q3.add(form_id)
-            q3_powers[form_id] = q3
-
     if actual_q2 != expected_q2:
         raise CertificateError(
             f"2-adic obstruction set mismatch: expected {sorted(expected_q2)}, "
             f"got {sorted(actual_q2)}"
         )
+
+    after_q2 = set(range(1, 50)) - actual_q2
+    actual_q3: set[int] = set()
+    for form_id in sorted(after_q2):
+        f = triples[form_id][0]
+        q3 = first_obstructing_power(f, 3, bounds["max_3_adic_power"])
+        if q3 is not None:
+            actual_q3.add(form_id)
+            q3_powers[form_id] = q3
     if actual_q3 != expected_q3:
         raise CertificateError(
-            f"3-adic obstruction set mismatch: expected {sorted(expected_q3)}, "
+            f"sequential 3-adic obstruction mismatch: expected {sorted(expected_q3)}, "
             f"got {sorted(actual_q3)}"
         )
 
+    after_local = after_q2 - actual_q3
     actual_u = {
         form_id
-        for form_id, triple in triples.items()
-        if not primitive_modulus_set_nonempty(triple, bounds["primitive_modulus"])
+        for form_id in after_local
+        if not primitive_modulus_set_nonempty(
+            triples[form_id], bounds["primitive_modulus"]
+        )
     }
     if actual_u != expected_u:
         raise CertificateError(
-            f"mod-256 primitive obstruction mismatch: expected {sorted(expected_u)}, "
+            f"sequential mod-256 obstruction mismatch: expected {sorted(expected_u)}, "
             f"got {sorted(actual_u)}"
         )
+
+    actual_survivors = after_local - actual_u
+    if actual_survivors != expected_survivors:
+        raise CertificateError("replayed survivor set does not match Lemma 5.1")
 
     return q2_powers, q3_powers
 
@@ -385,7 +394,7 @@ def main() -> int:
     print("signature (3,4,5) local obstruction certificate passed")
     print(f"  no Q_2: {sorted(q2_powers)}")
     print(f"  first obstructing powers of 2: {q2_powers}")
-    print(f"  no Q_3: {sorted(q3_powers)}")
+    print(f"  no Q_3 after the Q_2 stage: {sorted(q3_powers)}")
     print(f"  first obstructing powers of 3: {q3_powers}")
     print("  primitive mod-256 exclusions: [7, 8, 12, 19, 21, 22, 30, 34]")
     print("  surviving curve count: 23")
