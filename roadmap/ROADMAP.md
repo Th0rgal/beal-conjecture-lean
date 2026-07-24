@@ -1,206 +1,258 @@
-# Strategic Roadmap: Proving the Beal Conjecture in Lean 4 + Mathlib
+# Strategic roadmap: Beal conjecture in Lean 4
 
-> Generated 2026-06-26 from four parallel research missions (A: state-of-the-art survey, B: Mathlib gap audit, C: modular method feasibility, D: alternative elementary paths). All four reports are in this repository at `roadmap/state-of-the-art.md`, `roadmap/mission-C-modular-method.md`, `roadmap/mission-D-alternative-paths.md`.
+Updated 2026-07-24. The evidence and source audit behind this roadmap is in
+[`Research/BEAL_FRONTIER_AUDIT_2026-07-24.md`](../Research/BEAL_FRONTIER_AUDIT_2026-07-24.md).
 
-## Architecture roadmap (v1, 2026-07-21)
+## Bottom line
 
-This repository now has an executable checkpoint boundary in addition to the
-trusted Lean boundary. `Research/checkpoints/*.json` records only historical,
-reachable source commits and exact artifact hashes. The validator reads those
-artifacts with `git show <source_commit>:<path>`, rejects self-references and
-unreachable commits, and runs before Lean in CI. A checkpoint is provenance,
-not a mathematical result or certificate.
+The repository does not prove the Beal conjecture. PR #6 establishes an honest
+trusted boundary and an exact normalized Challenge proposition; it does not make
+the remaining mathematics finite or easier by itself.
 
-Follow-up PRs, in order of dependency:
+The immediate opportunity is to formalize several new elementary reductions
+that are already within Mathlib's scope. The global frontier remains deep
+fixed-signature arithmetic.
 
-1. Formalize an asymmetric ABC radical theorem and derive a uniform 11/12 bound
-   under its stated assumptions.
-2. Build a signature-aware certificate engine with independent replay.
-3. Integrate an official Lean comparator/challenge module once its API and trust
-   model are reviewed.
-4. Extend the durable checkpoint manifests with independently replayed research
-   certificates and retained source-audit evidence.
+Keep these statuses distinct:
 
-None of these follow-ups is implemented by the checkpoint format itself.
+- **trusted:** compiled Lean theorem in the public audited environment;
+- **kernel candidate:** elementary theorem ready to formalize;
+- **literature solved:** primary source claims a solution, but this repository has
+  no checked proof/certificate;
+- **open frontier:** no complete accepted mathematical solution;
+- **experimental:** bounded evidence or speculative program only.
 
-## Bottom line first
+## Correct mathematical frontier
 
-The Beal conjecture **cannot be proved in Lean 4 + Mathlib with currently available formal mathematics**. The bottleneck is genuinely mathematical, not formalization: every known attack either solves only fixed signature families (not all Beal), gives finiteness without enumeration, or is conditional on conjectures at least as strong as ABC.
+### `(3,4,5)`
 
-What an AI-assisted Lean team **can realistically do** in 2026-2028 is:
+Siksek and Stoll solved the signature `(3,4,5)` in the literature using partial
+descent on hyperelliptic curves. The repository still needs an exact source audit,
+a certificate model, independent replay, and a Lean theorem. It is
+**literature-solved/formalization-pending**, not mathematically open.
 
-1. Build a formal generalized Fermat / Beal signature library
-2. Audit the `(3,4,5)` literature locator and formalize a certified descent only after verification
-3. Import Faltings / Darmon-Granville / Stewart-Yu as precisely named theorem interfaces
-4. Convert "known islands" into Lean theorems with Magma/Sage-checkable certificates
-5. Build reusable Mathlib infrastructure (elliptic curves, modular forms, Jacobians) that supports future arithmetic-geometry formalization
+### `(3,5,7)`
 
-What it **cannot** do:
+The current solved-case survey identifies `(3,5,7)` as the first unresolved Beal
+signature after known cases are removed. This is the first distinct-prime global
+research target.
 
-- Formalize the entire Wiles / Ribet / Khare-Wintenberger machinery and then derive Beal as a corollary
-- Assume ABC and call it a proof (ABC is not proven, IUT is not accepted)
-- Baker-style explicit bounds alone (constants are too large to brute force)
-- Sum-product, additive combinatorics, or transcendence (no Beal attack exists)
+Pacetti–Villagra Torcomian's 2025 `(5,p,3)` work supplies hypergeometric-motive,
+conductor, Hilbert-newform, and ghost-solution infrastructure. Its exceptional
+sets explicitly include `p = 7`, and its strongest asymptotic theorem is
+conditional on a large-image conjecture. It does not prove `(3,5,7)`.
 
-## The mixed-exponent gap that remains
+### Repeated-prime signatures
 
-After the existing `beal-unified/` Lean 4 project, the open frontier is exactly the mixed-exponent families:
+When two left exponents share an odd prime, the nearest elementary target is an
+exact homogeneous cyclotomic perfect-power decomposition. The current repository
+contains factorization and order consequences, but still assumes the central
+cofactor power data. Constructing that data is the highest-payoff trusted
+arithmetic PR.
 
+## Priority stack
+
+### Priority 1 — generalized-Fermat signature graph
+
+Create `BealUnified/GeneralizedFermat.lean`.
+
+Deliverables:
+
+1. `PrimitiveGFESolution` with exponents allowed below Beal's floor;
+2. signatures, permutations, and hyperbolicity predicates;
+3. coordinatewise divisor shadows;
+4. preservation of positivity and pairwise coprimality under exponent absorption;
+5. upward closure: a solved divisor signature excludes every multiple signature;
+6. theorem types suitable for registry validation.
+
+Why first: the existing `4`-or-odd-prime normalization is exact but chooses only
+one divisor per exponent and loses perfect-power provenance. A signature graph
+lets every future formal theorem close an infinite divisibility cone.
+
+Risk: low. This is elementary algebra and API design.
+
+### Priority 2 — exact cyclotomic power split
+
+Create `BealUnified/CyclotomicPowerSplit.lean`.
+
+For
+
+```text
+X^p + Y^p = C^n,
+p odd prime,
+n ≥ 3,
+gcd(X,Y)=1,
 ```
-A^x + B^y = C^z,  x,y,z >= 3,  x,y,z not all equal,  gcd(A,B,C) = 1
+
+formalize:
+
+1. `gcd (X+Y) Φ_p^+(X,Y) ∣ p`;
+2. the coprime branch `X+Y = U^n`, `Φ = V^n`, `C = U*V`;
+3. the exceptional branch `X+Y = p^(n*k-1)U^n`, `Φ = p*V^n`;
+4. `v_p Φ = 1` from Mathlib plus-sign LTE;
+5. `V > 1`;
+6. a prime `q ∣ V` with `q^n ∣ Φ` and `q ≡ 1 (mod 2p)`;
+7. at least two distinct prime divisors of `C`;
+8. `rad C ≥ 4p+2`;
+9. the Beal corollary: a common odd prime divisor of the two left exponents
+   excludes a prime-power right base;
+10. the analogous difference theorem, retaining the `X-Y=1` exceptional branch.
+
+Why second: this constructs the mathematical data that
+`CofactorPowerData` currently records as an assumption and that
+`PrimitivePowSubDivisor` only consumes.
+
+Risk: medium-low. The mathematics is elementary; the main work is Mathlib API
+navigation for perfect powers and prime factorizations.
+
+### Priority 3 — frontier bounds and method limitations
+
+Create `BealUnified/FrontierBounds.lean`.
+
+Deliverables:
+
+1. the cleared-denominator inequality
+   `12*(yz+xz+xy) ≤ 11*xyz` outside `(3,3,3)`;
+2. `rad(A*B*C)^12 < (C^z)^11`;
+3. exact all-unit finite-field count `(Q-1)(Q-2)` for pairwise-coprime
+   exponents;
+4. the exact unit count over odd prime powers;
+5. a theorem-level statement that a predetermined finite collection of
+   all-unit congruence tests cannot eliminate a pairwise-coprime exponent
+   signature.
+
+Why third: these are unconditional, reusable, and they prevent further work from
+repeating proof strategies that cannot close the distinct-prime core.
+
+Risk: medium. The radical proof needs careful coercion and strict-power
+monotonicity; finite-group counting needs a clean Smith-normal-form or explicit
+Bezout implementation.
+
+### Priority 4 — expand registry semantics
+
+The current registry distinguishes only trusted solved rows and a generic open
+source-audit state. Introduce explicit statuses such as:
+
+- `solved`;
+- `reduction-solved`;
+- `literature-solved-formalization-pending`;
+- `open-frontier`;
+- `conditional`;
+- `experimental-evidence`.
+
+Requirements:
+
+- only trusted solved statuses may name formal declarations;
+- every trusted declaration must have an exact expected Lean type;
+- literature rows must pin a primary source and theorem statement;
+- computational rows must name a replay checker and exact artifact hashes;
+- no literature or experiment row may be imported into `BealUnified.Trusted`.
+
+Risk: low, but fail-closed validation is mandatory.
+
+### Priority 5 — certify `(3,4,5)`
+
+This is a formalization project, not new mathematics.
+
+Milestones:
+
+1. pin the exact Siksek–Stoll source version and theorem statement;
+2. reconstruct the reduction to the finite curve/Selmer-set calculation;
+3. define certificates for number-field arithmetic and local solubility;
+4. independently reproduce every source computation;
+5. retain producer and checker hashes in research checkpoints;
+6. formalize the implication from empty checked certificates to no primitive
+   `(3,4,5)` solution;
+7. only then change the registry row to trusted `solved`.
+
+Why before a large generic modular stack: it closes a real Beal signature and
+builds reusable descent/certificate infrastructure.
+
+Risk: high implementation cost, low mathematical uncertainty.
+
+### Priority 6 — attack `(3,5,7)` as a fixed signature
+
+Promising methods:
+
+- fixed-signature descent to explicit curves or étale algebras;
+- multi-Frey or hypergeometric-motive modular methods;
+- conductor and local-type classification;
+- Hilbert-newform enumeration with exact trace certificates;
+- explicit tracking and elimination of ghost forms;
+- cross-checking through an independent implementation.
+
+The 2025 `(5,p,3)` codebase is useful input, not a theorem for `p=7`. A valid
+program must explicitly resolve every exceptional residual case rather than
+extrapolating an asymptotic theorem.
+
+Risk: high. This is the first genuinely open mathematical target.
+
+### Priority 7 — repeated-prime global arithmetic
+
+After Priority 2, the repeated branch reduces to equations of the form
+
+```text
+Φ_p^±(X,Y) = p^δ * D^q.
 ```
 
-with at least one exponent not divisible by 3 or 4. The cleanest such cases are `(3,4,5)`, `(3,5,7)`, `(4,5,7)`, etc. `(3,4,5)` has a Siksek--Stoll (2012) locator, but this repository records it as open pending a source audit and checked certificate.
+The remaining global question needs one of:
 
-## DGX computational checkpoint — 2026-07-17
+- a verified cyclotomic-unit/class-group obstruction;
+- a theorem forcing a nonexceptional valuation not divisible by `q`;
+- a certified fixed-family modular argument.
 
-The reproducible checkpoint in
-[`Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md`](../Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md)
-adds bounded evidence and changes the near-term experimental ordering without
-changing the conjecture's status:
+Primitive-divisor existence alone is insufficient because nonexceptional
+valuations greater than one occur in the DGX census.
 
-1. prioritize the symbolic fixed cyclotomic gcd congruence on shared-exponent
-   slices;
-2. explicitly reject any unconditional “primitive divisor has valuation one”
-   heuristic — the bounded census found valuations through four;
-3. use finite fields only for support and character restrictions, because the
-   `A=0, B=C=1` branch survives every modulus;
-4. retain plus-sign LTE as a precisely hypothesized formal target, but do not
-   treat a zero-exception bounded sweep as a theorem;
-5. reserve CUDA for certificate-producing fixed-width residue/order batches in
-   operator-approved exclusive GPU windows; keep general PARI/FLINT arithmetic
-   on the bounded CPU lane.
+Risk: mathematically high.
 
-The checkpoint tested 24,348 ordered coprime cyclotomic pairs, 422,340 LTE
-instances, 11,664 finite-field signature/prime combinations, and a four-million
-input CPU/GPU differential calibration. A separately implemented SymPy path
-reconstructed all three complete CPU domains, while every one of five CUDA
-repetitions matched the independent CPU digest. Every artifact carries one exact
-clean producer commit and run ID. This stronger bounded assurance added no Lean
-theorem and does not advance the single open Beal core by itself.
+## Work not to prioritize as the main proof path
 
-## The 3 prioritized paths
-
-### Path 1 — Audit then formalize a `(3,4,5)` descent
-
-**A promising Lean 4 target, subject to source audit.** It may avoid formalizing Wiles.
-
-| Milestone | LOC estimate | Effort |
-|---|---|---|
-| Reduce Beal `(3,4,5)` to a finite Selmer-set statement | 5k-15k | weeks-months |
-| Build certificate format for local solubility over number fields | 5k-10k | weeks |
-| Formalize enough hyperelliptic-curve language to state "empty Selmer ⟹ no rational point" | 10k-30k | months |
-| Verify the specific finite computations (Sage/Magma outputs as checkable certificates) | 20k-35k | 1-3 PY |
-| Package as `theorem beal_no_coprime_signature_3_4_5 : False := by ...` | — | — |
-| **Total** | **40k-90k LOC** | **3-8 person-years** |
-
-**Why first.** Closes a real Beal signature. Builds reusable descent infrastructure (Jacobians, Selmer, hyperelliptic curves, certified computations) for future work. No need to formalize Wiles.
-
-**Risk.** Medium. Mathematics is known, but clean formalization of computational descent is non-trivial. Computational trust model needs a careful certificate format.
-
-### Path 2 — Generalized Fermat / Beal signature library + theorem interfaces
-
-**The infrastructure that lets us say precisely what is and is not known for every Beal signature.**
-
-| Milestone | LOC estimate | Effort |
-|---|---|---|
-| Define primitive solutions, signatures, hyperbolic/spherical regimes, reductions by exponent divisibility | 3k-8k | weeks |
-| Formalize the elementary reductions already proved in `beal-unified/` as a clean library API | 2k-5k | weeks |
-| Import Darmon-Granville as a named theorem interface for fixed hyperbolic signatures | 1k-3k | weeks |
-| Import Faltings / Vojta / Stewart-Yu as theorem interfaces | 2k-5k | weeks |
-| Build a registry of solved signatures with theorem hooks and literature references | 1k-3k | weeks |
-| **Total** | **10k-25k LOC** | **2-6 months** |
-
-**Why second.** Pinpoints exactly which signatures are open vs. closed under what assumptions. Provides a clean dependency graph that future paths can build on.
-
-**Risk.** Low. This is mostly formalization hygiene.
-
-### Path 3 — Modular-method infrastructure via narrow certified papers
-
-**Long-term path toward closing more Beal signatures, one modularity paper at a time.**
-
-| Milestone | LOC estimate | Effort |
-|---|---|---|
-| Define Frey curves and basic invariants over ℚ for selected families | 15k-30k | 1-2 PY |
-| Certificate checking for discriminants, conductors, local reduction types | 10k-25k | 1 PY |
-| State modularity and level-lowering as black-box interfaces with explicit hypotheses | 5k-15k | months |
-| Formalize newform-elimination computations as checkable certificates for one family (e.g. Bennett-Chen `a² + b⁶ = cⁿ`) | 20k-50k | 2-4 PY |
-| Extend one paper at a time | — | — |
-| **Total (for one narrow family)** | **50k-120k LOC** | **3-7 PY** |
-
-**Why third.** Eventually, this is what could close *most* known Beal-relevant mixed-signature cases. But it requires significant infrastructure (elliptic curves over ℚ with conductor/minimal model, Galois representations, modular forms, modularity lifting) that is **not in Mathlib today**.
-
-**Risk.** High. The mathematical results are published, but Mathlib has ~9.5k LOC on elliptic curves and ~7.4k on modular forms — foundations, not enough for a modular-method paper. Lean FLT project is still defining the deformation ring `R` and Hecke algebra `T`.
-
-## What NOT to invest in (for a Beal-specific project)
-
-| Approach | Why not |
+| Approach | Limitation |
 |---|---|
-| Full Wiles / Ribet / Khare-Wintenberger formalization | 30-80+ person-years, doesn't give Beal as a corollary |
-| ABC + IUT approach | IUT not accepted; even ABC wouldn't give a clean proof, only finiteness |
-| Baker / linear forms in logarithms → brute force | Constants too large to search; bounds exceed 10³⁰⁰ for relevant signatures |
-| Full generic cyclotomic attack on arbitrary mixed exponents | Useful on shared-factor/symmetric slices, but does not address a general signature such as `(3,4,5)` |
-| Additive combinatorics / sum-product | No published Beal attack exists |
-| Transcendence (Gel'fond-Schneider directly) | Integer exponents don't trigger transcendence methods |
+| More fixed-modulus finite-field atlases | Pairwise-coprime exponent maps are locally saturated; use them only for support lemmas |
+| Unconditional primitive-divisor valuation one | False without extra hypotheses; observed valuations reach four |
+| Generic LTE development | The needed plus-sign theorem already exists and applies mainly to shared-exponent slices |
+| Generic CUDA brute force | Bounded evidence only; useful after a certificate schema exists |
+| Qualitative ABC as a proof | Gives finiteness, not emptiness or a usable enumeration constant |
+| Baker bounds followed by brute force | Constants and number fields are too large and signature-dependent |
+| Full generic cyclotomic attack | Does not address pairwise-coprime signatures such as `(3,5,7)` |
+| Full Wiles/Ribet formalization | Very high cost and does not imply Beal |
+| Additive combinatorics or direct transcendence | No established Beal mechanism |
+| Unreviewed universal proof preprints | No registry or trusted status before independent source reconstruction |
 
-## The effort/payoff chart
+## Trust and publication gates
 
-```
-Payoff for Beal progress
-   ▲
-   │                ★ (3,4,5) descent
-   │              ★
-   │        ★
-   │           ★ Modular method (narrow certified)
-   │
-   │     ★ Signature library
-   │        ★ Mason-Stothers extension
-   │  ★
-   │       Darmon-Granville interface
-   │  ★ Weak ABC interface
-   │
-   │           ★ Sum-product
-   │     ★ Baker
-   │  ★
-   └────────────────────────────────────────────►
-       1M   1Y   5Y   10Y   50Y   100Y   Effort
-```
+A claim may enter the trusted solved inventory only when all of the following
+hold:
 
-## Concrete next-step recommendation for an AI-assisted team in 2026
+1. exact Lean theorem type is registered;
+2. public trusted import loads the declaration;
+3. axiom audit accepts every transitive dependency;
+4. all external computations have a certificate schema;
+5. a separately implemented checker replays those certificates;
+6. source, producer, checker, and artifact hashes are retained;
+7. CI exercises negative fixtures for malformed or weakened claims.
 
-**Quarter 1-2:** Path 2 (signature library + interfaces). ~25k LOC. Sets the foundation.
+A research checkpoint, a paper citation, a bounded search, or a successful Magma
+transcript is not by itself a trusted theorem.
 
-**Quarter 3-4:** Path 1, phase 1-2 (reduction + certificate format). Sets up the `(3,4,5)` attack.
+## Near-term execution order
 
-**Year 2:** Path 1, phase 3-4 (Selmer-set verification). Potential result: a Lean 4 theorem that no primitive `A³ + B⁴ = C⁵` exists, but only after a reviewed source and independently replayed certificate.
+1. merge the trust-boundary PR;
+2. merge the frontier semantics/audit update;
+3. implement generalized-Fermat divisor shadows;
+4. implement exact cyclotomic power splitting;
+5. implement radical and local-saturation theorems;
+6. expand the registry schema;
+7. begin `(3,4,5)` certificate reconstruction;
+8. maintain `(3,5,7)` as a separate research project with no proof claim.
 
-**Year 3+:** Path 3, one modular paper at a time. Closes `(p,p,3)`, `(a²,b⁶,cⁿ)`-style families.
+## Related documents
 
-**Year 5+:** Build enough Mathlib content that someone (a research mathematician, not an AI) can attempt the full Beal proof using the formal foundation.
-
-## Where AI assistance changes the calculation
-
-Two things make 2026 different from 2016:
-
-1. **Mathematical infrastructure is being formalized concurrently.** The Lean FLT project, Baek-Lee's Mason-Stothers, FLT-for-regular-primes Lean blueprint. Each of these shrinks the distance to a serious Beal attack.
-
-2. **AI-assisted formalization accelerates routine work.** Routine Mathlib contributions (algebraic structures, polynomial identities, number-field arithmetic) can plausibly be 5-10x faster with AI tooling. This means Path 1 at 3-8 person-years might be 1-2 person-years with AI assistance.
-
-It does **not** change the fundamental bottleneck: the modular method's proof machinery still requires human mathematical insight to formalize, not just typing speed.
-
-## What we will not achieve, even with AI
-
-A formal Lean 4 proof of the general Beal conjecture in 2026-2028. The mathematics doesn't exist. ABC is unproven. Wiles' machinery is decades of formalization away from Beal applicability. No amount of AI assistance substitutes for the missing theorems.
-
-The honest deliverable is: a Beal signature library, an audited candidate `(3,4,5)` program, certified interfaces for modern finiteness theorems, and a roadmap for future paths.
-
----
-
-## Mission reports in this repo
-
-- [`roadmap/state-of-the-art.md`](state-of-the-art.md) — survey of 11 mathematical approaches with mixed-exponent relevance, Mathlib gap estimates, person-year estimates
-- [`roadmap/mission-B-Mathlib-gap-audit.md`](../beal-unified/BEAL_MATHLIB_GAP_AUDIT.md) — concrete Mathlib 4.31 audit
-- [`roadmap/mission-C-modular-method.md`](mission-C-modular-method.md) — deep dive on modular method: Frey curves, Galois reps, level lowering, Lean FLT project status
-- [`roadmap/mission-D-alternative-paths.md`](mission-D-alternative-paths.md) — Darmon-Granville, Baker, weak ABC, cyclotomic, descent, Mason-Stothers, Vojta, sum-product — all 10 ranked by effort/payoff
-- [`Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md`](../Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md) — reproducible finite-field, LTE, cyclotomic, and CUDA checkpoint with exact bounds and trust limitations
-- [`ROADMAP.md`](../ROADMAP.md) — this file, the executive summary
+- [`Research/BEAL_FRONTIER_AUDIT_2026-07-24.md`](../Research/BEAL_FRONTIER_AUDIT_2026-07-24.md)
+- [`Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md`](../Research/DGX_SPARK_EXPERIMENTS_2026-07-17.md)
+- [`roadmap/state-of-the-art.md`](state-of-the-art.md)
+- [`roadmap/mission-C-modular-method.md`](mission-C-modular-method.md)
+- [`roadmap/mission-D-alternative-paths.md`](mission-D-alternative-paths.md)
+- [`roadmap/TRUST_BOUNDARY_ROADMAP.md`](TRUST_BOUNDARY_ROADMAP.md)
