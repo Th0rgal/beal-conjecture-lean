@@ -160,6 +160,56 @@ seventh-power map on `(Z/49Z)^*`.  This image is the unique subgroup of order
 1,18,19,30,31,48.
 ```
 
+## Converse: the local equation is saturated
+
+The preceding conditions are also sufficient over `Z_7`.  Fix arbitrarily
+
+```text
+a >= 1,
+z,d in Z_7^*.
+```
+
+Put
+
+```text
+Y=z^5,
+C=Y+7^(3*a-1)*d^3,
+B=z^7,
+E=Phi_7(C,Y)/7.
+```
+
+Because `3*a-1>=2`, we have `C=Y mod 49`, and hence
+
+```text
+E=Y^6=1 mod 7.
+```
+
+There is therefore a unique `e in 1+7*Z_7` with `e^3=E`.  Defining
+
+```text
+A=7^a*d*e
+```
+
+gives
+
+```text
+A^3
+ =7^(3*a)*d^3*E
+ =(C-Y)*Phi_7(C,Y)
+ =C^7-Y^7
+ =C^7-B^5.
+```
+
+Thus every choice of `(a,z,d)` produces a `7`-adic solution with the required
+valuation pattern.  Conversely, the proof above recovers these parameters from
+any such solution, taking `d=(A/7^a)/e`.
+
+Consequently there is no hidden finite congruence obstruction at the prime `7`
+beyond the Kummer image and normalized-cube conditions: the odd local locus is
+an explicit two-unit family for every positive valuation `a`.  Any proof of the
+odd branch must therefore use a genuinely global condition or couple the
+`7`-adic data to another place.
+
 ## Elementary finite-level corollary
 
 The same residue restriction can be obtained without completing to `Z_7`.
@@ -207,9 +257,11 @@ sevenths of the unit classes modulo `49` and supplies an exact normalized-cube
 condition for any future `7`-adic descent, etale-algebra search, or local-type
 calculation.
 
-The current modular frontier still consists of the two mod-`5` Hilbert levels
-`35721` and `964467`; this theorem is an additional local constraint, not a
-replacement for the residual Hecke-module computation.
+The converse is equally useful strategically: more stand-alone congruence
+searches at `7` cannot close the odd branch, because the local solution locus is
+explicitly nonempty and positive-dimensional at every valuation.  The current
+modular frontier still consists of the two mod-`5` Hilbert levels `35721` and
+`964467`.
 
 ## Replay
 
