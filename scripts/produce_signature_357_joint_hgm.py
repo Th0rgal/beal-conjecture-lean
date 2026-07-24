@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
-"""Compute coupled HGM trace polynomials for the two-Frey (3,5,7) program.
+"""Compute correctly labelled coupled HGM traces for the two-Frey (3,5,7) program.
 
-For a local parameter u=C^7/A^3, the two Frey parameters satisfy
+The mathematical specialization parameters are
 
-    t_5 = u,      t_7 = 1-u.
+    u = C^7/A^3,      v = -B^5/A^3,      u + v = 1.
 
-The pinned Pacetti--Villagra GP implementation computes the weight-two trace of
-the fixed-7 motive with parameters (1/5,-1/5),(1/3,-1/3).  The same finite-HGM
-routine computes the independent mod-5 motive with parameters
-(1/7,-1/7),(1/3,-1/3).  This producer retains the parameter labels instead of
-collapsing them into marginal candidate sets.
+The pinned PARI/GP routine ``hgm(z, ...)`` uses the reciprocal finite-HGM
+coordinate: its argument is ``z=t_0^(-1)``.  This convention is anchored by
+Pacetti--Villagra Torcomian, Table 7.1: at the mathematical specialization
+``t_0=3`` and the prime over 29, the RM trace polynomial is ``x^2-2*x-44``;
+the pinned routine returns that polynomial at ``z=10=3^(-1) mod 29``, not at
+``z=3``.
 
-PARI/GP is an external producer.  The output consists only of integer trace
-polynomials and finite parameter labels; a separate standard-library checker
-performs all reductions and pair eliminations.
+Consequently this producer evaluates
+
+    z5 = u^(-1),      z7 = v^(-1),
+
+so that ``(z5-1)*(z7-1)=1``.  It retains both the mathematical parameters and
+the implementation arguments.  PARI/GP is only the external producer; the
+output contains integer polynomials and finite parameter labels for replay by
+standard-library checkers.
 """
 
 from __future__ import annotations
@@ -33,6 +39,7 @@ SOURCE_URL = (
     "e88f914c577ab6cf9a45e5cdd82c1993477fb423/Codes/GPcode.gp"
 )
 EXPECTED_GIT_BLOB = "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2"
+PARAMETER_CONVENTION_SHA256 = "c32eb5bb8c060dc6c3625011aa073a0b7f081ad57d2aa51a58daa1abed4df141"
 PRIMES = [13, 29, 41]
 USER_AGENT = (
     "beal-conjecture-lean-research/1.0 "
@@ -77,13 +84,15 @@ P=[{primes}];
 
 EmitRow(p0,u,f5,f7)=
 {{
-  local(t7,A7,A5);
-  t7=lift(Mod(1-u,p0));
-  A7=algdep(p0^f5*hgm(t7,[1/5,-1/5],[1/3,-1/3],p0,f5),2);
+  local(v,z5,z7,A7,A5);
+  v=lift(Mod(1-u,p0));
+  z5=lift(1/Mod(u,p0));
+  z7=lift(1/Mod(v,p0));
+  A7=algdep(p0^f5*hgm(z7,[1/5,-1/5],[1/3,-1/3],p0,f5),2);
   A7=A7/content(A7);
-  A5=algdep(p0^f7*hgm(u,[1/7,-1/7],[1/3,-1/3],p0,f7),3);
+  A5=algdep(p0^f7*hgm(z5,[1/7,-1/7],[1/3,-1/3],p0,f7),3);
   A5=A5/content(A5);
-  print("JOINT|",p0,"|",u,"|",t7,"|",f5,"|",f7,"|",A7,"|",A5);
+  print("JOINT|",p0,"|",u,"|",v,"|",z5,"|",z7,"|",f5,"|",f7,"|",A7,"|",A5);
 }};
 
 EmitPrime(p0)=
@@ -119,24 +128,32 @@ def main() -> int:
 
     rows: list[dict[str, Any]] = []
     pattern = re.compile(
-        r"^JOINT\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|([^|]+)\|(.+)$"
+        r"^JOINT\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|([^|]+)\|(.+)$"
     )
     for line in process.stdout.splitlines():
         match = pattern.match(line.strip())
         if match is None:
             continue
-        prime, u, t7, f5, f7 = (
-            int(match.group(index)) for index in range(1, 6)
+        prime, u, v, z5, z7, f5, f7 = (
+            int(match.group(index)) for index in range(1, 8)
         )
+        if (u + v) % prime != 1:
+            raise ProducerError(f"mathematical parameter relation failed at {prime}")
+        if (u * z5) % prime != 1 or (v * z7) % prime != 1:
+            raise ProducerError(f"reciprocal GP coordinate failed at {prime}")
+        if ((z5 - 1) * (z7 - 1)) % prime != 1:
+            raise ProducerError(f"GP-coordinate coupling failed at {prime}")
         rows.append(
             {
                 "prime": prime,
                 "u_mod_prime": u,
-                "t7_mod_prime": t7,
+                "v_mod_prime": v,
+                "gp_argument_mod5": z5,
+                "gp_argument_fixed7": z7,
                 "residue_degree_K5": f5,
                 "residue_degree_K7": f7,
-                "fixed7_trace_polynomial": match.group(6).replace(" ", ""),
-                "mod5_trace_polynomial": match.group(7).replace(" ", ""),
+                "fixed7_trace_polynomial": match.group(8).replace(" ", ""),
+                "mod5_trace_polynomial": match.group(9).replace(" ", ""),
             }
         )
 
@@ -148,8 +165,11 @@ def main() -> int:
             f"GP stderr tail:\n{process.stderr[-4000:]}"
         )
     body = {
-        "schema_version": 1,
-        "status": "coupled finite-HGM trace-polynomial producer output",
+        "schema_version": 2,
+        "status": (
+            "coupled finite-HGM trace-polynomial producer output with "
+            "source-anchored reciprocal GP coordinates"
+        ),
         "source": {
             "repository": "lucasvillagra/GFE-5p3",
             "commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423",
@@ -163,7 +183,15 @@ def main() -> int:
                 check=False,
             ).stdout.strip(),
         },
-        "parameter_identity": "t5=u,t7=1-u",
+        "parameter_convention_certificate": {
+            "path": "Research/Signature357/gp_parameter_convention.json",
+            "sha256": PARAMETER_CONVENTION_SHA256,
+            "conclusion": "GP hgm argument z equals the inverse mathematical parameter",
+        },
+        "mathematical_parameter_identity": "u=C^7/A^3,v=-B^5/A^3,u+v=1",
+        "gp_parameter_identity": (
+            "z5=u^(-1),z7=v^(-1),(z5-1)*(z7-1)=1"
+        ),
         "primes": PRIMES,
         "row_count": len(rows),
         "rows": rows,
