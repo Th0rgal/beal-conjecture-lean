@@ -33,7 +33,7 @@ SOURCE_URL = (
     "e88f914c577ab6cf9a45e5cdd82c1993477fb423/Codes/GPcode.gp"
 )
 EXPECTED_GIT_BLOB = "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2"
-PRIMES = [13, 29, 41]
+PRIMES = [13, 29, 41, 43]
 USER_AGENT = (
     "beal-conjecture-lean-research/1.0 "
     "(+https://github.com/Th0rgal/beal-conjecture-lean)"
