@@ -8,6 +8,7 @@ on:
       - "scripts/run_signature_357_magma_mod5_levels.py"
       - "scripts/run_signature_357_magma_level33.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_mod5_forced_zero.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   pull_request:
@@ -15,6 +16,7 @@ on:
       - "scripts/run_signature_357_magma_mod5_levels.py"
       - "scripts/run_signature_357_magma_level33.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_mod5_forced_zero.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   workflow_dispatch:
@@ -46,10 +48,15 @@ jobs:
         run: >-
           python3 scripts/produce_signature_357_mod5_complete_local.py
           > mod5-complete-local.json
+      - name: Produce even-branch forced-zero polynomials at 19 and 71
+        run: >-
+          python3 scripts/produce_signature_357_mod5_forced_zero.py
+          > mod5-forced-zero.json
       - name: Query and filter this Hilbert level
         run: >-
           python3 scripts/run_signature_357_magma_mod5_levels.py
           --local-data mod5-complete-local.json
+          --forced-zero-data mod5-forced-zero.json
           --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
           > "mod5-magma-${{ matrix.norm }}.json"
       - uses: actions/upload-artifact@v4
@@ -57,6 +64,7 @@ jobs:
           name: signature357-mod5-magma-${{ matrix.norm }}
           path: |
             mod5-complete-local.json
+            mod5-forced-zero.json
             mod5-magma-${{ matrix.norm }}.json
           if-no-files-found: error
 
