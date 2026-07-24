@@ -13,21 +13,30 @@
   "level_count": 8,
   "levels": [
     {
-      "exponent_pair": [0, 0],
+      "exponent_pair": [
+        0,
+        0
+      ],
       "level_norm": 1,
       "record_count": 0,
       "records": [],
       "total_coefficient_field_dimension": 0
     },
     {
-      "exponent_pair": [0, 1],
+      "exponent_pair": [
+        0,
+        1
+      ],
       "level_norm": 7,
       "record_count": 0,
       "records": [],
       "total_coefficient_field_dimension": 0
     },
     {
-      "exponent_pair": [1, 0],
+      "exponent_pair": [
+        1,
+        0
+      ],
       "level_norm": 27,
       "record_count": 1,
       "records": [
@@ -46,7 +55,10 @@
       "total_coefficient_field_dimension": 1
     },
     {
-      "exponent_pair": [0, 2],
+      "exponent_pair": [
+        0,
+        2
+      ],
       "level_norm": 49,
       "record_count": 1,
       "records": [
@@ -65,7 +77,10 @@
       "total_coefficient_field_dimension": 1
     },
     {
-      "exponent_pair": [1, 1],
+      "exponent_pair": [
+        1,
+        1
+      ],
       "level_norm": 189,
       "record_count": 1,
       "records": [
@@ -84,7 +99,10 @@
       "total_coefficient_field_dimension": 1
     },
     {
-      "exponent_pair": [0, 3],
+      "exponent_pair": [
+        0,
+        3
+      ],
       "level_norm": 343,
       "record_count": 1,
       "records": [
@@ -103,7 +121,10 @@
       "total_coefficient_field_dimension": 3
     },
     {
-      "exponent_pair": [2, 0],
+      "exponent_pair": [
+        2,
+        0
+      ],
       "level_norm": 729,
       "record_count": 4,
       "records": [
@@ -155,7 +176,10 @@
       "total_coefficient_field_dimension": 8
     },
     {
-      "exponent_pair": [1, 2],
+      "exponent_pair": [
+        1,
+        2
+      ],
       "level_norm": 1323,
       "record_count": 6,
       "records": [
