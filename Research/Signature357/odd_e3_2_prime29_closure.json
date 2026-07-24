@@ -1,0 +1,94 @@
+{
+  "certificate_sha256": "a1c2dd050b7fec302796bca1df7818496d06367aef7f22d313a62c4d524abae8",
+  "conclusion": {
+    "reason": "the corrected two-Frey coupling forces t7=1 at 29, but neither packet 24 nor packet 28 has residual base trace plus or minus 30 modulo 7",
+    "statement": "the Dahmen--Siksek odd e3=2 block is empty",
+    "surviving_packets": []
+  },
+  "equation": "A^3+B^5=C^7",
+  "local_forcing": {
+    "fixed7_parameter": "t7=v=1",
+    "forced_u_mod29": 0,
+    "forced_v_mod29": 1,
+    "mod5_forced_regime": "zero",
+    "norm_prime": 29,
+    "permitted_base_traces_integers": [
+      -30,
+      30
+    ],
+    "permitted_base_traces_mod7": [
+      5,
+      2
+    ],
+    "rational_prime": 29,
+    "residue_degree_K5": 1
+  },
+  "nonclaim": "modularity, level lowering, the reduction to packets 24 and 28, and the multiplicative local trace criterion remain imported research inputs; this certificate closes only the odd e3=2 block, not the e3=3 block or the full Beal conjecture",
+  "packet_rows": [
+    {
+      "artifact_id": 8608407293,
+      "artifact_name": "signature357-fixed7-packet-24-prime-29",
+      "artifact_zip_sha256": "69b0c00b833d5876f7bba6b25611582bc372eddb452ea3de8e6e8a748875a9ac",
+      "base_trace_coefficients_low_to_high": [
+        196,
+        0,
+        -98,
+        0,
+        1
+      ],
+      "base_trace_polynomial": "196 - 98*x^2 + x^4",
+      "evaluations_at_permitted_traces_mod7": {
+        "-30": 2,
+        "30": 2
+      },
+      "gcd_with_multiplicative_target_degree_mod7": 0,
+      "packet": 24,
+      "source_certificate_sha256": "8d862a2c248e58b2178d4d52f06061c810b78b933085dbbfa33208898c60461d",
+      "survives": false
+    },
+    {
+      "artifact_id": 8608382387,
+      "artifact_name": "signature357-fixed7-packet-28-prime-29",
+      "artifact_zip_sha256": "486eeddc97347f580aebb2bb14845ff9bc7b7e5b2b8a89a73abd979458b4543f",
+      "base_trace_coefficients_low_to_high": [
+        196,
+        0,
+        -98,
+        0,
+        1
+      ],
+      "base_trace_polynomial": "196 - 98*x^2 + x^4",
+      "evaluations_at_permitted_traces_mod7": {
+        "-30": 2,
+        "30": 2
+      },
+      "gcd_with_multiplicative_target_degree_mod7": 0,
+      "packet": 28,
+      "source_certificate_sha256": "cf28e3a8d39c3708b14d7b0b61e5e5cf22cfd45aeaf22a0304a739e4be3f6534",
+      "survives": false
+    }
+  ],
+  "schema_version": 1,
+  "scope": {
+    "branch": "Dahmen--Siksek odd branch",
+    "fixed7_level_exponents": [
+      2,
+      3
+    ],
+    "prime3_conductor_exponent": 2,
+    "surviving_packets_before_prime29": [
+      24,
+      28
+    ]
+  },
+  "source_dependencies": {
+    "local_collapse_path": "Research/Signature357/odd_e3_2_local_collapse.json",
+    "local_collapse_sha256": "7231702f319124e106ef5efd0def8351e6eb046218ca2db9e21f16ff144e6e95",
+    "marginal_fixed7_producer": "scripts/run_signature_357_magma_calculator.py",
+    "marginal_multiplicative_rule": "at t7=1 the permitted base trace is plus or minus (Norm(p)+1)",
+    "packet_trace_workflow_head_sha": "d34484b50fe6e3dad6361cc3b53bc6c0f0cafeb3",
+    "packet_trace_workflow_run_id": 30121884005,
+    "two_frey_identity": "u+v=1"
+  },
+  "status": "literature-assisted odd-e3=2 coupled prime-29 closure"
+}
