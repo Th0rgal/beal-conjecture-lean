@@ -7,15 +7,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   fetch-covered-levels:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: agent/signature-345-357-certificates
       - name: Install public-mirror client
         run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
 
@@ -53,19 +51,3 @@ jobs:
             fixed7-hmf.json
             Research/Signature357/fixed7_all_levels.json
           if-no-files-found: error
-
-      - name: Pin canonical research responses
-        run: |
-          if git diff --quiet -- \
-            Research/Signature357/lmfdb_low_levels.json \
-            Research/Signature357/fixed7_all_levels.json; then
-            echo "Research responses already pinned"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            Research/Signature357/lmfdb_low_levels.json \
-            Research/Signature357/fixed7_all_levels.json
-          git commit -m "Pin complete low-level and fixed-7 frontiers"
-          git push origin HEAD:agent/signature-345-357-certificates

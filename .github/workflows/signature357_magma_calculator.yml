@@ -7,15 +7,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   fixed7-level-23:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: agent/signature-345-357-certificates
       - name: Run optimized public-Magma fixed-7 replay
         run: >-
           python3 scripts/run_signature_357_magma_calculator.py
@@ -25,14 +23,3 @@ jobs:
           name: signature357-fixed7-level23-online
           path: Research/Signature357/fixed7_level23_online.json
           if-no-files-found: error
-      - name: Pin canonical calculator result
-        run: |
-          if git diff --quiet -- Research/Signature357/fixed7_level23_online.json; then
-            echo "Online Magma result already pinned"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Research/Signature357/fixed7_level23_online.json
-          git commit -m "Pin fixed-7 level-(2,3) survivor set"
-          git push origin HEAD:agent/signature-345-357-certificates
