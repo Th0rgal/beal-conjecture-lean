@@ -341,6 +341,19 @@ def replay(data_path: pathlib.Path, hmf_path: pathlib.Path) -> dict[str, Any]:
     levels = hmf.get("levels")
     if not isinstance(prime_ordering, list) or not isinstance(levels, list):
         raise CertificateError("malformed HMF inventory")
+    supplied_digest = hmf.get("certificate_sha256")
+    hmf_body = dict(hmf)
+    hmf_body.pop("certificate_sha256", None)
+    if not isinstance(supplied_digest, str) or canonical_digest(hmf_body) != supplied_digest:
+        raise CertificateError("HMF inventory digest mismatch")
+
+    level_norms = [
+        level.get("level_norm") if isinstance(level, dict) else None for level in levels
+    ]
+    if len(level_norms) != len(EXPECTED_COUNTS) or set(level_norms) != set(
+        EXPECTED_COUNTS
+    ):
+        raise CertificateError("HMF inventory must contain each expected fixed-7 level exactly once")
 
     first_index: dict[int, tuple[int, int]] = {}
     for index, entry in enumerate(prime_ordering):
@@ -424,7 +437,7 @@ def replay(data_path: pathlib.Path, hmf_path: pathlib.Path) -> dict[str, Any]:
         "status": "exact fixed-7 replay from pinned candidates and LMFDB Hecke data",
         "residual_prime": 7,
         "source_candidate_git_blob": EXPECTED_SOURCE_BLOB,
-        "hmf_inventory_sha256": hmf.get("certificate_sha256"),
+        "hmf_inventory_sha256": supplied_digest,
         "auxiliary_primes_available": sorted(candidates),
         "levels": output_levels,
     }
