@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Intersect all fixed-7 level-(3,3) residual conditions in one Hecke module.
 
-The characteristic-zero newform decomposition of this space is expensive.  The
-residual Hecke algebra is enough for a fail-closed elimination: a genuine
-residual eigensystem is a common eigenvector for every Hecke operator, lies in
-the superspecial subspace ker(T_7), satisfies the local HGM trace polynomial at
-each auxiliary prime, and obeys semilinear Galois trace symmetry.
+A genuine residual eigensystem lies in the superspecial subspace ``ker(T_7)``,
+satisfies every local HGM trace polynomial, and obeys the semilinear Galois
+relations between conjugate Hecke operators.  The characteristic-zero newform
+decomposition is not required.
 
-A zero final intersection eliminates the entire fixed-7 level (3,3), conditional
-on the imported modularity, level-lowering, local trace and semilinear descent
-theorems.  A nonzero intersection is only a necessary survivor space.
+Parallel-weight-2 Hilbert newspaces already have a permanently fixed rational
+basis in Magma.  This producer deliberately does not call ``SetRationalBasis``;
+the redundant conversion was the first observed memory bottleneck.  A zero
+final intersection eliminates the level conditional on the imported modularity,
+level-lowering, local-trace and semilinear-descent theorems.  A nonzero space is
+only a necessary survivor.
 """
 from __future__ import annotations
 
@@ -28,7 +30,6 @@ DATA_URL = (
 )
 EXPECTED_DATA_BLOB = "9c96357834f2298b4d91ab97812c38e84b8ef7a2"
 CALCULATOR_URL = "https://magma.maths.usyd.edu.au/calc/"
-# Inert primes first: their scalar-trace relation is especially restrictive.
 PRIMES = [13, 43, 11, 29, 41]
 MAX_INPUT = 49_000
 USER_AGENT = "Mozilla/5.0 beal-conjecture-lean-research/1.0"
@@ -43,9 +44,10 @@ def git_blob_sha1(data: bytes) -> str:
 
 
 def digest(value: Any) -> str:
-    return hashlib.sha256(
-        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
-    ).hexdigest()
+    encoded = json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def fetch_data() -> bytes:
@@ -172,15 +174,19 @@ UnionMatrix := function(T,row)
   A:=A*(T-F7!(q+1)*Id)*(T+F7!(q+1)*Id);
   return A;
 end function;
+printf "PHASE=space-start\n";
 M0:=HilbertCuspForms(K,3^3*I5^3);
-M:=NewSubspace(M0); SetRationalBasis(M);
+M:=NewSubspace(M0);
 n:=Dimension(M); V:=VectorSpace(F7,n);
 printf "NEW_DIM=%o\n",n;
+printf "PHASE=T7-start\n";
 T7:=Matrix(F7,HeckeOperator(M,I7));
+printf "PHASE=T7-ready\n";
 S:=V meet Kernel(T7);
 printf "SUPERSPECIAL_DIM=%o\n",Dimension(S);
 for row in Rows do
   l:=row[1]; fac:=Factorisation(l*OK);
+  printf "PHASE=prime-%o-start\n",l;
   T1:=Matrix(F7,HeckeOperator(M,fac[1][1]));
   S:=S meet Kernel(UnionMatrix(T1,row));
   if #fac eq 1 then
@@ -191,6 +197,7 @@ for row in Rows do
     S:=S meet Kernel(T1-T2^7);
   end if;
   printf "DIM_AFTER_%o=%o\n",l,Dimension(S);
+  if Dimension(S) eq 0 then break; end if;
 end for;
 printf "FINAL_DIM=%o\n",Dimension(S);
 '''
@@ -206,8 +213,10 @@ def parse_int(output: str, marker: str) -> int:
 def main() -> int:
     rows = rows_by_prime(fetch_data())
     code = magma_code(rows)
+    if "SetRationalBasis" in code:
+        raise ResearchError("generated code unexpectedly contains SetRationalBasis")
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "combined fixed-7 level-(3,3) residual Hecke and semilinear sieve",
         "calculator": CALCULATOR_URL,
         "candidate_blob_sha1": EXPECTED_DATA_BLOB,
@@ -215,11 +224,20 @@ def main() -> int:
         "level_norm": 91125,
         "auxiliary_primes": PRIMES,
         "input_bytes": len(code.encode()),
-        "soundness": "final dimension zero eliminates every superspecial semilinear residual eigensystem; positive dimension is only necessary",
+        "rational_basis_policy": "native parallel-weight-2 newspace basis; no redundant conversion",
+        "early_zero_exit": True,
+        "soundness": (
+            "final dimension zero eliminates every superspecial semilinear "
+            "residual eigensystem; positive dimension is only necessary"
+        ),
     }
+    output = ""
     try:
         output = submit(code)
-        dimensions = {str(prime): parse_int(output, f"DIM_AFTER_{prime}") for prime in PRIMES}
+        dimensions = {
+            prime: int(dimension)
+            for prime, dimension in re.findall(r"DIM_AFTER_(\d+)=(\d+)", output)
+        }
         body.update(
             {
                 "request_status": "completed",
@@ -227,7 +245,7 @@ def main() -> int:
                 "superspecial_dimension": parse_int(output, "SUPERSPECIAL_DIM"),
                 "dimensions_after_primes": dimensions,
                 "final_dimension": parse_int(output, "FINAL_DIM"),
-                "output_tail": output[-2000:],
+                "output_tail": output[-5000:],
             }
         )
     except Exception as exc:
@@ -235,6 +253,7 @@ def main() -> int:
             {
                 "request_status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
+                "output_tail": output[-8000:],
             }
         )
     result = dict(body)
