@@ -2,7 +2,7 @@ name: Signature 357 public-Magma residual frontier
 
 concurrency:
   group: signature357-public-magma-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 on:
   push:
@@ -11,6 +11,7 @@ on:
     paths:
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
       - "scripts/run_signature_357_magma_fixed7_residual_space.py"
+      - "scripts/run_signature_357_magma_fixed7_superspecial_32.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "Research/Signature357/odd_p7_twist.json"
       - "Research/Signature357/signature357_remaining_frontier.json"
@@ -19,6 +20,7 @@ on:
     paths:
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
       - "scripts/run_signature_357_magma_fixed7_residual_space.py"
+      - "scripts/run_signature_357_magma_fixed7_superspecial_32.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "Research/Signature357/odd_p7_twist.json"
       - "Research/Signature357/signature357_remaining_frontier.json"
@@ -87,4 +89,19 @@ jobs:
         with:
           name: signature357-fixed7-residual-${{ matrix.prime }}
           path: "fixed7-residual-${{ matrix.prime }}.json"
+          if-no-files-found: error
+
+  fixed7-superspecial-32:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Filter the exact level-(3,2) survivor list by superspeciality
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_superspecial_32.py
+          > fixed7-superspecial-32.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-superspecial-32
+          path: fixed7-superspecial-32.json
           if-no-files-found: error
