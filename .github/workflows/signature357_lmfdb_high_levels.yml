@@ -1,0 +1,29 @@
+name: Signature 357 LMFDB high-level probe
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/fetch_signature_357_lmfdb_high_levels.py"
+      - ".github/workflows/signature357_lmfdb_high_levels.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+      - name: Query all seven remaining levels in the LMFDB mirror
+        run: >-
+          python3 scripts/fetch_signature_357_lmfdb_high_levels.py
+          > lmfdb-high-levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-high-levels
+          path: lmfdb-high-levels.json
+          if-no-files-found: error
