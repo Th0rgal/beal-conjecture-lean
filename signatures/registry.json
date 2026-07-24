@@ -37,7 +37,7 @@
       "status": "open-frontier",
       "formal_declaration": null,
       "assumptions": "open mathematical frontier; no formal declaration or complete external certificate is known",
-      "literature_source": "Wilcox–Grechuk, Generalised Fermat equation: a survey of solved cases, arXiv:2412.11933; frontier locator only",
+      "literature_source": "Ratcliffe–Grechuk, Generalized Fermat equation: A survey of solved cases, Expositiones Mathematicae 43 (2025), article 125688, DOI 10.1016/j.exmath.2025.125688; frontier locator only",
       "certificate_dependency": "none available; fixed-signature descent or modular elimination remains research work",
       "last_audit": "2026-07-24"
     }
