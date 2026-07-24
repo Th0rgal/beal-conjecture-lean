@@ -52,9 +52,31 @@ def canonical_sha256(value: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def fetch_json(url: str) -> dict[str, Any]:
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+    )
+    with urllib.request.urlopen(request, timeout=90) as response:
+        raw = response.read()
+        status = response.status
+        content_type = response.headers.get("Content-Type", "")
+        final_url = response.geturl()
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        preview = raw[:600].decode("utf-8", errors="replace").replace("\n", "\\n")
+        raise FetchError(
+            "LMFDB returned non-JSON data: "
+            f"status={status}, content_type={content_type!r}, "
+            f"requested={url!r}, final={final_url!r}, preview={preview!r}"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise FetchError(f"LMFDB JSON root is not an object at {url}")
+    return payload
+
+
 def fetch_level(level_norm: int) -> tuple[list[dict[str, Any]], list[str]]:
-    # LMFDB's public API uses raw text for string equality and the i-prefix for
-    # integer equality (as in the repository's already working level-18225 probe).
     params = {
         "field_label": FIELD_LABEL,
         "level_norm": f"i{level_norm}",
@@ -67,10 +89,8 @@ def fetch_level(level_norm: int) -> tuple[list[dict[str, Any]], list[str]]:
     urls: list[str] = []
     while url:
         urls.append(url)
-        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(request, timeout=90) as response:
-            payload = json.load(response)
-        if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
+        payload = fetch_json(url)
+        if not isinstance(payload.get("data"), list):
             raise FetchError(f"unexpected LMFDB API response for level {level_norm}")
         for value in payload["data"]:
             if not isinstance(value, dict):
