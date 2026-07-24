@@ -62,7 +62,7 @@ theorem normalized_core_iff_non333 :
 
 /-- Exact reduction after removing both diagonal normalized signatures already
 settled in the trusted boundary. -/
-theorem normalized_core_iff_nonDiagonal :
+theorem normalized_core_iff_non_diagonal :
     NormalizedPrimitiveCore ↔ NormalizedPrimitiveCoreNonDiagonal := by
   constructor
   · rintro ⟨A, B, C, x, y, z, hx, hy, hz, sol, hAB, hBC, hAC⟩
