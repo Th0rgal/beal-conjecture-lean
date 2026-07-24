@@ -102,7 +102,7 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
         odd["cyclotomic_untwist_sha256"],
         "cyclotomic untwist",
     )
-    if untwist["conclusion"]["twisted_prime7_conductor_bound"] != "e7_twisted<=1":
+    if untwist["local_untwist"]["twisted_residual_conductor_exponents"] != [0, 1]:
         raise CertificateError("twisted prime-7 conductor bound mismatch")
     monodromy = bound_source(
         odd["exact_monodromy_path"],
