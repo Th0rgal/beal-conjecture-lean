@@ -1,0 +1,33 @@
+name: Signature 357 fixed7 packet zero tests
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py"
+      - ".github/workflows/signature357_fixed7_zero_tests.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py"
+      - ".github/workflows/signature357_fixed7_zero_tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zero-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read the four decisive trace predicates
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py
+          > fixed7-zero-tests.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-packets-24-28-zero-tests
+          path: fixed7-zero-tests.json
+          if-no-files-found: error
