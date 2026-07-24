@@ -148,8 +148,8 @@ python3 scripts/check_signature_357_odd_irreducibility.py --self-test
 python3 scripts/check_signature_357_odd_irreducibility.py
 ```
 
-It validates the exact arithmetic around the auxiliary-prime obstruction
-`6084=2^2*3^2*13^2`, the Beal-to-paper orientation, and `7 ∤ 6084`. The source
+It validates the corrected auxiliary-prime obstruction
+`900=2^2*3^2*5^2` with `C(2)=5`, the Beal-to-paper orientation, and `7 ∤ 900`. The source
 implication from reducibility to divisibility by that obstruction remains an
 explicit literature dependency.
 
