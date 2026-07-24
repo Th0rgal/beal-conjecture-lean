@@ -3,6 +3,8 @@
 
 Each level is submitted independently. A failed or timed-out level is retained as
 an explicit error record and is never interpreted as an empty newform space.
+Besides the marginal local filter, the producer applies the exact even-branch
+coupling at 13, 29 and 41.
 """
 from __future__ import annotations
 import argparse, hashlib, html, http.cookiejar, json, pathlib, re, urllib.parse, urllib.request
@@ -56,13 +58,27 @@ F5 := GF(5); R5<X> := PolynomialRing(F5);
 Red := function(P) return R5![F5!Coefficient(P,i) : i in [0..Degree(P)]]; end function;
 Common := function(P,Q) return Degree(GreatestCommonDivisor(Red(P),Red(Q))) gt 0; end function;
 AnyCommon := function(P,L) for Q in L do if Common(P,Q) then return true; end if; end for; return false; end function;
-PossibleAt := function(form,row)
-  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; fK:=row[5]; fF:=row[6]; I:=Factorisation(l*OK)[1][1];
+TracePolynomials := function(form,row)
+  l:=row[1]; fK:=row[5]; fF:=row[6]; I:=Factorisation(l*OK)[1][1];
   Eig:=HeckeEigenvalue(form,I); Pbase:=MinimalPolynomial(Eig); Efull:=Eig;
-  if fF/fK eq 2 then Efull:=Eig^2-2*l^fK; end if; Pfull:=MinimalPolynomial(Efull);
+  if fF/fK eq 2 then Efull:=Eig^2-2*l^fK; end if;
+  return Pbase,MinimalPolynomial(Efull),Integers()!Norm(I);
+end function;
+PossibleAt := function(form,row)
+  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
   if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
-  q:=Integers()!Norm(I); if Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1)) then return true; end if;
+  if Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1)) then return true; end if;
   return false;
+end function;
+PossibleEvenAt := function(form,row)
+  l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
+  if l eq 13 or l eq 29 then
+    return AnyCommon(Pfull,Z);
+  elif l eq 41 then
+    return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf);
+  end if;
+  if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
+  return Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1));
 end function;
 '''
 def make_code(e3:int,e7:int,rows)->str:
@@ -70,17 +86,23 @@ def make_code(e3:int,e7:int,rows)->str:
     data='Rows:=['+','.join(encoded)+'];\n'
     suffix=rf'''
 M := HilbertCuspForms(K,I3^{e3}*I7^{e7}); decomp := NewformDecomposition(NewSubspace(M));
-S8 := []; Slocal := []; Dims := [];
+S8 := []; Slocal := []; Seven := []; Dims := [];
 for i in [1..#decomp] do
   form:=Eigenform(decomp[i]); Append(~Dims,Dimension(decomp[i])); P2:=MinimalPolynomial(HeckeEigenvalue(form,I2));
-  if Common(P2,x) then Append(~S8,i); alive:=true;
-    for row in Rows do if not PossibleAt(form,row) then alive:=false; break; end if; end for;
+  if Common(P2,x) then
+    Append(~S8,i); alive:=true; aliveEven:=true;
+    for row in Rows do
+      if alive and not PossibleAt(form,row) then alive:=false; end if;
+      if aliveEven and not PossibleEvenAt(form,row) then aliveEven:=false; end if;
+      if not alive and not aliveEven then break; end if;
+    end for;
     if alive then Append(~Slocal,i); end if;
+    if aliveEven then Append(~Seven,i); end if;
   end if;
 end for;
 printf "LEVEL_PAIR=[{e3},{e7}]\n"; printf "LEVEL_NORM=%o\n",27^{e3}*7^{e7};
 printf "SPACE_DIMENSION=%o\n",Dimension(M); printf "PACKET_COUNT=%o\n",#decomp;
-printf "PACKET_DIMS=%o\n",Dims; printf "NORM8_SURVIVORS=%o\n",S8; printf "LOCAL_SURVIVORS=%o\n",Slocal;
+printf "PACKET_DIMS=%o\n",Dims; printf "NORM8_SURVIVORS=%o\n",S8; printf "LOCAL_SURVIVORS=%o\n",Slocal; printf "EVEN_COUPLED_SURVIVORS=%o\n",Seven;
 '''
     return PREFIX+data+suffix
 
@@ -98,11 +120,11 @@ def main()->int:
     parser=argparse.ArgumentParser(); parser.add_argument('--local-data',type=pathlib.Path,required=True); args=parser.parse_args()
     local=json.loads(args.local_data.read_text()); rows=candidate_rows(local); outputs=[]
     for e3,e7 in LEVEL_PAIRS:
-        code=make_code(e3,e7,rows); record={'level_exponents':[e3,e7],'level_norm':27**e3*7**e7,'input_bytes':len(code.encode())}
+        code=make_code(e3,e7,rows); record={'level_exponents':[e3,e7],'level_norm':27**e3*7**e7,'input_bytes':len(code.encode()),'even_only_level':e3==1 or e7==3}
         try:
-            text=submit(code); record.update({'status':'completed','space_dimension':parse_int(text,'SPACE_DIMENSION'),'packet_count':parse_int(text,'PACKET_COUNT'),'packet_dimensions':parse_list(text,'PACKET_DIMS'),'norm8_survivors':parse_list(text,'NORM8_SURVIVORS'),'local_survivors':parse_list(text,'LOCAL_SURVIVORS'),'output_tail':text[-1000:]})
+            text=submit(code); record.update({'status':'completed','space_dimension':parse_int(text,'SPACE_DIMENSION'),'packet_count':parse_int(text,'PACKET_COUNT'),'packet_dimensions':parse_list(text,'PACKET_DIMS'),'norm8_survivors':parse_list(text,'NORM8_SURVIVORS'),'local_survivors':parse_list(text,'LOCAL_SURVIVORS'),'even_coupled_survivors':parse_list(text,'EVEN_COUPLED_SURVIVORS'),'output_tail':text[-1200:]})
         except Exception as exc: record.update({'status':'failed','error':f'{type(exc).__name__}: {exc}'})
         outputs.append(record)
-    body={'schema_version':1,'status':'public-Magma mod-5 high-level packet enumeration and marginal local filter','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal local filter is necessary but not sufficient for a solution'}
+    body={'schema_version':2,'status':'public-Magma mod-5 high-level packet enumeration with marginal and even-coupled local filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'even_coupled_primes':[13,29,41],'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
     result=dict(body); result['certificate_sha256']=canonical_sha256(body); print(json.dumps(result,sort_keys=True,indent=2)); return 0
 if __name__=='__main__': raise SystemExit(main())
