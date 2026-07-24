@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compose the global ray and rational two-Frey even-branch certificates."""
+"""Compose the global ray, residual-prime Hasse and rational two-Frey certificates."""
 from __future__ import annotations
 import argparse, copy, hashlib, json, math, pathlib, tempfile
 from typing import Any
@@ -22,14 +22,15 @@ def digest(value:dict[str,Any])->str:
     value=copy.deepcopy(value);value.pop('certificate_sha256',None)
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
 def validate(data:dict[str,Any])->str:
-    if data.get('schema_version')!=1 or digest(data)!=data.get('certificate_sha256'):raise CertificateError('schema or digest mismatch')
-    inputs=data['inputs'];global_ray=load(ROOT/inputs['global_fixed7_path']);rational=load(ROOT/inputs['rational_two_frey_path'])
-    if digest(global_ray)!=global_ray.get('certificate_sha256') or global_ray['certificate_sha256']!=inputs['global_fixed7_sha256']:raise CertificateError('global ray input mismatch')
-    if digest(rational)!=rational.get('certificate_sha256') or rational['certificate_sha256']!=inputs['rational_two_frey_sha256']:raise CertificateError('rational two-Frey input mismatch')
-    if global_ray['conclusion']['forced_divisibility']!='19*71 divides C' or rational['conclusion']['forced_divisibility']!='13*29 divides C':raise CertificateError('input divisibilities changed')
+    if data.get('schema_version')!=2 or digest(data)!=data.get('certificate_sha256'):raise CertificateError('schema or digest mismatch')
+    inputs=data['inputs'];global_ray=load(ROOT/inputs['global_fixed7_path']);hasse=load(ROOT/inputs['fixed7_prime7_hasse_path']);rational=load(ROOT/inputs['rational_two_frey_path'])
+    for value,key,label in ((global_ray,'global_fixed7_sha256','global ray'),(hasse,'fixed7_prime7_hasse_sha256','prime-7 Hasse'),(rational,'rational_two_frey_sha256','rational two-Frey')):
+        if digest(value)!=value.get('certificate_sha256') or value['certificate_sha256']!=inputs[key]:raise CertificateError(f'{label} input mismatch')
+    if global_ray['conclusion']['forced_divisibility']!='19*71 divides C' or rational['conclusion']['forced_divisibility']!='13*29 divides C' or hasse['even_branch_corollary']['conclusion']!='7 divides C':raise CertificateError('input divisibilities changed')
     primes=data['prime_factors_for_C']
-    if primes!=[2,3,5,13,19,29,71] or math.prod(primes)!=data['forced_divisor_of_C'] or data['forced_divisor_of_C']!=15257190:raise CertificateError('composed divisor mismatch')
+    if primes!=[2,3,5,7,13,19,29,71] or math.prod(primes)!=data['forced_divisor_of_C'] or data['forced_divisor_of_C']!=106800330:raise CertificateError('composed divisor mismatch')
     if data['additional_conclusions']!=['the fixed-7 reducibility character is psi_(2,0)','41 does not divide B']:raise CertificateError('additional conclusions changed')
+    if "Manin's congruence" not in data['nonclaim']:raise CertificateError('Hasse trust boundary missing')
     return data['certificate_sha256']
 def expect_rejection(data,label):
     data['certificate_sha256']=digest(data)
@@ -38,7 +39,7 @@ def expect_rejection(data,label):
     raise RuntimeError(f'checker accepted {label}')
 def self_test():
     data=load(MANIFEST);validate(data)
-    bad=copy.deepcopy(data);bad['prime_factors_for_C'].remove(71);bad['forced_divisor_of_C']//=71;expect_rejection(bad,'a weakened divisor')
+    bad=copy.deepcopy(data);bad['prime_factors_for_C'].remove(7);bad['forced_divisor_of_C']//=7;expect_rejection(bad,'a weakened divisor')
     with tempfile.NamedTemporaryFile('w',delete=False) as f:f.write('{"x":1,"x":2}');path=pathlib.Path(f.name)
     try:
         try:load(path)
@@ -49,5 +50,5 @@ def self_test():
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--self-test',action='store_true');args=parser.parse_args()
     if args.self_test:self_test();return 0
-    value=validate(load(MANIFEST));print('even rational global divisibility certificate valid');print('  15,257,190 divides C');print('  41 does not divide B');print(f'  certificate sha256: {value}');return 0
+    value=validate(load(MANIFEST));print('even rational global divisibility certificate valid');print('  106,800,330 divides C');print('  41 does not divide B');print(f'  certificate sha256: {value}');return 0
 if __name__=='__main__':raise SystemExit(main())
