@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
-"""Fetch all LMFDB-covered mod-5 levels for signature (3,5,7).
+"""Fetch the LMFDB-covered candidate mod-5 levels for signature (3,5,7).
 
-This is an internet-facing research producer, not a trusted checker.  The global
-conductor certificate leaves 24 levels p3^a*p7^b.  LMFDB documents complete
-degree-three Hilbert-newform coverage through level norm 2059, containing eight
-of those levels.  For every form at those levels this script also fetches the
-Hecke polynomial and the eigenvalue at the unique prime of norm 8.
-
-The output is canonical JSON.  Empty database responses are recorded as database
-output, never interpreted as arithmetic nonexistence without the separately
-cited completeness statement.
+This internet-facing script is a research producer, not a trusted checker.  The
+global conductor certificate leaves 24 levels p3^a*p7^b.  LMFDB documents
+complete degree-three Hilbert-newform coverage through level norm 2059, which
+contains exactly eight candidate norms.  This first-stage producer fetches only
+the complete form inventory; Hecke enrichment is intentionally separate so an
+API/schema failure cannot hide the basic finite enumeration.
 """
-
 from __future__ import annotations
 
 import hashlib
@@ -21,7 +17,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-API_ROOT = "https://www.lmfdb.org/api/"
+BASE = "https://www.lmfdb.org/api/hmf_forms/"
 FIELD_LABEL = "3.3.49.1"
 COMPLETENESS_BOUND = 2059
 LEVELS = sorted(
@@ -30,7 +26,7 @@ LEVELS = sorted(
     for b in range(4)
     if 27**a * 7**b <= COMPLETENESS_BOUND
 )
-FORM_FIELDS = (
+FIELDS = (
     "label",
     "level_norm",
     "level_ideal",
@@ -39,7 +35,6 @@ FORM_FIELDS = (
     "is_base_change",
     "parallel_weight",
 )
-HECKE_FIELDS = ("label", "hecke_polynomial", "hecke_eigenvalues")
 USER_AGENT = (
     "beal-conjecture-lean-research/1.0 "
     "(+https://github.com/Th0rgal/beal-conjecture-lean)"
@@ -50,47 +45,6 @@ class FetchError(RuntimeError):
     pass
 
 
-def fetch_payload(url: str) -> dict[str, Any]:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=90) as response:
-        payload = json.load(response)
-    if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
-        raise FetchError(f"unexpected LMFDB API response at {url}")
-    return payload
-
-
-def query_all(
-    table: str,
-    filters: dict[str, str],
-    fields: tuple[str, ...],
-) -> tuple[list[dict[str, Any]], list[str]]:
-    params = dict(filters)
-    params["_format"] = "json"
-    params["_fields"] = ",".join(fields)
-    url = API_ROOT + table + "/?" + urllib.parse.urlencode(params)
-    records: list[dict[str, Any]] = []
-    urls: list[str] = []
-    while url:
-        urls.append(url)
-        payload = fetch_payload(url)
-        for value in payload["data"]:
-            if not isinstance(value, dict):
-                raise FetchError(f"non-object record returned by {table}")
-            missing = set(fields) - set(value)
-            if missing:
-                raise FetchError(
-                    f"{table} record lacks fields {sorted(missing)}: {value!r}"
-                )
-            records.append({field: value[field] for field in fields})
-        next_url = payload.get("next")
-        if next_url is None:
-            break
-        if not isinstance(next_url, str):
-            raise FetchError("LMFDB next link is not a string")
-        url = urllib.parse.urljoin(API_ROOT, next_url)
-    return records, urls
-
-
 def canonical_sha256(value: Any) -> str:
     encoded = json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
@@ -98,96 +52,79 @@ def canonical_sha256(value: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def main() -> int:
-    field_rows, query_urls = query_all(
-        "hmf_fields",
-        {"label": "s" + FIELD_LABEL},
-        ("label", "primes"),
-    )
-    if len(field_rows) != 1 or field_rows[0]["label"] != FIELD_LABEL:
-        raise FetchError(f"expected exactly one hmf_fields row for {FIELD_LABEL}")
-    primes = field_rows[0]["primes"]
-    if not isinstance(primes, list) or any(not isinstance(p, str) for p in primes):
-        raise FetchError("hmf_fields.primes is not a string array")
-    norm8_indices = [index for index, prime in enumerate(primes) if prime.startswith("[8,")]
-    if len(norm8_indices) != 1:
-        raise FetchError(f"expected one prime of norm 8, got {norm8_indices}")
-    norm8_index = norm8_indices[0]
-    norm8_prime = primes[norm8_index]
+def fetch_level(level_norm: int) -> tuple[list[dict[str, Any]], list[str]]:
+    params = {
+        "field_label": "s" + FIELD_LABEL,
+        "level_norm": f"i{level_norm}",
+        "parallel_weight": "i2",
+        "_format": "json",
+        "_fields": ",".join(FIELDS),
+    }
+    url = BASE + "?" + urllib.parse.urlencode(params)
+    records: list[dict[str, Any]] = []
+    urls: list[str] = []
+    while url:
+        urls.append(url)
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(request, timeout=90) as response:
+            payload = json.load(response)
+        if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
+            raise FetchError(f"unexpected LMFDB API response for level {level_norm}")
+        for value in payload["data"]:
+            if not isinstance(value, dict):
+                raise FetchError("LMFDB record must be an object")
+            missing = set(FIELDS) - set(value)
+            if missing:
+                raise FetchError(
+                    f"level {level_norm} record lacks fields: {sorted(missing)}"
+                )
+            records.append({field: value[field] for field in FIELDS})
+        next_url = payload.get("next")
+        if next_url is None:
+            break
+        if not isinstance(next_url, str):
+            raise FetchError("LMFDB next link is not a string")
+        url = urllib.parse.urljoin(BASE, next_url)
+    records.sort(key=lambda record: record["label"])
+    return records, urls
 
-    inventories: list[dict[str, Any]] = []
-    total = 0
+
+def main() -> int:
+    levels: list[dict[str, Any]] = []
+    query_urls: list[str] = []
+    total_records = 0
     total_dimension = 0
     for level_norm, exponent_3, exponent_7 in LEVELS:
-        forms, urls = query_all(
-            "hmf_forms",
-            {
-                "field_label": "s" + FIELD_LABEL,
-                "level_norm": f"i{level_norm}",
-                "parallel_weight": "i2",
-            },
-            FORM_FIELDS,
-        )
+        records, urls = fetch_level(level_norm)
         query_urls.extend(urls)
-        forms.sort(key=lambda record: record["label"])
-        enriched: list[dict[str, Any]] = []
-        for form in forms:
-            label = form["label"]
-            if not isinstance(label, str):
-                raise FetchError("form label is not a string")
-            hecke_rows, urls = query_all(
-                "hmf_hecke",
-                {"label": "s" + label},
-                HECKE_FIELDS,
-            )
-            query_urls.extend(urls)
-            if len(hecke_rows) != 1 or hecke_rows[0]["label"] != label:
-                raise FetchError(f"expected exactly one hmf_hecke row for {label}")
-            hecke = hecke_rows[0]
-            eigenvalues = hecke["hecke_eigenvalues"]
-            if not isinstance(eigenvalues, list) or norm8_index >= len(eigenvalues):
-                raise FetchError(f"missing norm-8 Hecke eigenvalue for {label}")
-            enriched.append(
-                {
-                    **form,
-                    "hecke_polynomial": hecke["hecke_polynomial"],
-                    "hecke_eigenvalue_norm8": eigenvalues[norm8_index],
-                }
-            )
-        record_count = len(enriched)
-        dimension_sum = sum(int(record["dimension"]) for record in enriched)
-        total += record_count
+        dimension_sum = sum(int(record["dimension"]) for record in records)
+        total_records += len(records)
         total_dimension += dimension_sum
-        inventories.append(
+        levels.append(
             {
                 "level_norm": level_norm,
                 "exponent_pair": [exponent_3, exponent_7],
-                "record_count": record_count,
+                "record_count": len(records),
                 "total_coefficient_field_dimension": dimension_sum,
-                "records": enriched,
+                "records": records,
             }
         )
-
     body = {
-        "schema_version": 2,
-        "status": "LMFDB complete-range inventory, not a standalone nonexistence theorem",
+        "schema_version": 1,
+        "status": "LMFDB complete-range form inventory, not a nonexistence theorem",
         "source": {
             "database": "LMFDB",
-            "tables": ["hmf_fields", "hmf_forms", "hmf_hecke"],
+            "table": "hmf_forms",
             "field_label": FIELD_LABEL,
             "parallel_weight": 2,
             "documented_degree3_completeness_bound": COMPLETENESS_BOUND,
             "query_urls": sorted(set(query_urls)),
         },
-        "prime_ordering": {
-            "norm8_index_zero_based": norm8_index,
-            "norm8_prime": norm8_prime,
-        },
         "candidate_levels_within_bound": [level for level, _a, _b in LEVELS],
         "level_count": len(LEVELS),
-        "total_record_count": total,
+        "total_record_count": total_records,
         "total_coefficient_field_dimension": total_dimension,
-        "levels": inventories,
+        "levels": levels,
     }
     output = dict(body)
     output["certificate_sha256"] = canonical_sha256(body)
