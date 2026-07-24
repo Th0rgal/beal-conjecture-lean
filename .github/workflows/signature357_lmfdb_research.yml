@@ -1,9 +1,6 @@
 name: Signature 357 LMFDB research fetch
 
 on:
-  push:
-    branches:
-      - agent/signature-345-357-certificates
   workflow_dispatch:
 
 permissions:
