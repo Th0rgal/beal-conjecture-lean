@@ -86,8 +86,12 @@ def validate(data: dict[str, Any]) -> str:
     if frontier["branches"]["even"]["allowed_e7"] != [1]:
         raise CertificateError("even e7 range mismatch")
     closure = dependencies["closure"]
-    if 189 not in closure["conclusion"]["closed_level_norms"]:
-        raise CertificateError("low-level norm 189 was not closed")
+    if closure["scope"]["complete_level_norm_bound"] != 2059:
+        raise CertificateError("low-level completeness bound changed")
+    if closure["scope"]["only_preclosure_packet"] != "3.3.49.1-189.1-a":
+        raise CertificateError("the preclosure low-level packet changed")
+    if "frontier is empty" not in closure["conclusion"]:
+        raise CertificateError("the complete low-level frontier is not closed")
 
     branch = data["branch"]
     if branch["mod5_level_norms_before_low_level_closure"] != [189, 5103]:
