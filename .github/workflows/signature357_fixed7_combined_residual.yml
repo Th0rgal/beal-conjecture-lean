@@ -1,0 +1,33 @@
+name: Signature 357 fixed7 combined residual level 33
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_combined_residual.py"
+      - ".github/workflows/signature357_fixed7_combined_residual.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_combined_residual.py"
+      - ".github/workflows/signature357_fixed7_combined_residual.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  combined:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Intersect superspecial, local and semilinear Hecke conditions
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_combined_residual.py
+          > fixed7-combined-residual-33.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-combined-residual-33
+          path: fixed7-combined-residual-33.json
+          if-no-files-found: error
