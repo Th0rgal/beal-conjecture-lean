@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "f5e588bcdda3954d1a994b94066793d3fd53d18c0ade05424e9ed4e2c1f6c441",
+  "certificate_sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1",
   "equation": "A^3+B^5=C^7",
   "even_branch_corollary": {
     "conclusion": "7 divides C",
@@ -26,7 +26,7 @@
     "quadratic_element": "d=3*sqrt(5)*phi",
     "norm_d": 45,
     "source_path": "Research/Signature357/fixed7_global_reducibility_sieve.json",
-    "source_sha256": "82ecb0e373c8b604c30690aeb9d2d2ddc3b8e0d8d14ed60d95c2f55513f93cc7",
+    "source_sha256": "d09fafd74cb4513067372721b15327e23d386e26a87933fee744240458cdd46d",
     "unique_character": "psi_(2,0)"
   },
   "schema_version": 1,
@@ -54,9 +54,9 @@
     "group_theory": "gcd(5,6)=1 in F7^*, so t=1",
     "hasse_witt_convention": "W=[[c6,c5],[c13,c12]] for f(x)^3=sum c_j*x^j",
     "matrix": "[[0,-t^4],[t,0]]",
-    "ordinary_for_classes": [2,3,4,5,6],
+    "ordinary_for_classes": [2, 3, 4, 5, 6],
     "parameter": "t=-B^5/A^3",
-    "parameter_classes_mod7": [2,3,4,5,6],
+    "parameter_classes_mod7": [2, 3, 4, 5, 6],
     "q_frobenius_matrix": "W^(7)*W=-t^5*I because t is in F7",
     "q_frobenius_scalars_mod7": {
       "2": 3,
@@ -66,6 +66,6 @@
       "6": 1
     },
     "reducible_unramified_eigenvalue": -1,
-    "smooth_for_classes": [2,3,4,5,6]
+    "smooth_for_classes": [2, 3, 4, 5, 6]
   }
 }
