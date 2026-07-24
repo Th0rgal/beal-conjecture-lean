@@ -1,0 +1,62 @@
+name: Signature 357 fixed7 level 91125 LMFDB replay
+
+on:
+  push:
+    branches:
+      - research/signature357-final-e3-3-probe
+    paths:
+      - ".github/workflows/signature357_lmfdb_91125_probe.yml"
+      - "scripts/fetch_signature_357_fixed7_inputs.py"
+      - "scripts/fetch_signature_357_fixed7_lmfdb_sql.py"
+      - "scripts/check_signature_357_fixed7_lmfdb.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signature357-lmfdb-91125-probe
+  cancel-in-progress: false
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+      - name: Fetch pinned fixed-7 candidate data
+        run: python3 scripts/fetch_signature_357_fixed7_inputs.py > /tmp/fixed7-Data.txt
+      - name: Fetch all four fixed-7 Hilbert spaces and stored Hecke arrays
+        run: python3 scripts/fetch_signature_357_fixed7_lmfdb_sql.py > /tmp/fixed7-hmf.json
+      - name: Replay the complete fixed-7 elimination modulo 7
+        run: >-
+          python3 scripts/check_signature_357_fixed7_lmfdb.py
+          --data /tmp/fixed7-Data.txt
+          --hmf /tmp/fixed7-hmf.json
+          > /tmp/fixed7-all-levels.json
+      - name: Extract the level-91125 record
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          value=json.loads(pathlib.Path('/tmp/fixed7-all-levels.json').read_text())
+          rows=[row for row in value['levels'] if row['level_norm']==91125]
+          if len(rows)!=1: raise SystemExit('missing or duplicate level 91125')
+          result={
+            'schema_version':1,
+            'source_certificate_sha256':value['certificate_sha256'],
+            'level':rows[0],
+            'nonclaim':'LMFDB inventory completeness and the imported modular method remain external inputs; absence of a stored row is never treated as elimination',
+          }
+          pathlib.Path('/tmp/fixed7-level-91125.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({'packet_count':rows[0]['packet_count'],'survivor_count':rows[0]['survivor_count'],'survivors':rows[0]['survivors']},sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-lmfdb-91125
+          path: |
+            /tmp/fixed7-Data.txt
+            /tmp/fixed7-hmf.json
+            /tmp/fixed7-all-levels.json
+            /tmp/fixed7-level-91125.json
+          if-no-files-found: error
