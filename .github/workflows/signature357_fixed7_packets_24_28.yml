@@ -1,18 +1,13 @@
-name: Signature 357 fixed7 packets 24 28 traces
+name: Signature 357 isolated fixed7 packet 43 traces
 
 concurrency:
-  group: signature357-fixed7-packet43-${{ github.ref }}
-  cancel-in-progress: true
+  group: signature357-isolated-fixed7-packet43
+  cancel-in-progress: false
 
 on:
   push:
     branches:
-      - agent/signature-345-357-certificates
-    paths:
-      - "scripts/run_signature_357_magma_fixed7_24_28_traces.py"
-      - "scripts/run_signature_357_magma_fixed7_trace_one.py"
-      - ".github/workflows/signature357_fixed7_packets_24_28.yml"
-  pull_request:
+      - agent/signature357-packet43-run
     paths:
       - "scripts/run_signature_357_magma_fixed7_24_28_traces.py"
       - "scripts/run_signature_357_magma_fixed7_trace_one.py"
