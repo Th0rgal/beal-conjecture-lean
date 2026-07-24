@@ -1,0 +1,40 @@
+name: Signature 357 public-Magma mod-5 high levels
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_mod5_levels.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - ".github/workflows/signature357_mod5_magma_levels.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enumerate-and-filter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce complete local HGM candidate polynomials
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+      - name: Query and filter all seven high Hilbert levels
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_levels.py
+          --local-data mod5-complete-local.json
+          > mod5-magma-high-levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-magma-high-levels
+          path: |
+            mod5-complete-local.json
+            mod5-magma-high-levels.json
+          if-no-files-found: error
