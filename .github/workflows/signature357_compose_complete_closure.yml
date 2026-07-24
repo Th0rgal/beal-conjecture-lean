@@ -9,6 +9,16 @@ on:
       - "Research/Signature357/odd_e3_2_zero_test_frontier.json"
       - "Research/Signature357/fixed7_level33_combined_frontier.json"
       - "Research/Signature357/odd_mod5_combined_residual_frontier.json"
+      - "Research/Signature357/odd_branch_cm_filter.json"
+      - "Research/Signature357/fixed7_level32_superspecial_closure.json"
+      - "Research/Signature357/low_level_complete_closure.json"
+      - "scripts/check_signature_357_even_branch_closure.py"
+      - "scripts/check_signature_357_fixed7_24_28_zero_tests.py"
+      - "scripts/check_signature_357_fixed7_level33_combined.py"
+      - "scripts/check_signature_357_odd_mod5_combined.py"
+      - "scripts/check_signature_357_odd_cm_filter.py"
+      - "scripts/check_signature_357_fixed7_level32_superspecial.py"
+      - "scripts/check_signature_357_low_level_closure.py"
   workflow_dispatch:
 
 permissions:
