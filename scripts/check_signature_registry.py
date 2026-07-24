@@ -309,11 +309,10 @@ if __name__ == "__main__":
     try:
         if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] != "--self-test"):
             raise ValueError("usage: check_signature_registry.py [--self-test]")
+        count = validate(REGISTRY)
+        print(f"signature registry validated ({count} entries)")
         if len(sys.argv) == 2:
             self_test()
-        else:
-            count = validate(REGISTRY)
-            print(f"signature registry validated ({count} entries)")
     except (OSError, ValueError, RuntimeError) as exc:
         print(f"signature registry check failed: {exc}", file=sys.stderr)
         raise SystemExit(1)
