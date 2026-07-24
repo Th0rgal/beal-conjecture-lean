@@ -11,7 +11,9 @@ large integer resultants and is designed to fit the public calculator's
 The pinned candidate data are split into independent batches to respect the
 calculator's 50,000-byte input limit.  Every batch recomputes the 35 newform
 packets and returns those surviving all auxiliary primes in that batch; the exact
-full survivor set is their intersection.
+full survivor set is their intersection.  The calculation also applies the odd-
+branch superspecial condition at the unique prime above 7: the Hecke eigenvalue
+must vanish modulo at least one prime above 7 in its coefficient field.
 
 This is an internet-facing research producer, not a trusted checker.
 """
@@ -147,7 +149,17 @@ for i in [1..#decomp] do
   end for;
   if alive then Append(~S,i); end if;
 end for;
+
+I7 := Factorisation(7*OK)[1][1];
+Ssup := [];
+for i in S do
+  form := Eigenform(decomp[i]);
+  P7 := MinimalPolynomial(HeckeEigenvalue(form,I7));
+  if Common(P7,x) then Append(~Ssup,i); end if;
+end for;
+
 printf "FIXED7_SURVIVORS=%o\n",S;
+printf "SUPERSPECIAL_SURVIVORS=%o\n",Ssup;
 printf "PACKET_COUNT=%o\n",#decomp;
 '''
 
@@ -200,7 +212,15 @@ def form_metadata(page: str) -> tuple[str, dict[str, str]]:
     return action, hidden
 
 
-def submit(code: str) -> tuple[str, list[int], int]:
+def parse_integer_list(text: str, marker: str) -> list[int]:
+    match = re.search(rf"{re.escape(marker)}=\[\s*([^\]]*)\]", text)
+    if match is None:
+        raise ResearchError(f"calculator output lacked {marker}")
+    content = match.group(1).strip()
+    return [] if not content else [int(value.strip()) for value in content.split(",")]
+
+
+def submit(code: str) -> tuple[str, list[int], list[int], int]:
     if len(code.encode("utf-8")) > MAX_INPUT:
         raise ResearchError("generated Magma input exceeds calculator limit")
 
@@ -233,14 +253,15 @@ def submit(code: str) -> tuple[str, list[int], int]:
     with opener.open(request, timeout=180) as response:
         page = response.read().decode("utf-8", errors="replace")
     text = html.unescape(re.sub(r"<[^>]+>", "", page))
-    match = re.search(r"FIXED7_SURVIVORS=\[\s*([^\]]*)\]", text)
+    survivors = parse_integer_list(text, "FIXED7_SURVIVORS")
+    superspecial = parse_integer_list(text, "SUPERSPECIAL_SURVIVORS")
     count = re.search(r"PACKET_COUNT=(\d+)", text)
-    if match is None or count is None:
+    if count is None:
         snippet = text[-4000:]
-        raise ResearchError(f"calculator output lacked result markers:\n{snippet}")
-    content = match.group(1).strip()
-    survivors = [] if not content else [int(value.strip()) for value in content.split(",")]
-    return text, survivors, int(count.group(1))
+        raise ResearchError(f"calculator output lacked packet count:\n{snippet}")
+    if not set(superspecial) <= set(survivors):
+        raise ResearchError("superspecial set is not a subset of fixed-7 survivors")
+    return text, survivors, superspecial, int(count.group(1))
 
 
 def canonical_digest(value: Any) -> str:
@@ -255,25 +276,40 @@ def main() -> int:
     batch_rows = batches(rows)
     outputs: list[dict[str, Any]] = []
     intersection: set[int] | None = None
+    superspecial_intersection: set[int] | None = None
     for number, batch in enumerate(batch_rows, start=1):
         code = make_code(batch)
-        text, survivors, packet_count = submit(code)
+        text, survivors, superspecial, packet_count = submit(code)
         if packet_count != 35:
             raise ResearchError(f"batch {number}: expected 35 packets, got {packet_count}")
         current = set(survivors)
+        current_superspecial = set(superspecial)
         intersection = current if intersection is None else intersection & current
+        superspecial_intersection = (
+            current_superspecial
+            if superspecial_intersection is None
+            else superspecial_intersection & current_superspecial
+        )
         outputs.append(
             {
                 "batch": number,
                 "auxiliary_primes": [prime for prime, _row in batch],
                 "input_bytes": len(code.encode("utf-8")),
                 "survivors": survivors,
+                "superspecial_survivors": superspecial,
                 "output_tail": text[-1000:],
             }
         )
+    fixed7 = sorted(intersection or set())
+    superspecial = sorted(superspecial_intersection or set())
+    if not set(superspecial) <= set(fixed7):
+        raise ResearchError("final superspecial set is not contained in fixed-7 set")
     body = {
-        "schema_version": 1,
-        "status": "public-Magma fixed-7 replay for conductor exponents (2,3)",
+        "schema_version": 2,
+        "status": (
+            "public-Magma fixed-7 and superspecial replay for conductor "
+            "exponents (2,3)"
+        ),
         "source": {
             "calculator": CALCULATOR_URL,
             "source_candidate_git_blob": EXPECTED_DATA_BLOB,
@@ -283,7 +319,8 @@ def main() -> int:
         "packet_count": 35,
         "batch_count": len(outputs),
         "batches": outputs,
-        "fixed7_survivors": sorted(intersection or set()),
+        "fixed7_survivors": fixed7,
+        "superspecial_survivors": superspecial,
     }
     result = dict(body)
     result["certificate_sha256"] = canonical_digest(body)
