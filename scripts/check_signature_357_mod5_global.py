@@ -2,10 +2,10 @@
 """Replay the global mod-5 automorphic reduction for signature (3,5,7).
 
 The checker composes two independently replayed local irreducibility certificates
-with the Dahmen--Siksek branch dichotomy, then verifies the finite conductor and
-level arithmetic over Q(zeta_7)^+. The cited dichotomy, modularity, compatible-
-system, conductor and Hilbert level-lowering theorems remain explicit literature
-inputs.
+with the Dahmen--Siksek branch dichotomy, then verifies the inversion-optimized
+conductor and level arithmetic over Q(zeta_7)^+. The cited dichotomy, modularity,
+compatible-system, conductor and Hilbert level-lowering theorems remain explicit
+literature inputs.
 """
 from __future__ import annotations
 
@@ -77,8 +77,8 @@ def validate(data: dict[str, Any]) -> str:
         },
         "manifest",
     )
-    if data["schema_version"] != 1:
-        raise CertificateError("schema_version must equal 1")
+    if data["schema_version"] != 2:
+        raise CertificateError("schema_version must equal 2")
     if data["status"] != "literature-assisted-finite-automorphic-reduction":
         raise CertificateError("unexpected status")
     if data["equation"] != "A^3+B^5=C^7":
@@ -118,10 +118,8 @@ def validate(data: dict[str, Any]) -> str:
     exact_keys(odd, {"path", "sha256", "coverage"}, "odd_branch_certificate")
     if even["path"] != "Research/Signature357/mod5_prime2_b_odd.json":
         raise CertificateError("unexpected even-branch certificate path")
-    if odd["path"] != "Research/Signature357/mod5_irducibility_at3.json":
-        # Preserve fail-closed behavior while accepting the correctly spelled path below.
-        if odd["path"] != "Research/Signature357/mod5_irreducibility_at3.json":
-            raise CertificateError("unexpected odd-branch certificate path")
+    if odd["path"] != "Research/Signature357/mod5_irreducibility_at3.json":
+        raise CertificateError("unexpected odd-branch certificate path")
 
     try:
         even_digest = bodd.validate(bodd.load_json(ROOT / even["path"]))
@@ -152,7 +150,7 @@ def validate(data: dict[str, Any]) -> str:
             "orientation", "original_parameter", "inverted_parameter", "motive",
             "modularity_source", "modularity_hypothesis_check", "finite_flat_source",
             "residual_unramified_source", "conductor_bound_source",
-            "level_lowering_dependency",
+            "inversion_isomorphism_source", "level_lowering_dependency",
         },
         "automorphic_input",
     )
@@ -164,21 +162,25 @@ def validate(data: dict[str, Any]) -> str:
         raise CertificateError("inverted automorphic parameter mismatch")
     if "Theorem 6.2" not in automorphic["modularity_source"]:
         raise CertificateError("modularity source missing")
-    if automorphic["modularity_hypothesis_check"] != "r=7 does not divide the coefficient 1 of A^3":
+    if automorphic["modularity_hypothesis_check"] != (
+        "r=7 does not divide the coefficient 1 of A^3"
+    ):
         raise CertificateError("modularity hypothesis was not discharged")
     if "Theorem 4.2" not in automorphic["residual_unramified_source"]:
         raise CertificateError("residual ramification source missing")
-    if not (
-        "Theorem 7.4" in automorphic["conductor_bound_source"]
-        and "Corollary 7.5" in automorphic["conductor_bound_source"]
-    ):
-        raise CertificateError("exact conductor bounds are not pinned")
+    if "Theorem 7.4" not in automorphic["conductor_bound_source"]:
+        raise CertificateError("exact conductor bound is not pinned")
+    if "equation (15)" not in automorphic["inversion_isomorphism_source"]:
+        raise CertificateError("inversion isomorphism source is missing")
+    if "isomorphic by inversion" not in automorphic["motive"]:
+        raise CertificateError("the two parameter presentations are not identified")
 
     conductor = data["prime_to_5_conductor"]
     exact_keys(
         conductor,
         {
-            "support_rational_primes", "prime_3", "prime_7", "maximum_level",
+            "support_rational_primes", "branchwise_parameter_optimization",
+            "prime_3", "prime_7", "maximum_level",
             "maximum_level_norm", "possible_exponent_pairs",
             "possible_level_divisor_count", "parallel_weight",
         },
@@ -187,6 +189,19 @@ def validate(data: dict[str, Any]) -> str:
     if conductor["support_rational_primes"] != [3, 7]:
         raise CertificateError("prime-to-5 conductor support must be {3,7}")
 
+    optimization = conductor["branchwise_parameter_optimization"]
+    expected_optimization = {
+        "even_at_3": "use u: v3(u)>0 and v3(u-1)=0",
+        "odd_at_3": "use u: v3(u)=v3(u-1)=0",
+        "even_at_7": "use u: v7(u)>=0 and v7(u-1)=0",
+        "odd_at_7": "use t=u^(-1): v7(t)>0 and v7(t-1)=0",
+    }
+    if optimization != expected_optimization:
+        raise CertificateError("branchwise inversion optimization mismatch")
+
+    # In every branch/place presentation above, neither exceptional clause of
+    # Theorem 7.4 occurs: the chosen parameter is integral and the valuation of
+    # parameter*(parameter-1) is never 1. Hence the "otherwise" bound is 3.
     p3 = conductor["prime_3"]
     p7 = conductor["prime_7"]
     exact_keys(p3, {"splitting", "residue_degree", "norm", "maximum_exponent"}, "prime_3")
@@ -194,31 +209,37 @@ def validate(data: dict[str, Any]) -> str:
     if at3.real_cyclotomic_residue_degree(3, 7) != 3:
         raise CertificateError("3 must have residue degree 3 in K7")
     if p3 != {
-        "splitting": "inert in K7", "residue_degree": 3,
-        "norm": 27, "maximum_exponent": 5,
+        "splitting": "inert in K7",
+        "residue_degree": 3,
+        "norm": 27,
+        "maximum_exponent": 3,
     }:
         raise CertificateError("prime-3 conductor metadata mismatch")
     if p7 != {
-        "splitting": "totally ramified in K7", "residue_degree": 1,
-        "norm": 7, "maximum_exponent": 3,
+        "splitting": "totally ramified in K7",
+        "residue_degree": 1,
+        "norm": 7,
+        "maximum_exponent": 3,
     }:
         raise CertificateError("prime-7 conductor metadata mismatch")
 
-    pairs = [[a, b] for a in range(6) for b in range(4)]
+    pairs = [[a, b] for a in range(4) for b in range(4)]
     if conductor["possible_exponent_pairs"] != pairs:
         raise CertificateError("level-divisor exponent pairs are not complete")
-    if conductor["possible_level_divisor_count"] != len(pairs) or len(pairs) != 24:
+    if conductor["possible_level_divisor_count"] != len(pairs) or len(pairs) != 16:
         raise CertificateError("unexpected number of level divisors")
     maximum_norm = (p3["norm"] ** p3["maximum_exponent"]) * (
         p7["norm"] ** p7["maximum_exponent"]
     )
-    if maximum_norm != 4_921_675_101 or conductor["maximum_level_norm"] != maximum_norm:
+    if maximum_norm != 6_751_269 or conductor["maximum_level_norm"] != maximum_norm:
         raise CertificateError("maximum level norm mismatch")
-    if conductor["maximum_level"] != "p3^5*p7^3":
+    if conductor["maximum_level"] != "p3^3*p7^3":
         raise CertificateError("maximum level ideal mismatch")
     if conductor["parallel_weight"] != [2, 2, 2]:
         raise CertificateError("parallel weight mismatch")
 
+    if "16 levels" not in data["finite_frontier"]:
+        raise CertificateError("optimized finite level frontier is missing")
     if "joint mod-5/mod-7 trace graph" not in data["finite_frontier"]:
         raise CertificateError("finite joint-trace frontier is missing")
     if "does not prove" not in data["nonclaim"]:
@@ -256,14 +277,24 @@ def self_test() -> None:
     expect_rejection(mutated, "an incomplete level list")
 
     mutated = copy.deepcopy(source)
-    mutated["prime_to_5_conductor"]["prime_3"]["maximum_exponent"] = 3
-    expect_rejection(mutated, "the over-optimistic old prime-3 bound")
+    mutated["prime_to_5_conductor"]["prime_3"]["maximum_exponent"] = 5
+    expect_rejection(mutated, "the obsolete non-optimized prime-3 bound")
+
+    mutated = copy.deepcopy(source)
+    mutated["prime_to_5_conductor"]["branchwise_parameter_optimization"][
+        "odd_at_7"
+    ] = "use u despite negative valuation"
+    expect_rejection(mutated, "a missing inversion at the odd-branch prime 7")
+
+    mutated = copy.deepcopy(source)
+    mutated["automorphic_input"]["inversion_isomorphism_source"] = "unrecorded"
+    expect_rejection(mutated, "an unpinned inversion isomorphism")
 
     mutated = copy.deepcopy(source)
     mutated["global_irreducibility_conclusion"] = "the Beal conjecture is proved"
     expect_rejection(mutated, "an overclaimed conclusion")
 
-    duplicate = '{"schema_version":1,"schema_version":1}'
+    duplicate = '{"schema_version":2,"schema_version":2}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -292,8 +323,8 @@ def main() -> int:
     print("global signature-(3,5,7) mod-5 frontier certificate valid")
     print("  irreducibility: every Dahmen--Siksek branch covered")
     print("  modularity: Golfieri--Pacetti Theorem 6.2")
-    print("  prime-to-5 level divides p3^5*p7^3 over Q(zeta_7)^+")
-    print("  maximum level norm: 4921675101; level divisors: 24")
+    print("  conductor: inversion-optimized level divides p3^3*p7^3")
+    print("  maximum level norm: 6751269; level divisors: 16")
     print(f"  certificate sha256: {digest}")
     return 0
 
