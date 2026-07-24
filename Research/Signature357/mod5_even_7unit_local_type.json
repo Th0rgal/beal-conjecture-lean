@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "literature-assisted-even-7-unit-local-type-elimination",
+  "equation": "A^3+B^5=C^7",
+  "branch": {
+    "name": "Dahmen--Siksek even branch with 7 not dividing C",
+    "conditions": [
+      "30 divides C",
+      "7 does not divide A*B",
+      "7 does not divide C",
+      "gcd(A,B,C)=1"
+    ],
+    "conclusion": "A,B,C are all 7-adic units"
+  },
+  "hgm_local_type": {
+    "orientation": "(-C)^7+B^5+A^3=0",
+    "paper_variables": [
+      "a=-C",
+      "b=B",
+      "c=A",
+      "q=7",
+      "p=5",
+      "r=3"
+    ],
+    "source": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Proposition 3.10, Corollary 3.11 and Proposition 3.14",
+    "potential_reduction": "potentially good at the prime above 7",
+    "finite_inertia_prime_divisors": [
+      2,
+      7
+    ],
+    "residual_inertia_prime_to_5": true,
+    "consequence": "the residual inertia image has no element of order 5"
+  },
+  "candidate": {
+    "hmf_label": "3.3.49.1-1323.1-a",
+    "elliptic_curve_label": "3.3.49.1-1323.1-a6",
+    "source": "LMFDB elliptic curves over Q(zeta_7)^+ of conductor 1323.1",
+    "j_invariant": {
+      "numerator": 103823,
+      "denominator": 63
+    },
+    "prime_7_ramification_index_in_K7": 3,
+    "valuation_at_prime_above_7": -3,
+    "potential_reduction": "potentially multiplicative",
+    "tate_source": "Tate curve ramification criterion as used in arXiv:2512.17845v1, Corollary 3.6",
+    "residual_characteristic": 5,
+    "five_divides_negative_j_valuation": false,
+    "consequence": "the residual inertia image contains a nontrivial unipotent element of order 5"
+  },
+  "incompatibility": {
+    "hgm_contains_order_5_inertia": false,
+    "candidate_contains_order_5_inertia": true,
+    "conclusion": "the candidate 3.3.49.1-1323.1-a cannot match the even 7-unit HGM residual representation"
+  },
+  "nonclaim": "the local-type and Tate-curve criteria are literature inputs; this certificate does not enumerate higher levels and does not prove the full signature",
+  "certificate_sha256": "7994ac5a092e1521af8a8d112f47d51486f8507a10099ef7b893ee10a60896e5"
+}
