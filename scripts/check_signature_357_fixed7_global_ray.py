@@ -76,6 +76,13 @@ def f49_power(value:base.F49,exponent:int)->base.F49:
 def character(a:int,b:int,coordinate:list[int])->base.F49:
     return f49_power(base.I,a*coordinate[0])*((-1)**(b*coordinate[1]))
 def nonsquare(value:int,prime:int)->bool: return pow(value%prime,(prime-1)//2,prime)==prime-1
+NODAL_RESIDUES={
+    'prime11_residues_nonsquare':[8,7],
+    'prime19_residues_nonsquare':[2,13],
+    'prime79_residues_nonsquare':[17,77],
+    'prime89_residues_square':[36,68],
+    'prime131_residues_nonsquare':[42,104],
+}
 
 def validate(data:dict[str,Any],ray:dict[str,Any],extra:dict[str,Any])->str:
     extend_candidates(extra)
@@ -89,6 +96,8 @@ def validate(data:dict[str,Any],ray:dict[str,Any],extra:dict[str,Any])->str:
         if certificate(prime,psi)!=data['candidate_products_mod7'][label]['products_G_0_inf_1']: raise CertificateError(f'candidate product mismatch at {label}')
     split=data['nodal_splitting_character']
     if split['norm']!=45: raise CertificateError('nodal norm mismatch')
+    if any(split.get(label)!=values for label,values in NODAL_RESIDUES.items()):
+        raise CertificateError('nodal residue list mismatch')
     nonsquare_sets=((11,split['prime11_residues_nonsquare']),(19,split['prime19_residues_nonsquare']),(79,split['prime79_residues_nonsquare']),(131,split['prime131_residues_nonsquare']))
     if not all(nonsquare(v,p) for p,values in nonsquare_sets for v in values): raise CertificateError('nodal nonsquare-class mismatch')
     if not all(not nonsquare(v,89) for v in split['prime89_residues_square']): raise CertificateError('nodal square-class mismatch at 89')
@@ -116,6 +125,7 @@ def self_test():
     data,ray,extra=load(MANIFEST),load(RAY),load(EXTRA);validate(data,ray,extra)
     bad=copy.deepcopy(data);bad['ray_coordinates']['19a']['coordinate']=[3,0];expect_rejection(bad,ray,extra,'a mutated ray coordinate')
     bad=copy.deepcopy(data);bad['nodal_splitting_character']['prime11_residues_nonsquare'][0]=1;expect_rejection(bad,ray,extra,'a square nodal residue')
+    bad=copy.deepcopy(data);bad['nodal_splitting_character']['prime79_residues_nonsquare']=[];expect_rejection(bad,ray,extra,'an incomplete nodal residue list')
     bad=copy.deepcopy(data);bad['conclusion']['forced_divisor']=19*71;expect_rejection(bad,ray,extra,'a weakened forced divisor')
     with tempfile.NamedTemporaryFile('w',delete=False) as f:f.write('{"x":1,"x":2}');path=pathlib.Path(f.name)
     try:
