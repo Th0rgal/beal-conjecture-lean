@@ -1,5 +1,9 @@
 name: Signature 357 fixed7 packets 24 28 traces
 
+concurrency:
+  group: signature357-fixed7-packet43-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -22,9 +26,10 @@ jobs:
   trace:
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         packet: [24, 28]
-        prime: [13, 29, 41, 43]
+        prime: [43]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
