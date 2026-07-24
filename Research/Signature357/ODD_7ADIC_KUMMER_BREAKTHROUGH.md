@@ -162,27 +162,42 @@ seventh-power map on `(Z/49Z)^*`.  This image is the unique subgroup of order
 
 ## Elementary finite-level corollary
 
-The congruence can also be obtained without `7`-adic analysis.  Since
-`7^3 | A^3`,
+The same residue restriction can be obtained without completing to `Z_7`.
+Since `7^3 | A^3`,
 
 ```text
 C^7 = B^5 mod 343.
 ```
 
-Euler's theorem and this equality give
+The unit group modulo `343` has order `294`, and `5` is invertible modulo
+`294`, with
 
 ```text
-B^294=1,
-B^210=1 mod 343.
+5*59 = 1 mod 294.
 ```
 
-Their exponent gcd is `42`, so
+Consequently
 
 ```text
-B^42=1 mod 343,
+B=(B^5)^59=(C^59)^7 mod 343,
 ```
 
-which implies `B^6=1 mod 49`.
+so `B` is already a seventh power modulo `343`.  Its order therefore divides
+`294/gcd(294,7)=42`, giving
+
+```text
+B^42=1 mod 343.
+```
+
+After reduction modulo `49`, the seventh-power image has order `6`, and hence
+
+```text
+B^6=1 mod 49.
+```
+
+Equivalently, Euler's theorem and `C^7=B^5` also give `B^294=B^210=1`
+modulo `343`; their exponent gcd is `42`, which recovers the first displayed
+order bound.
 
 ## Why this helps
 
