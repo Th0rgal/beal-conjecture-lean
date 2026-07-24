@@ -227,7 +227,7 @@ python3 scripts/check_signature_357_mod5_hecke_filter.py
 Certificate digest:
 
 ```text
-6c9e5f506f06564b413a2663161fcdfd604816dc832d0015e72f22d28f09d191
+7deb530855d6f604c21561d73ac43db23335eb86ef7770f8b3e8aeba93c4378d
 ```
 
 These four packets are examples, not a complete enumeration of the 16 levels.

@@ -84,5 +84,5 @@
     "surviving_packets": ["3.3.49.1-49.1-a", "3.3.49.1-729.1-b"]
   },
   "nonclaim": "the four packets are not claimed to be a complete enumeration of all Hilbert newforms at the twenty-four possible levels",
-  "certificate_sha256": "6c9e5f506f06564b413a2663161fcdfd604816dc832d0015e72f22d28f09d191"
+  "certificate_sha256": "7deb530855d6f604c21561d73ac43db23335eb86ef7770f8b3e8aeba93c4378d"
 }
