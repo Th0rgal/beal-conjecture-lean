@@ -46,7 +46,7 @@ def validate(data:dict[str,Any])->tuple[str,list[list[int]]]:
     expected='the odd e3=2 modular-pair frontier is empty' if not survivors else 'some modular pairs survive every tested prime'
     if data.get('conclusion')!=expected:raise CertificateError('conclusion mismatch')
     if 'imported research inputs' not in data.get('nonclaim',''):raise CertificateError('trust boundary missing')
-    return data['certificate_sha256'],survivors
+    raise CertificateError('expanded graph results require an independent replay of the source graph and polynomial compatibility calculations')
 
 def self_test()->None:
     with tempfile.NamedTemporaryFile('w',delete=False) as f:f.write('{"x":1,"x":2}');path=pathlib.Path(f.name)

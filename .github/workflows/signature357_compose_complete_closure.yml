@@ -28,6 +28,9 @@ jobs:
             python3 scripts/check_signature_357_fixed7_level33_combined.py
           test ! -f Research/Signature357/odd_mod5_combined_residual_frontier.json ||
             python3 scripts/check_signature_357_odd_mod5_combined.py
+          python3 scripts/check_signature_357_odd_cm_filter.py
+          python3 scripts/check_signature_357_fixed7_level32_superspecial.py
+          python3 scripts/check_signature_357_low_level_closure.py
       - name: Compose only from explicit empty frontiers
         run: |
           python3 - <<'PY'
@@ -46,15 +49,18 @@ jobs:
           even_closed='no primitive positive solution' in even.get('conclusion','')
           fixed_route=False;fixed_sources={}
           e32_path=root/'fixed7_packets_24_28_zero_tests.json'; level33_path=root/'fixed7_level33_combined_residual.json'
+          cm_path=root/'odd_branch_cm_filter.json'; level32_path=root/'fixed7_level32_superspecial_closure.json'
           if e32_path.exists() and level33_path.exists():
-              e32=load_checked(e32_path);level33=load_checked(level33_path)
-              fixed_route=(e32.get('surviving_packets')==[] and level33.get('final_dimension')==0)
-              fixed_sources={'e3_2_path':str(e32_path),'e3_2_sha256':e32.get('certificate_sha256'),'level33_path':str(level33_path),'level33_sha256':level33.get('certificate_sha256')}
+              e32=load_checked(e32_path);level33=load_checked(level33_path);cm=load_checked(cm_path);level32=load_checked(level32_path)
+              level22=next(row for row in cm.get('levels',[]) if row.get('level_exponents')==[2,2])
+              fixed_route=(level22.get('odd_branch_survivors_after_cm_filter')==[] and level32.get('conclusion')=='the Dahmen--Siksek odd branch has no solution lowering to fixed-7 level (3,2)' and e32.get('surviving_packets')==[] and level33.get('final_dimension')==0)
+              fixed_sources={'level22_path':str(cm_path),'level22_sha256':cm.get('certificate_sha256'),'level32_path':str(level32_path),'level32_sha256':level32.get('certificate_sha256'),'e3_2_path':str(e32_path),'e3_2_sha256':e32.get('certificate_sha256'),'level33_path':str(level33_path),'level33_sha256':level33.get('certificate_sha256')}
           mod5_route=False;mod5_sources={}
+          low_path=root/'low_level_complete_closure.json';low=load_checked(low_path)
           mod5_path=root/'odd_mod5_combined_residual_frontier.json'
           if mod5_path.exists():
-              mod5=load_checked(mod5_path);mod5_route=mod5.get('conclusion')=='the odd mod-5 residual frontier is empty'
-              mod5_sources={'path':str(mod5_path),'sha256':mod5.get('certificate_sha256')}
+              mod5=load_checked(mod5_path);mod5_route=(mod5.get('conclusion')=='the odd mod-5 residual frontier is empty' and 'complete LMFDB low-level frontier is empty' in low.get('conclusion',''))
+              mod5_sources={'low_level_path':str(low_path),'low_level_sha256':low.get('certificate_sha256'),'path':str(mod5_path),'sha256':mod5.get('certificate_sha256')}
           if not (even_closed and (fixed_route or mod5_route)):
               print(json.dumps({'even_closed':even_closed,'fixed7_odd_route_closed':fixed_route,'mod5_odd_route_closed':mod5_route},sort_keys=True))
               raise SystemExit(0)
