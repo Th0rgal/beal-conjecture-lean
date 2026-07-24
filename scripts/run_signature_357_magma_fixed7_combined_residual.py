@@ -216,7 +216,7 @@ def main() -> int:
     if "SetRationalBasis" in code:
         raise ResearchError("generated code unexpectedly contains SetRationalBasis")
     body: dict[str, Any] = {
-        "schema_version": 2,
+        "schema_version": 1,
         "status": "combined fixed-7 level-(3,3) residual Hecke and semilinear sieve",
         "calculator": CALCULATOR_URL,
         "candidate_blob_sha1": EXPECTED_DATA_BLOB,
@@ -238,13 +238,17 @@ def main() -> int:
             prime: int(dimension)
             for prime, dimension in re.findall(r"DIM_AFTER_(\d+)=(\d+)", output)
         }
+        final_dimension = parse_int(output, "FINAL_DIM")
+        if final_dimension == 0:
+            for prime in PRIMES:
+                dimensions.setdefault(prime, 0)
         body.update(
             {
                 "request_status": "completed",
                 "new_dimension": parse_int(output, "NEW_DIM"),
                 "superspecial_dimension": parse_int(output, "SUPERSPECIAL_DIM"),
                 "dimensions_after_primes": dimensions,
-                "final_dimension": parse_int(output, "FINAL_DIM"),
+                "final_dimension": final_dimension,
                 "output_tail": output[-5000:],
             }
         )

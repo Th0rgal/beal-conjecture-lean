@@ -12,35 +12,48 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   compose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: agent/signature-345-357-certificates
-          fetch-depth: 0
+      - name: Replay available source evidence
+        run: |
+          python3 scripts/check_signature_357_even_branch_closure.py
+          test ! -f Research/Signature357/fixed7_packets_24_28_zero_tests.json ||
+            python3 scripts/check_signature_357_fixed7_24_28_zero_tests.py
+          test ! -f Research/Signature357/fixed7_level33_combined_residual.json ||
+            python3 scripts/check_signature_357_fixed7_level33_combined.py
+          test ! -f Research/Signature357/odd_mod5_combined_residual_frontier.json ||
+            python3 scripts/check_signature_357_odd_mod5_combined.py
       - name: Compose only from explicit empty frontiers
         run: |
           python3 - <<'PY'
-          import hashlib,json,pathlib
+          import copy,hashlib,json,pathlib
           root=pathlib.Path('Research/Signature357')
+          def load_checked(path):
+              value=json.loads(path.read_text())
+              claimed=value.get('certificate_sha256')
+              unsigned=copy.deepcopy(value);unsigned.pop('certificate_sha256',None)
+              actual=hashlib.sha256(json.dumps(unsigned,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+              if claimed!=actual: raise SystemExit(f'invalid digest: {path}')
+              return value
           even_path=root/'even_branch_complete_closure.json'
           if not even_path.exists(): raise SystemExit('even-branch closure is absent')
-          even=json.loads(even_path.read_text())
+          even=load_checked(even_path)
           even_closed='no primitive positive solution' in even.get('conclusion','')
           fixed_route=False;fixed_sources={}
           e32_path=root/'odd_e3_2_zero_test_frontier.json'; level33_path=root/'fixed7_level33_combined_frontier.json'
           if e32_path.exists() and level33_path.exists():
-              e32=json.loads(e32_path.read_text());level33=json.loads(level33_path.read_text())
+              e32=load_checked(e32_path);level33=load_checked(level33_path)
               fixed_route=(e32.get('conclusion')=='the odd e3=2 block is closed' and level33.get('conclusion')=='fixed-7 level (3,3) is eliminated')
               fixed_sources={'e3_2_path':str(e32_path),'e3_2_sha256':e32.get('certificate_sha256'),'level33_path':str(level33_path),'level33_sha256':level33.get('certificate_sha256')}
           mod5_route=False;mod5_sources={}
           mod5_path=root/'odd_mod5_combined_residual_frontier.json'
           if mod5_path.exists():
-              mod5=json.loads(mod5_path.read_text());mod5_route=mod5.get('conclusion')=='the odd mod-5 residual frontier is empty'
+              mod5=load_checked(mod5_path);mod5_route=mod5.get('conclusion')=='the odd mod-5 residual frontier is empty'
               mod5_sources={'path':str(mod5_path),'sha256':mod5.get('certificate_sha256')}
           if not (even_closed and (fixed_route or mod5_route)):
               print(json.dumps({'even_closed':even_closed,'fixed7_odd_route_closed':fixed_route,'mod5_odd_route_closed':mod5_route},sort_keys=True))
@@ -55,15 +68,10 @@ jobs:
             'nonclaim':'this is a certificate composition over imported modularity, level-lowering, local-type, HGM trace and semilinear-descent theorems; it is not imported by BealUnified.Trusted until those dependencies are separately certified',
           }
           encoded=json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode();result=dict(body);result['certificate_sha256']=hashlib.sha256(encoded).hexdigest()
-          (root/'signature_357_complete_closure.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          pathlib.Path('/tmp/signature_357_complete_closure.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
           PY
-      - name: Commit only if a complete certificate was produced
-        run: |
-          test -f Research/Signature357/signature_357_complete_closure.json || exit 0
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Research/Signature357/signature_357_complete_closure.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Record complete signature-(3,5,7) closure"
-          git pull --rebase origin agent/signature-345-357-certificates
-          git push origin HEAD:agent/signature-345-357-certificates
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature-357-composed-closure
+          path: /tmp/signature_357_complete_closure.json
+          if-no-files-found: ignore
