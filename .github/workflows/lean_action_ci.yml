@@ -38,6 +38,19 @@ jobs:
             joint-hgm-traces.json
             joint-hgm-traces.err
           if-no-files-found: error
+      - name: Produce complete local mod-5 HGM traces
+        continue-on-error: true
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+          2> mod5-complete-local.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-complete-local
+          path: |
+            mod5-complete-local.json
+            mod5-complete-local.err
+          if-no-files-found: error
       - name: Fetch LMFDB SQL-mirror low-level frontier
         continue-on-error: true
         run: python3 scripts/fetch_signature_357_lmfdb_sql.py > lmfdb-low-levels-sql.json 2> lmfdb-low-levels-sql.err
