@@ -4,13 +4,13 @@
 The previous all-eight trace request crossed the public calculator budget after
 three rows. Splitting by packet and auxiliary prime makes every request
 independent and fail closed. Both the base-field trace polynomial and the
-F15/K5 degree-two Frobenius transform are retained.
+F15/K5 degree-two Frobenius transform are retained through coefficient records
+that cannot be corrupted by Magma's pretty-printer line wrapping.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import re
 from typing import Any
 
 import run_signature_357_magma_fixed7_24_28_traces as base
@@ -32,7 +32,12 @@ fK := InertiaDegree(I); fF := InertiaDegree(Factorisation(l*OF15)[1][1]);
 Efull := Eig;
 if fF/fK eq 2 then Efull := Eig^2-2*l^fK; end if;
 Pfull := MinimalPolynomial(Efull);
-printf "TRACE|%o|%o|%o|%o|%o|%o\n",{packet},l,fK,fF,Pbase,Pfull;
+printf "TRACE_START|%o|%o|%o|%o|%o|%o\n",{packet},l,fK,fF,Degree(Pbase),Degree(Pfull);
+printf "BASE_COEFFS";
+for c in Eltseq(Pbase) do printf "|%o",c; end for;
+printf "\nFULL_COEFFS";
+for c in Eltseq(Pfull) do printf "|%o",c; end for;
+printf "\nTRACE_END\n";
 '''
 
 
@@ -44,7 +49,7 @@ def main() -> int:
 
     code = make_code(args.packet, args.prime)
     record: dict[str, Any] = {
-        "schema_version": 2,
+        "schema_version": 3,
         "status": "public-Magma single fixed-7 packet trace read",
         "calculator": base.CALCULATOR_URL,
         "level_exponents": [2, 3],
@@ -57,20 +62,17 @@ def main() -> int:
     output = ""
     try:
         output = base.submit(code)
-        pattern = re.compile(
-            rf"TRACE\|{args.packet}\|{args.prime}\|(\d+)\|(\d+)\|([^|\n]+)\|([^|\n]+)"
-        )
-        match = pattern.search(output)
-        if match is None:
-            raise base.ResearchError("output lacked the requested trace row")
+        rows = base.parse_rows(output)
+        if len(rows) != 1:
+            raise base.ResearchError(f"expected one trace row, got {len(rows)}")
+        row = rows[0]
+        if (row["packet"], row["prime"]) != (args.packet, args.prime):
+            raise base.ResearchError("trace packet/prime mismatch")
         record.update(
             {
                 "request_status": "completed",
-                "residue_degree_K5": int(match.group(1)),
-                "residue_degree_F15": int(match.group(2)),
-                "base_trace_polynomial": match.group(3).strip(),
-                "full_trace_polynomial": match.group(4).strip(),
-                "output_tail": output[-3000:],
+                **row,
+                "output_tail": output[-4000:],
             }
         )
     except Exception as exc:
