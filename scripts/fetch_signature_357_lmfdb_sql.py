@@ -22,7 +22,9 @@ import psycopg
 
 FIELD_LABEL = "3.3.49.1"
 COMPLETENESS_BOUND = 2059
-# The inversion isomorphism lowers the global conductor frontier to p3^3*p7^3.
+# The current optimized conductor program uses p3^3*p7^3.  Exponents >=4 at p3
+# already have level norm >2059, so this choice does not affect the complete
+# low-level inventory produced here.
 LEVELS = sorted(
     (27**a * 7**b, a, b)
     for a in range(4)
@@ -80,7 +82,7 @@ def main() -> int:
             cursor.execute(
                 """
                 SELECT label, level_norm, level_ideal, dimension,
-                       is_CM, is_base_change, parallel_weight
+                       "is_CM", is_base_change, parallel_weight
                 FROM hmf_forms
                 WHERE field_label = %s
                   AND level_norm = ANY(%s)
