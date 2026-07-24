@@ -46,7 +46,7 @@ def validate(manifest:dict[str,Any],producer:dict[str,Any])->str:
     if manifest.get('schema_version')!=1 or digest(manifest)!=manifest.get('certificate_sha256'):
         raise CertificateError('manifest schema or digest mismatch')
     source=manifest['source']
-    if producer.get('certificate_sha256')!=source['producer_output_sha256'] or producer.get('primes')!=source['primes']:
+    if digest(producer)!=producer.get('certificate_sha256') or producer.get('certificate_sha256')!=source['producer_output_sha256'] or producer.get('primes')!=source['primes']:
         raise CertificateError('producer identity mismatch')
     for prime in source['primes']:
         expected=manifest['primes'][str(prime)]
@@ -77,6 +77,10 @@ def expect_rejection(manifest,producer,label):
 
 def self_test(producer:dict[str,Any])->None:
     manifest=load(MANIFEST); validate(manifest,producer)
+    bad_producer=copy.deepcopy(producer); bad_producer['unhashed_edit']=True
+    try: validate(manifest,bad_producer)
+    except CertificateError: pass
+    else: raise RuntimeError('checker accepted producer data not bound to its digest')
     bad=copy.deepcopy(manifest); bad['primes']['29']['regimes']['generic']['base_trace_roots_mod5']=[0]
     expect_rejection(bad,producer,'a generic rational trace at 29')
     bad=copy.deepcopy(manifest); bad['primes']['43']['regimes']['infinity']['base_trace_roots_mod5']=[3]

@@ -86,7 +86,9 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
 
     odd = branches["odd"]
     irreducibility = load(ROOT / odd["global_mod5_irreducibility_path"])
-    if irreducibility.get("certificate_sha256") != odd[
+    if digest(irreducibility) != irreducibility.get("certificate_sha256"):
+        raise CertificateError("mod-5 irreducibility certificate digest mismatch")
+    if irreducibility["certificate_sha256"] != odd[
         "global_mod5_irreducibility_sha256"
     ]:
         raise CertificateError("mod-5 irreducibility dependency mismatch")
