@@ -1,0 +1,33 @@
+name: Signature 357 decisive fixed7 traces
+
+on:
+  push:
+    branches:
+      - research/signature357-decisive-traces
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace:
+    strategy:
+      fail-fast: false
+      matrix:
+        packet: [24, 28]
+        prime: [13, 43]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read the decisive fixed-7 Hecke trace
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_trace_one.py
+          --packet "${{ matrix.packet }}"
+          --prime "${{ matrix.prime }}"
+          > "trace-${{ matrix.packet }}-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-decisive-trace-${{ matrix.packet }}-${{ matrix.prime }}
+          path: "trace-${{ matrix.packet }}-${{ matrix.prime }}.json"
+          if-no-files-found: error
