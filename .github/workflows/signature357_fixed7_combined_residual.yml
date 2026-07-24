@@ -1,9 +1,13 @@
-name: Signature 357 fixed7 combined residual level 33
+name: Signature 357 isolated fixed7 combined residual level 33
+
+concurrency:
+  group: signature357-isolated-fixed7-level33
+  cancel-in-progress: true
 
 on:
   push:
     branches:
-      - agent/signature-345-357-certificates
+      - agent/signature357-fixed7-level33-run
     paths:
       - "scripts/run_signature_357_magma_fixed7_combined_residual.py"
       - ".github/workflows/signature357_fixed7_combined_residual.yml"
@@ -19,7 +23,7 @@ permissions:
 jobs:
   combined:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
       - name: Intersect superspecial, local and semilinear Hecke conditions
