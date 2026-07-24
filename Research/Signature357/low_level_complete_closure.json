@@ -1,15 +1,22 @@
 {
-  "certificate_sha256": "8b3d99f39e68860710cb7649ffda01f8e40456f21c340289fd2e15033bedfa17",
+  "certificate_sha256": "8386331173c63f51a2fb9357216e0fb5098ff5c3104d7df706bd05c677ea7575",
   "conclusion": "no primitive (3,5,7) solution lowers on the mod-5 side to any Hilbert-newform level of norm at most 2059; the complete LMFDB low-level frontier is empty",
   "fixed7_prime41_obstruction": {
     "base_field": "Q(sqrt(5))",
-    "conclusion": "the fixed-7 residual representation cannot be reducible",
+    "conclusion": "the fixed-7 residual representation cannot be reducible for any permitted ray character",
     "evaluation_product_mod7": 1,
-    "evaluations_mod7": [4, 2, 4, 1, 2],
+    "evaluations_mod7": [
+      4,
+      2,
+      4,
+      1,
+      2
+    ],
     "forced_reduction_regime": "t7=0",
     "full_cyclotomic_field": "Q(zeta_15)",
     "parameter": "t7=-B^5/A^3",
     "prime_norm": 41,
+    "ray_character_control_sha256": "a1c779c4ce53e445aab3b041745d7df87e72cf0059c28e760776f2a987e5e28a",
     "reducible_trace_base_mod7": 0,
     "reducible_trace_full_mod7": 2,
     "residue_degree_base": 1,
@@ -25,7 +32,8 @@
   "imported_implications": [
     "the schema-3 complete LMFDB low-level filter leaves only packet 3.3.49.1-189.1-a, in the even branch with 7 dividing C",
     "the fixed-7 level-(2,2) CM/special-local-type argument implies that every even-branch solution has reducible residual mod-7 Frey representation",
-    "for a reducible fixed-7 representation at an auxiliary prime not dividing 3*5*7*C, the base trace is N+1 modulo 7",
+    "a reducible fixed-7 representation has semisimplification psi*chi_7 direct_sum psi^(-1), with psi in the ray character group C4 x C2",
+    "the prime-17 all-regime certificate excludes order-4 psi; either remaining quadratic value gives base/full trace targets 0 and 2 at norm 41",
     "when the residue degree doubles in Q(zeta_15)/Q(sqrt(5)), the trace transforms as a -> a^2-2*N"
   ],
   "mod5_prime41_filter": {
@@ -74,9 +82,16 @@
       "x^3+68*x^2-519*x-70223"
     ],
     "generic_evaluation_product_mod5": 4,
-    "infinity_candidate_polynomials": ["x+82", "x+82", "x+82"],
+    "infinity_candidate_polynomials": [
+      "x+82",
+      "x+82",
+      "x+82"
+    ],
     "infinity_evaluation_product_mod5": 4,
-    "multiplicative_targets_mod5": [2, 3],
+    "multiplicative_targets_mod5": [
+      2,
+      3
+    ],
     "only_surviving_reduction_regime": "u=1",
     "packet_trace_base": 2,
     "packet_trace_full": -78,
@@ -85,20 +100,30 @@
     "rational_prime": 41,
     "residue_degree_base": 1,
     "residue_degree_full": 2,
-    "zero_candidate_polynomials": ["x+82", "x+82", "x+82", "x+82", "x+82", "x+82", "x+82"],
+    "zero_candidate_polynomials": [
+      "x+82",
+      "x+82",
+      "x+82",
+      "x+82",
+      "x+82",
+      "x+82",
+      "x+82"
+    ],
     "zero_evaluation_product_mod5": 4
   },
   "nonclaim": "levels above norm 2059 remain to be enumerated and this certificate does not prove the full (3,5,7) equation",
-  "schema_version": 2,
+  "schema_version": 3,
   "scope": {
     "complete_level_norm_bound": 2059,
     "equation": "A^3+B^5=C^7",
     "fixed7_candidate_source_blob_sha1": "9c96357834f2298b4d91ab97812c38e84b8ef7a2",
+    "fixed7_ray_character_path": "Research/Signature357/fixed7_ray_character_control.json",
+    "fixed7_ray_character_sha256": "a1c779c4ce53e445aab3b041745d7df87e72cf0059c28e760776f2a987e5e28a",
     "low_level_filter_path": "Research/Signature357/lmfdb_low_level_filter.json",
     "low_level_filter_sha256": "fadf1a219227b97ed0a7265dfd64249563a84ac1b7796f6c5512bbe20b546673",
     "mod5_trace_producer": "scripts/produce_signature_357_mod5_complete_local.py",
     "mod5_trace_producer_output_sha256": "fa48486605caa9c9a897566ea3109483615a65b8acbbcac29f13d2ac0bb3ba09",
     "only_preclosure_packet": "3.3.49.1-189.1-a"
   },
-  "status": "research-certificate-with-imported-even-branch-reducibility-and-Mazur-trace-criterion"
+  "status": "research-certificate-with-imported-even-branch-reducibility-ray-classification-and-Mazur-trace-criterion"
 }
