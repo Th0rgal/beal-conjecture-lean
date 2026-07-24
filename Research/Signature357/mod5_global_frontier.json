@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "literature-assisted-finite-automorphic-reduction",
+  "equation": "A^3+B^5=C^7",
+  "field": {
+    "name": "K7=Q(zeta_7)^+",
+    "lmfdb_label": "3.3.49.1",
+    "degree": 3,
+    "discriminant": 49,
+    "class_number": 1
+  },
+  "branch_inputs": {
+    "Dahmen_Siksek_dichotomy": {
+      "even": "30 divides C and 7 does not divide A*B",
+      "odd": "C odd, 3 does not divide A*B*C, 5 does not divide A*C, and 7 divides A"
+    },
+    "even_branch_certificate": {
+      "path": "Research/Signature357/mod5_prime2_b_odd.json",
+      "sha256": "bee6d05455bb7b8c04b165d6c80cb5275c6bf6e95da7abfbf7307c4a073ad022",
+      "coverage": "C even and pairwise primitivity force A and B odd, hence B odd"
+    },
+    "odd_branch_certificate": {
+      "path": "Research/Signature357/mod5_irreducibility_at3.json",
+      "sha256": "df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e",
+      "coverage": "the odd branch has 3 not dividing A*B*C"
+    }
+  },
+  "global_irreducibility_conclusion": "every hypothetical primitive positive (3,5,7) solution carries an absolutely irreducible residual mod-5 plus HGM representation",
+  "automorphic_input": {
+    "orientation": "A^3+B^5+(-C)^7=0",
+    "modularity_source": "arXiv:2412.08804v2, Theorem 6.2",
+    "modularity_hypothesis_check": "r=7 does not divide the coefficient 1 of A^3",
+    "finite_flat_source": "arXiv:2412.08804v2, Theorem 4.3",
+    "residual_unramified_source": "arXiv:2412.08804v2, Theorem 4.2",
+    "conductor_bound_source": "arXiv:2412.08804v2, Corollary 7.5",
+    "level_lowering_dependency": "standard Hilbert modular level lowering for finite-flat absolutely irreducible residual representations",
+    "original_parameter": "t=A^3/C^7",
+    "inverted_parameter": "u=t^(-1)=C^7/A^3",
+    "motive": "H^+_4((1/7,-1/7),(1/3,-1/3)|t) is isomorphic by inversion to H((1/3,-1/3),(1/7,-1/7)|u)"
+  },
+  "prime_to_5_conductor": {
+    "support_rational_primes": [3, 7],
+    "prime_3": {
+      "splitting": "inert in K7",
+      "residue_degree": 3,
+      "norm": 27,
+      "maximum_exponent": 3
+    },
+    "prime_7": {
+      "splitting": "totally ramified in K7",
+      "residue_degree": 1,
+      "norm": 7,
+      "maximum_exponent": 3
+    },
+    "maximum_level": "p3^3*p7^3",
+    "maximum_level_norm": 6751269,
+    "possible_exponent_pairs": [
+      [0,0], [0,1], [0,2], [0,3],
+      [1,0], [1,1], [1,2], [1,3],
+      [2,0], [2,1], [2,2], [2,3],
+      [3,0], [3,1], [3,2], [3,3]
+    ],
+    "possible_level_divisor_count": 16,
+    "parallel_weight": [2, 2, 2]
+  },
+  "finite_frontier": "enumerate the weight-(2,2,2) Hilbert newforms over K7 at levels dividing p3^3*p7^3, then run the joint mod-5/mod-7 trace graph using u+t7=1",
+  "nonclaim": "this certificate does not enumerate the Hilbert newforms and does not prove nonexistence of (3,5,7) solutions",
+  "certificate_sha256": "14dd5302d3a790aa1b83cf7d41e81703236044c92ae581f5a1b1f8fc70992660"
+}
