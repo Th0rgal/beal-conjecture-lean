@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay the branch-specific mod-5 level frontier for signature (3,5,7)."""
+"""Replay the Hasse-refined mod-5 level frontier for signature (3,5,7)."""
 from __future__ import annotations
 
 import argparse
@@ -54,8 +54,8 @@ def digest(data: dict[str, Any]) -> str:
 
 
 def validate(data: dict[str, Any], closure: dict[str, Any]) -> tuple[str, list[int]]:
-    if data.get("schema_version") != 1:
-        raise CertificateError("schema_version must equal 1")
+    if data.get("schema_version") != 2:
+        raise CertificateError("schema_version must equal 2")
     if digest(data) != data.get("certificate_sha256"):
         raise CertificateError("frontier certificate digest mismatch")
 
@@ -65,9 +65,19 @@ def validate(data: dict[str, Any], closure: dict[str, Any]) -> tuple[str, list[i
     if scope["prime_norms"] != {"p3": 27, "p7": 7}:
         raise CertificateError("prime norm metadata mismatch")
 
+    dependencies = data["source_dependencies"]
+    hasse_path = ROOT / dependencies["fixed7_prime7_hasse_path"]
+    hasse = load(hasse_path)
+    if digest(hasse) != hasse.get("certificate_sha256"):
+        raise CertificateError("prime-7 Hasse certificate digest mismatch")
+    if hasse["certificate_sha256"] != dependencies["fixed7_prime7_hasse_sha256"]:
+        raise CertificateError("frontier is not bound to the Hasse certificate")
+    if hasse["scope"]["conclusion"] != "7 divides C":
+        raise CertificateError("Hasse input does not force 7|C")
+
     even = data["branches"]["even"]
     odd = data["branches"]["odd"]
-    if even["allowed_e3"] != [1, 2] or even["allowed_e7"] != [0, 1, 2, 3]:
+    if even["allowed_e3"] != [1, 2] or even["allowed_e7"] != [1]:
         raise CertificateError("even branch conductor range mismatch")
     if odd["allowed_e3"] != [2, 3] or odd["allowed_e7"] != [0, 1, 2]:
         raise CertificateError("odd branch conductor range mismatch")
@@ -92,7 +102,7 @@ def validate(data: dict[str, Any], closure: dict[str, Any]) -> tuple[str, list[i
     if (
         data["coarse_level_count"] != 16
         or data["branch_specific_level_count"] != len(allowed)
-        or len(allowed) != 11
+        or len(allowed) != 7
     ):
         raise CertificateError("level-count compression mismatch")
 
@@ -114,18 +124,19 @@ def validate(data: dict[str, Any], closure: dict[str, Any]) -> tuple[str, list[i
         raise CertificateError("frontier is not bound to the low-level closure")
     bound = closure["scope"]["complete_level_norm_bound"]
     low = [norm for norm in norms if norm <= bound]
-    if (
-        low != closure_meta["closed_admissible_norms_at_most_2059"]
-        or low != [27, 189, 729, 1323]
-    ):
+    if low != closure_meta["closed_admissible_norms_at_most_2059"] or low != [189, 729]:
         raise CertificateError("closed low-level norm list mismatch")
     high = [norm for norm in norms if norm > bound]
     if (
         high != data["remaining_high_level_norms"]
         or len(high) != data["remaining_high_level_count"]
-        or len(high) != 7
+        or len(high) != 5
     ):
         raise CertificateError("remaining high-level frontier mismatch")
+    if data["even_branch_remaining_norms"] != [5103]:
+        raise CertificateError("even branch was not concentrated at level 5103")
+    if data["odd_branch_remaining_norms"] != high:
+        raise CertificateError("odd branch high-level frontier mismatch")
     return data["certificate_sha256"], high
 
 
@@ -134,17 +145,17 @@ def self_test() -> None:
     validate(base, closure)
 
     mutated = copy.deepcopy(base)
-    mutated["branches"]["odd"]["allowed_e7"].append(3)
+    mutated["branches"]["even"]["allowed_e7"] = [0, 1]
     mutated["certificate_sha256"] = digest(mutated)
     try:
         validate(mutated, closure)
     except CertificateError:
         pass
     else:
-        raise RuntimeError("checker accepted the forbidden odd (3,3) conductor pair")
+        raise RuntimeError("checker accepted an even branch without 7|C")
 
     mutated = copy.deepcopy(base)
-    mutated["remaining_high_level_norms"].append(6751269)
+    mutated["remaining_high_level_norms"].append(250047)
     mutated["remaining_high_level_count"] += 1
     mutated["certificate_sha256"] = digest(mutated)
     try:
@@ -152,9 +163,9 @@ def self_test() -> None:
     except CertificateError:
         pass
     else:
-        raise RuntimeError("checker accepted the removed maximum level")
+        raise RuntimeError("checker accepted a Hasse-excluded level")
 
-    duplicate = '{"schema_version":1,"schema_version":1}'
+    duplicate = '{"schema_version":2,"schema_version":2}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -167,7 +178,7 @@ def self_test() -> None:
             raise RuntimeError("checker accepted duplicate JSON keys")
     finally:
         path.unlink(missing_ok=True)
-    print("signature-357 branch-specific level negative fixtures passed")
+    print("signature-357 Hasse-refined level negative fixtures passed")
 
 
 def main() -> int:
@@ -178,10 +189,11 @@ def main() -> int:
         self_test()
         return 0
     certificate, high = validate(load(MANIFEST), load(CLOSURE))
-    print("branch-specific mod-5 level frontier valid")
-    print("coarse levels: 16 -> branch-specific levels: 11")
+    print("Hasse-refined mod-5 level frontier valid")
+    print("coarse levels: 16 -> branch-specific levels: 7")
     print("complete low levels: closed")
     print("remaining high levels:", ", ".join(map(str, high)))
+    print("even branch remaining level: 5103")
     print("maximum remaining norm: 964467")
     print(f"certificate sha256: {certificate}")
     return 0
