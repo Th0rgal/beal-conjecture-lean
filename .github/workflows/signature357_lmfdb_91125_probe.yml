@@ -9,13 +9,19 @@ on:
       - "scripts/fetch_signature_357_fixed7_inputs.py"
       - "scripts/fetch_signature_357_fixed7_lmfdb_sql.py"
       - "scripts/check_signature_357_fixed7_lmfdb.py"
+  pull_request:
+    paths:
+      - ".github/workflows/signature357_lmfdb_91125_probe.yml"
+      - "scripts/fetch_signature_357_fixed7_inputs.py"
+      - "scripts/fetch_signature_357_fixed7_lmfdb_sql.py"
+      - "scripts/check_signature_357_fixed7_lmfdb.py"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: signature357-lmfdb-91125-probe
+  group: signature357-lmfdb-91125-probe-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
