@@ -14,7 +14,7 @@
     "prime3_table": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Corollary 3.6 and Table 3.2",
     "prime7_table": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Proposition 3.14 and Table 3.5",
     "fixed7_prime7_hasse_path": "Research/Signature357/fixed7_prime7_hasse_obstruction.json",
-    "fixed7_prime7_hasse_sha256": "f5e588bcdda3954d1a994b94066793d3fd53d18c0ade05424e9ed4e2c1f6c441",
+    "fixed7_prime7_hasse_sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1",
     "level_lowering": "the independent absolutely irreducible residual mod-5 representation lowers to a parallel-weight-two Hilbert newform at the residual conductor"
   },
   "branches": {
@@ -50,5 +50,5 @@
   "odd_branch_remaining_norms": [5103, 19683, 35721, 137781, 964467],
   "conclusion": "after the prime-7 Hasse obstruction and complete low-level closure, only five mod-5 Hilbert-newform levels remain; the even branch is concentrated at level norm 5103",
   "nonclaim": "the five remaining Hilbert-newform spaces have not all been eliminated and this certificate does not prove the full (3,5,7) equation",
-  "certificate_sha256": "197eb8ba7e77dc615aeb591f794f84408795b8ab1b8166be7932cd64c016b316"
+  "certificate_sha256": "963e1e0d1b7a399d3cd823aff75c5d0f8a6c0154bec0b5ac8934040902c14aa4"
 }
