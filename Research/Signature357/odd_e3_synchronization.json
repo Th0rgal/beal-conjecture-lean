@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "finite-arithmetic-with-imported-local-conductor-table",
+  "equation": "A^3+B^5=C^7",
+  "branch": "Dahmen--Siksek odd branch",
+  "parameters": {
+    "mod5": "u=C^7/A^3",
+    "fixed7": "v=-B^5/A^3",
+    "identity": "u+v=1"
+  },
+  "modulus": 9,
+  "unit_solution_count": 18,
+  "parameter_pairs": [[2, 8], [5, 5], [8, 2]],
+  "local_conductor_map": {"2": 3, "5": 2, "8": 3},
+  "conclusion": "e3(mod5)=e3(fixed7) for every odd-branch unit residue class",
+  "blocks": {
+    "e3=2": {
+      "parameter_pair": [5, 5],
+      "mod5_e7_range": [0, 1, 2],
+      "fixed7_levels": [[2, 2], [2, 3]]
+    },
+    "e3=3": {
+      "parameter_pairs": [[2, 8], [8, 2]],
+      "mod5_e7_range": [0, 1, 2],
+      "fixed7_levels": [[3, 2], [3, 3]]
+    }
+  },
+  "source_dependency": "Pacetti--Villagra Torcomian local conductor tables for the two Frey realizations",
+  "nonclaim": "the checker proves the modulo-9 synchronization only; the conductor interpretation is imported and the result does not eliminate a modular packet",
+  "certificate_sha256": "b3bca6c6176543efcf5fc42906099113a994eaa7887331e85e47e249be889e0c"
+}

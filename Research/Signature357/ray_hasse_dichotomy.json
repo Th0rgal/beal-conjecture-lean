@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "status": "research-certificate-with-imported-ray-class-local-trace-and-finite-flat-lemmas",
+  "equation": "A^3+B^5=C^7",
+  "fixed7_system": {
+    "field": "K5=Q(sqrt(5))",
+    "residual_characteristic": 7,
+    "orientation": "B^5+(-C)^7+A^3=0",
+    "paper_variables": [
+      "a=B",
+      "b=-C",
+      "c=A",
+      "q=5",
+      "p=7",
+      "r=3"
+    ],
+    "parameter": "t=-B^5/A^3",
+    "reducible_semisimplification": "psi*chi_7 direct_sum psi^(-1)",
+    "ray_modulus": "3*(sqrt(5))*infinity_1*infinity_2",
+    "ray_class_group": "C4 x C2"
+  },
+  "source_pins": {
+    "candidate_repository": "lucasvillagra/GFE-5p3",
+    "candidate_commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423",
+    "candidate_path": "Outputs/Data.txt",
+    "candidate_blob_sha1": "9c96357834f2298b4d91ab97812c38e84b8ef7a2",
+    "elimination_code_path": "Codes/MagmaCode.m",
+    "elimination_code_blob_sha1": "16455c3d35fb241e413db619a784267489ccba94",
+    "paper_arxiv": "2512.17845v1"
+  },
+  "candidate_product_rows": [
+    {
+      "prime": 17,
+      "psi": [0, 1],
+      "products": [[4, 5], [6, 0], [6, 0], [4, 0]]
+    },
+    {
+      "prime": 17,
+      "psi": [0, 6],
+      "products": [[4, 2], [6, 0], [6, 0], [4, 0]]
+    },
+    {
+      "prime": 19,
+      "psi": [1, 0],
+      "products": [[5, 0], [1, 0], [5, 0], [0, 0]]
+    },
+    {
+      "prime": 19,
+      "psi": [6, 0],
+      "products": [[1, 0], [1, 0], [5, 0], [0, 0]]
+    },
+    {
+      "prime": 11,
+      "psi": [1, 0],
+      "products": [[5, 0], [3, 0], [4, 0], [0, 0]]
+    },
+    {
+      "prime": 71,
+      "psi": [6, 0],
+      "products": [[1, 0], [5, 0], [4, 0], [0, 0]]
+    },
+    {
+      "prime": 13,
+      "psi": [6, 0],
+      "products": [[2, 0], [4, 0], [0, 0], [0, 0]]
+    }
+  ],
+  "ray_class_coordinates": {
+    "11a=3+phi": [3, 1],
+    "11b=3+2phi": [1, 1],
+    "13_inert": [1, 0],
+    "17_inert": [3, 0],
+    "19a=4+phi": [1, 0],
+    "19b=4+3phi": [1, 0],
+    "71a=8+phi": [1, 1],
+    "71b=8+7phi": [3, 1],
+    "7_inert": [3, 0]
+  },
+  "nodal_splitting_character": {
+    "fiber_factorization": "5*x^6-12*x^5+10*x^3+1=(x^2-x-1)^2*(5*x^2-2*x+1)",
+    "d_in_Z_phi": [6, 3],
+    "d_description": "d=3*(phi+2)=3*sqrt(5)*phi",
+    "norm_d": 45,
+    "reductions": {
+      "prime_11": [8, 7],
+      "prime_19": [2, 13]
+    },
+    "all_listed_reductions_nonsquare": true,
+    "ray_character_coordinates": [2, 0]
+  },
+  "ray_sieve_conclusion": {
+    "unique_reducibility_character": "eta=theta_(3*sqrt(5)*phi)",
+    "character_coordinates": [2, 0],
+    "forced_prime_divisors_of_C_before_prime7": [2, 19, 71],
+    "forced_divisibility_alternative": "13 divides A*C",
+    "prime2_obstruction": 6084,
+    "prime2_obstruction_factorization": [[2, 2], [3, 2], [13, 2]]
+  },
+  "hasse_witt_mod7": {
+    "generic_model": "y^2=5*x^6-12*x^5+10*t*x^3+t^2",
+    "generic_matrix": [[[], [[4, 6]]], [[[1, 1]], []]],
+    "generic_frobenius_product": [[[[5, 6]], []], [[], [[5, 6]]]],
+    "zero_model": "y^2=1+2*x^5",
+    "zero_matrix": [[[], [[0, 6]]], [[], []]],
+    "infinity_model": "y^2=5*x^6+3*x^3+1",
+    "infinity_matrix": [[[], []], [[], []]],
+    "eta_at_inert_prime_7": -1,
+    "generic_implication": "an eta etale factor forces t^5=1, hence t=1 in F_7^*",
+    "zero_and_infinity_implication": "stable Hasse-Witt rank is zero"
+  },
+  "imported_lemmas": [
+    "the reducible fixed-7 representation has the stated ray-class character shape and conductor",
+    "the pinned generic, zero, infinity, and multiplicative candidate polynomials exhaust the local trace cases",
+    "the exact prime-2 obstruction 6084 applies when 2 does not divide C",
+    "finite-flat full faithfulness at e=1<7-1 promotes the unramified eta factor to an etale subquotient",
+    "the Hasse-Witt Frobenius eigenvalue detects that etale factor in the ordinary generic fiber",
+    "the plus HGM at 7 has prime-to-5 dihedral supercuspidal type of order 4 or 28 when 7 does not divide A*B"
+  ],
+  "conditional_conclusions": [
+    "subject to the finite-flat and Hasse-Witt interpretation lemmas, reducibility of the fixed-7 representation forces 7 to divide C",
+    "subject to the cited local-type transfer, 7 dividing C forces absolute irreducibility of the independent mod-5 representation",
+    "therefore the two residual representations cannot both be reducible"
+  ],
+  "nonclaim": "the checker certifies the finite arithmetic only; the imported local-global and finite-flat lemmas require expert audit and the certificate does not prove the full signature",
+  "certificate_sha256": "f915ec6bdf39ea75bb6c0de3478fc5f6fea01c3d828297916f8262aa5170e224"
+}

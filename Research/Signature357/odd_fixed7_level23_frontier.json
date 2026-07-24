@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "retained-public-Magma-plus-imported-CM-filter",
+  "equation": "A^3+B^5=C^7",
+  "branch": "Dahmen--Siksek odd branch",
+  "level_exponents": [2, 3],
+  "artifact": {
+    "path": "Research/Signature357/fixed7_level23_online.json",
+    "certificate_sha256": "fa07d9bc8718eb708b4b43a5964672d8098d7a502c045b1351ec2f2e8cd77db5",
+    "github_actions_artifact_name": "signature357-fixed7-level23-online",
+    "github_actions_artifact_digest": "sha256:ba92658b9cd44f7b7d35b7b3282b9a90b7b6d0d9028373c970705b8f7822add9"
+  },
+  "packet_count": 35,
+  "fixed7_survivors": [1, 5, 7, 11, 12, 13, 16, 17, 21, 24, 28],
+  "superspecial_survivors": [1, 7, 11, 12, 13, 16, 21, 24, 28],
+  "superspecial_removed": [5, 17],
+  "persistent_cm_packets": [1, 7, 11, 12, 13, 16, 21],
+  "odd_branch_noncm_superspecial_survivors": [24, 28],
+  "compression": [
+    "35 packets",
+    "11 fixed-7 survivors",
+    "9 superspecial survivors",
+    "2 non-CM superspecial survivors"
+  ],
+  "imported_dependencies": [
+    "the persistent packets 1,7,11,12,13,16,21 are the CM packets at level (2,3)",
+    "Pacetti--Villagra Torcomian Proposition 5.8 and the odd-branch support conditions exclude those CM specializations",
+    "the residual-prime local-global compatibility identifies the superspecial condition with a_P=0 mod 7"
+  ],
+  "conclusion": "the odd fixed-7 level-(2,3) frontier consists of packets 24 and 28",
+  "nonclaim": "the public-Magma artifact certifies the finite trace filters, while the CM and local-global identifications are imported; packets 24 and 28 are not yet eliminated",
+  "certificate_sha256": "d9da040e206074f756726cdb6c42426f1cb39d64c22b5d544a2553897a8aa59f"
+}

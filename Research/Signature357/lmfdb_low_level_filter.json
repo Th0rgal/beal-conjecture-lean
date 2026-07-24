@@ -1,25 +1,18 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "status": "literature-assisted-complete-LMFDB-low-level-filter",
   "scope": {
     "equation": "A^3+B^5=C^7",
     "field": "K7=Q(zeta_7)^+",
     "residual_characteristic": 5,
     "complete_level_norm_bound": 2059,
-    "candidate_level_norms": [
-      1,
-      7,
-      27,
-      49,
-      189,
-      343,
-      729,
-      1323
-    ],
+    "candidate_level_norms": [1, 7, 27, 49, 189, 343, 729, 1323],
     "inventory_path": "Research/Signature357/lmfdb_low_levels.json",
     "inventory_sha256": "5a5bce8c80ea5d4bfb59dc67b4c10c8827ab7c1f486e27e93691900bf7e91495",
     "global_noncm_path": "Research/Signature357/mod5_global_noncm.json",
     "global_noncm_sha256": "9fbfb91d27d4d1c937c17edde59c0de9df499740f8ad11b31a851f54b4070927",
+    "even_conductor_at7_path": "Research/Signature357/mod5_even_conductor_at7.json",
+    "even_conductor_at7_sha256": "7e9c1d7dab68e16cf3444835f0e4ae8f21045306f4d970b09a7ee49c095bdc90",
     "even_7unit_local_type_path": "Research/Signature357/mod5_even_7unit_local_type.json",
     "even_7unit_local_type_sha256": "7994ac5a092e1521af8a8d112f47d51486f8507a10099ef7b893ee10a60896e5"
   },
@@ -38,86 +31,55 @@
     "all_survivors_base_change": true
   },
   "global_noncm_filter": {
-    "cm_packets_removed": [
-      "3.3.49.1-49.1-a",
-      "3.3.49.1-729.1-b"
-    ],
-    "survivors": [
-      "3.3.49.1-189.1-a",
-      "3.3.49.1-1323.1-a"
-    ],
+    "cm_packets_removed": ["3.3.49.1-49.1-a", "3.3.49.1-729.1-b"],
+    "survivors": ["3.3.49.1-189.1-a", "3.3.49.1-1323.1-a"],
     "count": 2,
     "all_survivors_non_cm": true
+  },
+  "even_conductor_at7_filter": {
+    "allowed_e7": [2, 3],
+    "packet_removed": "3.3.49.1-189.1-a",
+    "removed_packet_exponent_pair": [1, 1],
+    "survivors": ["3.3.49.1-1323.1-a"],
+    "count": 1,
+    "reason": "in the even branch q=7 does not divide b*c, so Table 3.5 permits only e7=2 or 3"
   },
   "even_7unit_local_type_filter": {
     "packet_removed": "3.3.49.1-1323.1-a",
     "reason": "potentially good HGM residual inertia is prime to 5, while the candidate Tate inertia contains an element of order 5",
-    "survivors": [
-      "3.3.49.1-189.1-a"
-    ],
-    "count": 1
+    "survivors": [],
+    "count": 0
   },
   "branch_filters": {
     "odd_branch": {
       "source_condition": "3 does not divide A*B*C",
-      "local_conductor_at3": [
-        2,
-        3
-      ],
-      "pre_noncm_survivors": [
-        "3.3.49.1-729.1-b"
-      ],
+      "pre_noncm_survivors": ["3.3.49.1-729.1-b"],
       "low_level_survivors": [],
       "count": 0,
       "conclusion": "the complete LMFDB low-level odd branch is empty"
     },
     "even_branch": {
-      "source_condition": "30 divides C",
-      "local_type_at3": "special",
-      "local_conductor_at3": [
-        1,
-        2
-      ],
-      "pre_7unit_local_type_survivors": [
-        "3.3.49.1-189.1-a",
-        "3.3.49.1-1323.1-a"
-      ],
-      "low_level_survivors": [
-        "3.3.49.1-189.1-a"
-      ],
-      "count": 1
-    },
-    "even_branch_7_unit": {
-      "source_condition": "30 divides C and 7 does not divide C",
-      "local_conductor_at7": [
-        2,
-        3
-      ],
-      "pre_local_type_survivors": [
-        "3.3.49.1-1323.1-a"
-      ],
+      "source_condition": "30 divides C and 7 does not divide A*B",
+      "pre_conductor_survivors": ["3.3.49.1-189.1-a", "3.3.49.1-1323.1-a"],
+      "post_conductor_survivors": ["3.3.49.1-1323.1-a"],
       "low_level_survivors": [],
       "count": 0,
-      "conclusion": "the complete LMFDB low-level even 7-unit branch is empty"
+      "conclusion": "the complete LMFDB low-level even branch is empty"
     },
-    "even_branch_7_divides_C": {
-      "source_condition": "30 divides C and 7 divides C",
-      "local_conductor_at7": [
-        1
-      ],
-      "low_level_survivors": [
-        "3.3.49.1-189.1-a"
-      ],
-      "count": 1
+    "all_branches": {
+      "low_level_survivors": [],
+      "count": 0,
+      "conclusion": "the complete degree-three LMFDB range through level norm 2059 is empty for a primitive (3,5,7) solution"
     }
   },
   "source_dependencies": {
     "lmfdb_completeness": "degree-three Hilbert newforms complete through level norm 2059",
-    "local_conductor": "arXiv:2512.17845v1, Table 3.2, Remark 3.8, Table 3.5",
-    "cm_support": "arXiv:2512.17845v1, Proposition 5.8, plus Mihailescu's Catalan theorem",
-    "even_7unit_local_type": "arXiv:2512.17845v1, Proposition 3.10, Corollary 3.11 and Proposition 3.14, plus Tate-curve ramification and LMFDB curve 1323.1-a6",
+    "local_conductor": "arXiv:2512.17845v1, Tables 3.2 and 3.5",
+    "cm_support": "arXiv:2512.17845v1, Proposition 5.8, plus Mihailescu Catalan theorem",
+    "even_conductor_correction": "Research/Signature357/mod5_even_conductor_at7.json",
+    "even_7unit_local_type": "Research/Signature357/mod5_even_7unit_local_type.json",
     "dichotomy": "Dahmen--Siksek (3,5,7) branch theorem",
-    "nonclaim": "does not enumerate the remaining eight levels above 2059 and does not prove nonexistence"
+    "nonclaim": "does not enumerate the remaining branch-valid levels above 2059 and does not prove nonexistence"
   },
-  "certificate_sha256": "e2e098e8a1d3f6c30ddd978ae3038e88cdaf15db0b3f914db4cf5c611a5ff1a0"
+  "certificate_sha256": "b49b9c6a639ae5fb9fd190255a71046ffd931b31c3344e639367e67bdc5aa10f"
 }

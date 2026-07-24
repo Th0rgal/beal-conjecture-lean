@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "literature-assisted-branch-valid-mod5-level-frontier",
+  "equation": "A^3+B^5=C^7",
+  "field": {
+    "name": "K7=Q(zeta_7)^+",
+    "prime_norms": {"p3": 27, "p7": 7}
+  },
+  "source_dependencies": {
+    "dichotomy": "Dahmen--Siksek branch theorem",
+    "prime3": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Table 3.2 and the prime-to-5 local-type reduction argument",
+    "prime7": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Table 3.5",
+    "even_conductor_correction": "Research/Signature357/mod5_even_conductor_at7.json"
+  },
+  "branches": {
+    "even": {
+      "conditions": ["30 divides C", "7 does not divide A*B"],
+      "possible_e3": [0, 1, 2],
+      "possible_e7": [2, 3],
+      "reason": "the special type at 3 may lose its extension class modulo 5, while q does not divide b*c forces the Table 3.5 exponents 2 or 3 at 7"
+    },
+    "odd": {
+      "conditions": ["C odd", "3 does not divide A*B*C", "5 does not divide A*C", "7 divides A"],
+      "possible_e3": [2, 3],
+      "possible_e7": [0, 1, 2],
+      "reason": "the exact supercuspidal types at 3 have conductor 2 or 3; Table 3.5 bounds the exponent at 7 by 2 when 7 divides the paper variable c=A"
+    }
+  },
+  "levels": [
+    {"exponent_pair": [0, 2], "level_norm": 49, "branches": ["even"]},
+    {"exponent_pair": [0, 3], "level_norm": 343, "branches": ["even"]},
+    {"exponent_pair": [1, 2], "level_norm": 1323, "branches": ["even"]},
+    {"exponent_pair": [1, 3], "level_norm": 9261, "branches": ["even"]},
+    {"exponent_pair": [2, 0], "level_norm": 729, "branches": ["odd"]},
+    {"exponent_pair": [2, 1], "level_norm": 5103, "branches": ["odd"]},
+    {"exponent_pair": [2, 2], "level_norm": 35721, "branches": ["even", "odd"]},
+    {"exponent_pair": [2, 3], "level_norm": 250047, "branches": ["even"]},
+    {"exponent_pair": [3, 0], "level_norm": 19683, "branches": ["odd"]},
+    {"exponent_pair": [3, 1], "level_norm": 137781, "branches": ["odd"]},
+    {"exponent_pair": [3, 2], "level_norm": 964467, "branches": ["odd"]}
+  ],
+  "summary": {
+    "level_count": 11,
+    "level_norms": [49, 343, 729, 1323, 5103, 9261, 19683, 35721, 137781, 250047, 964467],
+    "maximum_level_norm": 964467,
+    "previous_global_level_count": 16,
+    "previous_global_maximum_norm": 6751269,
+    "older_coarse_level_count": 24,
+    "older_coarse_maximum_norm": 4921675101,
+    "unproved_nine_level_refinement": "removing exponent pairs (0,2) and (0,3) would require proving that the even-branch special extension class cannot vanish modulo 5"
+  },
+  "nonclaim": "the conductor tables, local-type preservation and branch theorem are literature inputs; the frontier does not enumerate the newforms or prove nonexistence",
+  "certificate_sha256": "57346c10f74c0c877ab318bcbf05e044fd52451a2a9628061bd3ffe13fa4b6d5"
+}
