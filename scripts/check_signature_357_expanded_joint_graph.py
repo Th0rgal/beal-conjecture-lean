@@ -48,22 +48,29 @@ def validate(data:dict[str,Any])->tuple[str,list[list[int]]]:
     return data['certificate_sha256'],survivors
 
 def self_test()->None:
-    if not MANIFEST.exists():print('expanded graph result not present yet');return
-    base=load(MANIFEST);validate(base)
-    bad=copy.deepcopy(base);bad['records'][0]['pairs'][0]['compatible']=not bad['records'][0]['pairs'][0]['compatible'];bad['certificate_sha256']=digest(bad)
-    try:validate(bad)
-    except CertificateError:pass
-    else:raise RuntimeError('checker accepted a forged compatibility flag')
     with tempfile.NamedTemporaryFile('w',delete=False) as f:f.write('{"x":1,"x":2}');path=pathlib.Path(f.name)
     try:
         try:load(path)
         except CertificateError:pass
         else:raise RuntimeError('duplicate keys accepted')
     finally:path.unlink(missing_ok=True)
+    if not MANIFEST.exists():
+        print('expanded graph result absent; manifest-dependent fixtures skipped')
+        print('duplicate-key fixture rejected')
+        return
+    base=load(MANIFEST);validate(base)
+    bad=copy.deepcopy(base);bad['records'][0]['pairs'][0]['compatible']=not bad['records'][0]['pairs'][0]['compatible'];bad['certificate_sha256']=digest(bad)
+    try:validate(bad)
+    except CertificateError:pass
+    else:raise RuntimeError('checker accepted a forged compatibility flag')
     print('expanded two-Frey graph negative fixtures rejected')
 
 def main()->int:
     parser=argparse.ArgumentParser();parser.add_argument('--self-test',action='store_true');args=parser.parse_args()
     if args.self_test:self_test();return 0
+    if not MANIFEST.exists():
+        print('expanded two-Frey graph unresolved: no verified result artifact is present')
+        print('  nonclaim: no modular pair is eliminated by this optional replay')
+        return 0
     certificate,survivors=validate(load(MANIFEST));print('expanded two-Frey graph valid');print('  surviving modular pairs:',survivors);print('  certificate sha256:',certificate);return 0
 if __name__=='__main__':raise SystemExit(main())
