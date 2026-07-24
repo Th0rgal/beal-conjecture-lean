@@ -53,6 +53,12 @@ jobs:
       - run: python3 scripts/check_signature_357_mod5_hecke_filter.py
       - run: python3 scripts/check_signature_357_prime7_local.py --self-test
       - run: python3 scripts/check_signature_357_prime7_local.py
+      - run: python3 scripts/fetch_signature_357_lmfdb.py > lmfdb-low-levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-low-levels
+          path: lmfdb-low-levels.json
+          if-no-files-found: error
       - run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json
       - uses: actions/upload-artifact@v4
         with:
