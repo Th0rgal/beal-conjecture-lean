@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "source": {
+    "arxiv": "1103.1979v1",
+    "section": "5",
+    "lemma": "5.1"
+  },
+  "search_bounds": {
+    "max_2_adic_power": 14,
+    "max_3_adic_power": 9,
+    "primitive_modulus": 256
+  },
+  "expected": {
+    "no_Q2": [1, 4, 9, 10, 11, 13, 14, 18, 25, 26, 33, 35, 39, 45, 46, 48],
+    "no_Q3": [20, 42],
+    "primitive_mod_256_empty": [7, 8, 12, 19, 21, 22, 30, 34],
+    "surviving_indices": [2, 3, 5, 6, 15, 16, 17, 23, 24, 27, 28, 29, 31, 32, 36, 37, 38, 40, 41, 43, 44, 47, 49]
+  }
+}
