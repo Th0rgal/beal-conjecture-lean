@@ -21,6 +21,23 @@ jobs:
           fetch-depth: 0
       - run: python3 scripts/check_research_checkpoints.py
       - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+      - name: Install PARI/GP research producer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce coupled mod-5/mod-7 HGM traces
+        continue-on-error: true
+        run: >-
+          python3 scripts/produce_signature_357_joint_hgm.py
+          > joint-hgm-traces.json
+          2> joint-hgm-traces.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-joint-hgm-traces
+          path: |
+            joint-hgm-traces.json
+            joint-hgm-traces.err
+          if-no-files-found: error
       - name: Fetch LMFDB SQL-mirror low-level frontier
         continue-on-error: true
         run: python3 scripts/fetch_signature_357_lmfdb_sql.py > lmfdb-low-levels-sql.json 2> lmfdb-low-levels-sql.err
