@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Read only the decisive mod-7 zero-trace predicates for packets 24 and 28.
+"""Read the decisive mod-7 zero-trace predicates for packets 24 and 28.
 
-The odd e3=2 block has been reduced to fixed-7 packets 24 and 28 at level
-(2,3).  Semilinear descent and the coupled mod-5 calculation force the base
-Hecke trace to be zero modulo 7 at the inert rational primes 13 and 43.
+Semilinear descent and the coupled mod-5 calculation force the fixed-7 base
+Hecke trace to be zero modulo 7 at the inert rational primes 13 and 43.  The
+public calculator previously constructed explicit algebraic eigenvalue fields;
+that exceeded the memory limit at 43.  This producer instead takes the
+characteristic polynomial of the Hecke operator on each already isolated
+Hecke-irreducible packet.  A zero root modulo 7 is exactly the necessary packet
+spectrum condition, without constructing an eigenvalue field.
 
-This producer deliberately prints only coefficient lists and boolean gcd tests;
-it avoids pretty-printed polynomial wrapping.  A failed request is explicit and
-is never interpreted as an elimination.
+The request prints coefficient lists and boolean zero-root tests only.  A failed
+request is explicit and is never interpreted as an elimination.
 """
 from __future__ import annotations
 
@@ -32,9 +35,10 @@ class ResearchError(RuntimeError):
 
 
 def digest(value: Any) -> str:
-    return hashlib.sha256(
-        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
-    ).hexdigest()
+    encoded = json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def form_metadata(page: str) -> tuple[str, dict[str, str]]:
@@ -99,10 +103,11 @@ M := HilbertCuspForms(K,3^2*I5^3);
 decomp := NewformDecomposition(NewSubspace(M));
 printf "PACKET_COUNT=%o\n",#decomp;
 for index in [24,28] do
-  form := Eigenform(decomp[index]);
+  packet := decomp[index];
+  printf "PACKET_DIM|%o|%o\n",index,Dimension(packet);
   for ell in [13,43] do
     I := Factorisation(ell*OK)[1][1];
-    P := MinimalPolynomial(HeckeEigenvalue(form,I));
+    P := CharacteristicPolynomial(HeckeOperator(packet,I));
     P7 := R7![F7!Coefficient(P,j) : j in [0..Degree(P)]];
     G := GreatestCommonDivisor(P7,X);
     printf "ZERO_TEST|%o|%o|%o|",index,ell,Degree(P);
@@ -116,22 +121,34 @@ end for;
 def main() -> int:
     code = magma_code()
     body: dict[str, Any] = {
-        "schema_version": 1,
-        "status": "public-Magma decisive fixed-7 zero-trace tests",
+        "schema_version": 2,
+        "status": "public-Magma decisive fixed-7 packet-matrix zero-trace tests",
         "calculator": CALCULATOR_URL,
         "level_exponents": [2, 3],
         "level_norm": 10125,
         "packets": PACKETS,
         "primes": PRIMES,
-        "required_condition": "each surviving packet must have base trace 0 modulo 7 at both inert primes",
+        "required_condition": (
+            "each surviving packet must have base trace 0 modulo 7 at both "
+            "inert primes"
+        ),
+        "trace_polynomial_kind": (
+            "characteristic polynomial of the Hecke operator on the "
+            "Hecke-irreducible packet"
+        ),
         "input_bytes": len(code.encode()),
         "rows": [],
     }
+    output = ""
     try:
         output = submit(code)
         count = re.search(r"PACKET_COUNT=(\d+)", output)
         if count is None or int(count.group(1)) != 35:
             raise ResearchError("unexpected packet count")
+        packet_dimensions = {
+            packet: dimension
+            for packet, dimension in re.findall(r"PACKET_DIM\|(24|28)\|(\d+)", output)
+        }
         pattern = re.compile(r"ZERO_TEST\|(24|28)\|(13|43)\|(\d+)\|([^|\n]*)\|(\d+)")
         rows = []
         for match in pattern.finditer(output):
@@ -143,6 +160,7 @@ def main() -> int:
             rows.append(
                 {
                     "packet": packet,
+                    "packet_dimension": int(packet_dimensions[str(packet)]),
                     "prime": prime,
                     "trace_polynomial_degree": degree,
                     "trace_coefficients_low_to_high": coefficients,
@@ -164,7 +182,7 @@ def main() -> int:
                     )
                     for packet in PACKETS
                 },
-                "output_tail": output[-1600:],
+                "output_tail": output[-5000:],
             }
         )
     except Exception as exc:
@@ -172,6 +190,7 @@ def main() -> int:
             {
                 "request_status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
+                "output_tail": output[-8000:],
             }
         )
     result = dict(body)
