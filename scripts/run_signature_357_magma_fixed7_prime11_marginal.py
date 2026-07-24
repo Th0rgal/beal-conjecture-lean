@@ -2,20 +2,18 @@
 """Test fixed-7 level (3,3) first at the cheapest auxiliary prime 11.
 
 The full superspecial computation first constructs T_7 on a 1024-dimensional
-newspace and exceeds the public calculator memory limit.  This fail-closed
-probe instead applies only the necessary local HGM condition at the split
-rational prime 11.  It deliberately omits the superspecial and semilinear
-conditions, so a zero result is still decisive while a positive result is only
-an enlarged necessary survivor space.
+newspace and exceeds the public calculator memory limit. This fail-closed probe
+instead applies only the necessary local HGM condition at the split rational
+prime 11. It deliberately omits the superspecial and semilinear conditions, so
+a zero result is still decisive while a positive result is only an enlarged
+necessary survivor space.
 
-To reduce memory pressure, the producer:
-
-* clears stored definite-Hecke precomputation before T_11;
-* reduces the rational Hecke matrix modulo 7 immediately;
-* deletes the rational matrix and the prime-11 precomputation;
-* factors the permitted trace polynomial over F_7;
-* computes kernels factor-by-factor.  At prime 11 every squarefree factor has
-  degree at most two, so only T and T^2 are required.
+The Hilbert modular-form interface does not expose the sparse ``HeckeImages``
+intrinsic of ``ModFrmAlg``. It does expose the supported ``LowMemory`` Hecke
+parameter. The producer therefore clears stored definite-Hecke precomputation,
+computes T_11 with ``LowMemory:=true``, reduces it modulo 7 immediately, deletes
+the rational matrix and the prime cache, and tests the squarefree local factors
+one at a time. At prime 11 every factor has degree at most two.
 """
 from __future__ import annotations
 
@@ -49,7 +47,7 @@ UnionPolynomial := function(row)
   for Q in row[3] do P *:= Evaluate(Red(Q),U); end for;
   for Q in row[4] do P *:= Evaluate(Red(Q),U); end for;
   P *:= (X-F7!(q+1))*(X+F7!(q+1));
-  return P;
+  return SquarefreePart(P);
 end function;
 printf "PHASE=space-start\n";
 M0:=HilbertCuspForms(K,3^3*I5^3);
@@ -60,9 +58,9 @@ O:=QuaternionOrder(M);
 DeleteHeckePrecomputation(O);
 printf "PHASE=old-hecke-cache-cleared\n";
 I:=Factorisation(Row[1]*OK)[1][1];
-printf "PHASE=T11-rational-start\n";
-TQ:=HeckeOperator(M,I);
-printf "PHASE=T11-rational-ready\n";
+printf "PHASE=T11-low-memory-start\n";
+TQ:=HeckeOperator(M,I : LowMemory:=true, UseLLL:=false, ThetaPrec:=0);
+printf "PHASE=T11-low-memory-ready\n";
 T:=Matrix(F7,TQ);
 delete TQ;
 DeleteHeckePrecomputation(O,I);
@@ -104,7 +102,7 @@ def main() -> int:
     rows = base.rows_by_prime(base.fetch_data())
     code = magma_code(rows[PRIME])
     record: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "fixed-7 level-(3,3) low-memory prime-11 marginal residual sieve",
         "calculator": base.CALCULATOR_URL,
         "candidate_blob_sha1": base.EXPECTED_DATA_BLOB,
@@ -117,9 +115,14 @@ def main() -> int:
             "superspecial T_7 kernel",
             "semilinear relation between the two primes above 11",
         ],
+        "matrix_construction": (
+            "ModFrmHil HeckeOperator with LowMemory=true, UseLLL=false and "
+            "automatic theta precision"
+        ),
         "memory_policy": (
-            "delete definite-Hecke precomputation before and after T_11; "
-            "delete the rational matrix immediately after reduction modulo 7"
+            "clear definite-Hecke precomputation before T_11; reduce the "
+            "low-memory rational operator immediately modulo 7; delete the "
+            "rational matrix and prime cache before finite-field linear algebra"
         ),
         "soundness": (
             "final dimension zero eliminates the entire fixed-7 level-(3,3) "
