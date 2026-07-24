@@ -2,7 +2,7 @@
   "branch_status": {
     "even": {
       "certificate_path": "Research/Signature357/even_branch_complete_closure.json",
-      "certificate_sha256": "b2d2bbf1dc1c6b3d7407887c21951c0284616fb31ef51a661bfb6dcd9d733bcd",
+      "certificate_sha256": "c79cd8cc222ae15e279f842675ce25be83084d2bf010402229a6871bd2441301",
       "conclusion": "empty"
     },
     "odd": {
@@ -36,7 +36,7 @@
       "remaining_level_norms": [35721, 964467]
     }
   },
-  "certificate_sha256": "b50d3729e90b549e5bf26b9d249ac04e9f07f4ef5ac7d5df039d12d94bdb3ef9",
+  "certificate_sha256": "b86bbc078017d50e1c507897d088008e9b11384f92197f781702aabe4f9b907b",
   "compression": {
     "even_branch_levels_removed_by_complete_closure": [189, 5103],
     "final_remaining_level_count": 2,

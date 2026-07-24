@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "30ce0c0340f6888ecf25ffa247b80071b1f2f0ab3aff5d768e09eb6febf60597",
+  "certificate_sha256": "2cc5ced90006e274fabef257decde93fb80cf4356594e0d5ce7be6b8693939c8",
   "consequences": {
     "13": "for a rational packet: trace 0 forces 13|C; trace +/-1 forces 13|B; trace +/-2 is generic; 13|A is impossible",
     "29": "for a rational packet: trace +/-2 forces 29|C; trace 0 forces 29|A*B; traces +/-1 are impossible",
@@ -18,6 +18,6 @@
   },
   "regime_meaning": {"generic": "ell does not divide A*B*C", "infinity": "ell divides A", "multiplicative": "ell divides B", "zero": "ell divides C"},
   "schema_version": 1,
-  "source": {"primes": [13, 29, 41, 43], "producer": "scripts/produce_signature_357_mod5_complete_local.py", "producer_output_sha256": "c20e4d0d046df579a94e6e344e20a3bf2a87a563eb31d8ab7c58351b1d242e34", "residual_characteristic": 5},
+  "source": {"primes": [13, 29, 41, 43], "producer": "scripts/produce_signature_357_mod5_complete_local.py", "producer_output_sha256": "c23020b933a36bbc9c0f10a81269b45428b055274d90223965ad1d605c3baf97", "residual_characteristic": 5},
   "status": "finite-rational-Hecke-trace-regime-certificate"
 }

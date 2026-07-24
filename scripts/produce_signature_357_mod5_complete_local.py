@@ -85,7 +85,7 @@ EmitPrime(p0)=
   print("META|",p0,"|",fK,"|",fF);
 
   for(u=2,p0-1,
-    A=algdep(p0^fF*hgm(u,[1/7,-1/7],[1/3,-1/3],p0,fF),3);
+    A=algdep(p0^fF*hgm(lift(1/Mod(u,p0)),[1/7,-1/7],[1/3,-1/3],p0,fF),3);
     A=NormPoly(A);
     print("GENERIC|",p0,"|",u,"|",A)
   );

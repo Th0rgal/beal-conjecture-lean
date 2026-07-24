@@ -20,6 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: python3 scripts/check_research_checkpoints.py
+      - uses: leanprover/lean-action@v1
       - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
       - name: Install PARI/GP research producer
         run: |
@@ -173,7 +174,6 @@ jobs:
       - run: python3 scripts/check_signature_357_mod5_hecke_filter.py
       - run: python3 scripts/check_signature_357_prime7_local.py --self-test
       - run: python3 scripts/check_signature_357_prime7_local.py
-      - uses: leanprover/lean-action@v1
       # docgen-action@v1 only builds and deploys docs on push events, and its
       # Pages deployment 404s while GitHub Pages is disabled on this repo.
       # Re-add `leanprover-community/docgen-action@v1` once Pages is enabled.

@@ -3,7 +3,7 @@
     "the fixed-7 reducibility character is psi_(2,0)",
     "41 does not divide B"
   ],
-  "certificate_sha256": "a53f915ebfff36c7078b0d507a77d3bc56449c2f7b353a58cbd3bd51c89cecde",
+  "certificate_sha256": "34559aeee489409e5c94d984b22fb0a67f09e9368d14dbc1a25c7738a8fd5a44",
   "equation": "A^3+B^5=C^7",
   "forced_divisor_of_C": 98369618750130,
   "inputs": {
@@ -13,7 +13,7 @@
     "global_fixed7_path": "Research/Signature357/fixed7_global_reducibility_sieve.json",
     "global_fixed7_sha256": "d09fafd74cb4513067372721b15327e23d386e26a87933fee744240458cdd46d",
     "rational_two_frey_path": "Research/Signature357/even_rational_two_frey_sieve.json",
-    "rational_two_frey_sha256": "e5cb118804cf1fadcd8d1c19b7a2feaa235ef759423550e31b84ca26408da3ad"
+    "rational_two_frey_sha256": "67f3c3284f1d8e0e7574f03d2d8cda3025683a8f545bb4b072690526abc2cdf6"
   },
   "nonclaim": "the prime-7 Hasse step imports Manin's congruence and the ordinary finite-flat identification; non-rational coefficient-field packets require polynomial-gcd rather than rational-trace tests; this is not a proof of the full signature",
   "prime_factors_for_C": [

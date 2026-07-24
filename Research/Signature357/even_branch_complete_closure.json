@@ -19,7 +19,7 @@
     ],
     "only_remaining_level_norm": 5103
   },
-  "certificate_sha256": "b2d2bbf1dc1c6b3d7407887c21951c0284616fb31ef51a661bfb6dcd9d733bcd",
+  "certificate_sha256": "c79cd8cc222ae15e279f842675ce25be83084d2bf010402229a6871bd2441301",
   "conclusion": "there is no primitive positive solution in the Dahmen--Siksek even branch",
   "equation": "A^3+B^5=C^7",
   "impact": "the full (3,5,7) problem is reduced to the odd branch",
@@ -91,7 +91,7 @@
     "fixed7_hasse_sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1",
     "low_level_closure_path": "Research/Signature357/low_level_complete_closure.json",
     "low_level_closure_sha256": "8386331173c63f51a2fb9357216e0fb5098ff5c3104d7df706bd05c677ea7575",
-    "mod5_local_producer_certificate_sha256": "c20e4d0d046df579a94e6e344e20a3bf2a87a563eb31d8ab7c58351b1d242e34"
+    "mod5_local_producer_certificate_sha256": "c23020b933a36bbc9c0f10a81269b45428b055274d90223965ad1d605c3baf97"
   },
   "status": "literature-assisted-complete-even-branch-closure"
 }
