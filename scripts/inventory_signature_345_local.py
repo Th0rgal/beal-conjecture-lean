@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """Emit the raw local-obstruction inventory for reconstructed Edwards IDs.
 
-This diagnostic is intentionally separate from the proof checker. It computes
-local profiles using the same exact arithmetic, but does not attach paper C_i
-labels to reconstructed Table-1 IDs. The output is used to construct and audit
-the missing source-index permutation.
+This diagnostic is intentionally separate from a proof checker. It computes
+finite-modulus profiles without attaching paper `C_i` labels to raw Table-1 IDs.
+The output is used to construct and audit the missing source-index permutation.
 """
 
 from __future__ import annotations
 
 import json
 
-import check_signature_345_local as local
+import signature345_local_utils as local
 
 
 def main() -> int:
