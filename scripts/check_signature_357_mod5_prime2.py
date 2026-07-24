@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Replay the mod-5 prime-2 character obstruction for signature (3,5,7).
+"""Replay the parity-complete mod-5 prime-2 obstruction for signature (3,5,7).
 
-The checker reconstructs the finite-field Jacobi arithmetic over F_64, the
-Jacobi-motive Tate factor, the finite-flat unit-signature calculation over
-F_125, the class-number-one bound for Q(zeta_7)^+, and the final Frobenius
-character contradiction.  Four representation-theoretic inputs remain
-explicitly imported and are not disguised as Python computations.
+For a primitive solution A^3+B^5=C^7 with B odd, exactly one of A,C is even.
+The plus HGM H((1/7,-1/7),(1/3,-1/3)|C^7/A^3) is therefore in the
+zero or infinity degeneration at 2. The checker reconstructs both exact Jacobi
+traces over F_64, the finite-flat unit-signature calculation over F_125, the
+class-number-one argument for Q(zeta_7)^+, and the resulting absolute
+irreducibility contradiction.
+
+Five representation-theoretic inputs are kept explicit in the manifest; this
+program checks their arithmetic consequences but does not reprove them.
 """
-
 from __future__ import annotations
 
 import argparse
@@ -40,8 +43,7 @@ def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 def load_json(path: pathlib.Path) -> dict[str, Any]:
     try:
         data = json.loads(
-            path.read_text(encoding="utf-8"),
-            object_pairs_hook=reject_duplicate_keys,
+            path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys
         )
     except (OSError, json.JSONDecodeError) as exc:
         raise CertificateError(str(exc)) from exc
@@ -62,7 +64,7 @@ def canonical_sha256(data: dict[str, Any]) -> str:
     payload.pop("certificate_sha256", None)
     encoded = json.dumps(
         payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    ).encode()
     return hashlib.sha256(encoded).hexdigest()
 
 
@@ -73,8 +75,7 @@ GF64_MODULUS = (1 << 6) | (1 << 1) | 1
 
 def gf64_mul(left: int, right: int) -> int:
     result = 0
-    a = left
-    b = right
+    a, b = left, right
     while b:
         if b & 1:
             result ^= a
@@ -82,7 +83,7 @@ def gf64_mul(left: int, right: int) -> int:
         a <<= 1
         if a & (1 << GF64_DEGREE):
             a ^= GF64_MODULUS
-    return result & ((1 << GF64_DEGREE) - 1)
+    return result & 63
 
 
 def gf64_pow(base: int, exponent: int) -> int:
@@ -125,12 +126,12 @@ def discrete_log_table(generator: int) -> dict[int, int]:
 def jacobi_coefficients(
     exponent_a: int, exponent_b: int, logs: dict[int, int]
 ) -> list[int]:
-    """Return coefficients in Z[zeta_21], indexed by powers 0..20."""
+    """Ordinary Jacobi sum in Z[zeta_21], indexed by powers 0..20."""
     coefficients = [0] * 21
     for value in range(64):
-        if value == 0 or value == 1:
+        if value in (0, 1):
             continue
-        one_minus = value ^ 1  # characteristic two
+        one_minus = value ^ 1
         first = logs[value] % 21
         second = logs[one_minus] % 21
         index = (exponent_a * first + exponent_b * second) % 21
@@ -157,6 +158,21 @@ def reduce_monic_polynomial(
     return out
 
 
+def add_polynomials(values: list[list[int]]) -> list[int]:
+    if not values:
+        raise CertificateError("empty polynomial sum")
+    length = len(values[0])
+    if any(len(value) != length for value in values):
+        raise CertificateError("incompatible polynomial lengths")
+    return [sum(value[index] for value in values) for index in range(length)]
+
+
+def scalar_polynomial(value: list[int]) -> int:
+    if value[1:] != [0] * (len(value) - 1):
+        raise CertificateError(f"expected rational integer in Q(zeta_21), got {value}")
+    return value[0]
+
+
 # F_125 = F_5[theta]/(theta^3+theta^2-2theta-1).
 F125 = tuple[int, int, int]
 F125_ONE: F125 = (1, 0, 0)
@@ -168,7 +184,7 @@ def f125_mul(left: F125, right: F125) -> F125:
     for i, a in enumerate(left):
         for j, b in enumerate(right):
             raw[i + j] = (raw[i + j] + a * b) % 5
-    # theta^3 = 1 + 2 theta - theta^2 = 1+2 theta+4 theta^2.
+    # theta^3 = 1+2*theta-theta^2.
     for degree in range(4, 2, -1):
         coefficient = raw[degree] % 5
         if coefficient:
@@ -196,7 +212,51 @@ def f125_pow(value: F125, exponent: int) -> F125:
     return result
 
 
-def validate(data: dict[str, Any]) -> str:
+def verify_trace_branch(
+    branch: dict[str, Any], logs: dict[int, int], phi21: list[int], q: int
+) -> tuple[int, int]:
+    exact_keys(
+        branch,
+        {
+            "name",
+            "parity_condition",
+            "parameter_behavior",
+            "formula",
+            "jacobi_character_exponents",
+            "expected_jacobi_sum",
+            "weight2_trace",
+            "weight2_trace_mod5",
+        },
+        "trace branch",
+    )
+    exponents = branch["jacobi_character_exponents"]
+    if not isinstance(exponents, list) or len(exponents) != 2:
+        raise CertificateError("each degeneration must contain two Jacobi sums")
+    reduced = [
+        reduce_monic_polynomial(
+            jacobi_coefficients(pair[0], pair[1], logs), phi21
+        )
+        for pair in exponents
+    ]
+    total = add_polynomials(reduced)
+    if total != branch["expected_jacobi_sum"]:
+        raise CertificateError(f"{branch['name']} Jacobi sum mismatch: {total}")
+    integer_sum = scalar_polynomial(total)
+    # Formula (30) or (31): outer Jacobi factor q, followed by the weight-two
+    # Tate multiplier q, so the integral weight-two trace is -integer_sum.
+    normalized = -Fraction(integer_sum, q)
+    weight2_trace = q * normalized
+    if (
+        weight2_trace.denominator != 1
+        or weight2_trace.numerator != branch["weight2_trace"]
+    ):
+        raise CertificateError(f"{branch['name']} weight-two trace mismatch")
+    if weight2_trace.numerator % 5 != branch["weight2_trace_mod5"]:
+        raise CertificateError(f"{branch['name']} residual trace mismatch")
+    return weight2_trace.numerator, weight2_trace.numerator % 5
+
+
+def validate(data: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     exact_keys(
         data,
         {
@@ -208,16 +268,45 @@ def validate(data: dict[str, Any]) -> str:
             "finite_fields",
             "trace_certificate",
             "character_certificate",
+            "conclusion",
             "certificate_sha256",
         },
         "manifest",
     )
-    if data["schema_version"] != 1:
-        raise CertificateError("schema_version must equal 1")
+    if data["schema_version"] != 2:
+        raise CertificateError("schema_version must equal 2")
     if data["status"] != "research-certificate-with-imported-local-lemmas":
         raise CertificateError("unexpected certificate status")
-    if not isinstance(data["imported_lemmas"], list) or len(data["imported_lemmas"]) != 4:
-        raise CertificateError("expected exactly four imported lemmas")
+    if not isinstance(data["imported_lemmas"], list) or len(data["imported_lemmas"]) != 5:
+        raise CertificateError("expected exactly five imported lemmas")
+
+    scope = data["scope"]
+    exact_keys(
+        scope,
+        {
+            "equation",
+            "hypotheses",
+            "orientation",
+            "parameter",
+            "field",
+            "residual_prime",
+            "claim",
+        },
+        "scope",
+    )
+    if scope != {
+        "equation": "A^3+B^5=C^7",
+        "hypotheses": ["pairwise coprime positive A,B,C", "B odd"],
+        "orientation": "(-C)^7+B^5+A^3=0",
+        "parameter": "t=C^7/A^3",
+        "field": "K7=Q(zeta_7)^+",
+        "residual_prime": 5,
+        "claim": "the plus mod-5 HGM representation is absolutely irreducible",
+    }:
+        raise CertificateError("scope metadata mismatch")
+    parity_cases = sorted((A, (A + 1) % 2) for A in (0, 1))
+    if parity_cases != [(0, 1), (1, 0)]:
+        raise CertificateError("B-odd parity cover failed")
 
     source = data["source_audit"]
     exact_keys(
@@ -234,8 +323,9 @@ def validate(data: dict[str, Any]) -> str:
     )
     if (
         source["hypergeometric_paper"] != "arXiv:2412.08804v2"
-        or source["inversion"] != "equation (15)"
-        or "equation (30)" not in source["finite_monodromy_trace"]
+        or source["inversion"]
+        != "equation (15), which swaps the two parameter pairs"
+        or "formulas (30) and (31)" not in source["finite_monodromy_trace"]
         or "Q(zeta_21)" not in source["finite_monodromy_trace"]
     ):
         raise CertificateError("source audit metadata mismatch")
@@ -268,94 +358,82 @@ def validate(data: dict[str, Any]) -> str:
     if multiplicative_order_64(2) != 63:
         raise CertificateError("x is not primitive in the selected F64 model")
     logs = discrete_log_table(2)
-
     phi21 = f64["phi21_ascending"]
     if phi21 != [1, -1, 0, 1, -1, 0, 1, 0, -1, 1, 0, -1, 1]:
         raise CertificateError("incorrect Phi_21 polynomial")
+
+    f125 = fields["F125"]
+    exact_keys(
+        f125,
+        {"characteristic", "degree", "minimal_polynomial_ascending", "theta_order"},
+        "F125",
+    )
+    if f125 != {
+        "characteristic": 5,
+        "degree": 3,
+        "minimal_polynomial_ascending": [4, 3, 1, 1],
+        "theta_order": 31,
+    }:
+        raise CertificateError("unexpected F125 metadata")
+    if any((a**3 + a**2 + 3 * a + 4) % 5 == 0 for a in range(5)):
+        raise CertificateError("selected cubic is reducible over F5")
+    if f125_pow(F125_THETA, 31) != F125_ONE or F125_THETA == F125_ONE:
+        raise CertificateError("theta does not have exact order 31")
 
     trace = data["trace_certificate"]
     exact_keys(
         trace,
         {
-            "inverse_parameter",
-            "valuation_at_2",
-            "unit_reduction",
-            "parameters",
-            "jacobi_character_exponents",
-            "jacobi_values",
             "residue_field_norm",
             "jacobi_motive_factor",
-            "normalized_trace",
             "weight2_tate_multiplier",
-            "weight2_trace",
-            "weight2_trace_mod5",
+            "branches",
         },
         "trace_certificate",
     )
-    if trace["unit_reduction"] != 1:
-        raise CertificateError("the odd unit must reduce to one modulo 2")
-    if trace["jacobi_character_exponents"] != [[-4, -10], [-14, 10]]:
-        raise CertificateError("unexpected Jacobi character exponents")
-
-    values: list[int] = []
-    for exponents in trace["jacobi_character_exponents"]:
-        coefficients = jacobi_coefficients(exponents[0], exponents[1], logs)
-        reduced = reduce_monic_polynomial(coefficients, phi21)
-        if reduced[1:] != [0] * 11:
-            raise CertificateError(
-                f"Jacobi sum does not reduce to an integer: {reduced}"
-            )
-        values.append(reduced[0])
-    if values != trace["jacobi_values"] or values != [8, 8]:
-        raise CertificateError(f"Jacobi values mismatch: {values}")
-
     q = trace["residue_field_norm"]
-    if q != 64:
-        raise CertificateError("the full cyclotomic residue field must have norm 64")
-
-    # Definition 2.3 gives
-    # J0 = -g(-3)g(3)g(7)g(-7)g(0)/(g(10)g(-10)).
-    # In characteristic 2, chi(-1)=1, so g(k)g(-k)=q for k != 0
-    # and g(0)=-1. Hence J0=q.
-    jacobi_motive_factor = ((-1) * q * q * (-1)) // q
-    if jacobi_motive_factor != trace["jacobi_motive_factor"] or jacobi_motive_factor != q:
-        raise CertificateError("Jacobi-motive Tate factor mismatch")
-
-    normalized_trace = -Fraction(sum(values), jacobi_motive_factor)
-    if normalized_trace != Fraction(trace["normalized_trace"]):
-        raise CertificateError(f"normalized trace mismatch: {normalized_trace}")
-    multiplier = trace["weight2_tate_multiplier"]
-    if multiplier != q:
-        raise CertificateError("unexpected weight-2 Tate multiplier")
-    weight2_trace = multiplier * normalized_trace
-    if weight2_trace.denominator != 1 or weight2_trace.numerator != trace["weight2_trace"]:
-        raise CertificateError("weight-2 trace mismatch")
-    if weight2_trace.numerator % 5 != trace["weight2_trace_mod5"]:
-        raise CertificateError("weight-2 residual trace mismatch")
-
-    f125 = fields["F125"]
-    exact_keys(
-        f125,
-        {
-            "characteristic",
-            "degree",
-            "minimal_polynomial_ascending",
-            "theta_order",
-        },
-        "F125",
-    )
     if (
-        f125["characteristic"] != 5
-        or f125["degree"] != 3
-        or f125["minimal_polynomial_ascending"] != [4, 3, 1, 1]
+        q != 64
+        or trace["jacobi_motive_factor"] != q
+        or trace["weight2_tate_multiplier"] != q
     ):
-        raise CertificateError("unexpected F125 metadata")
-    if any((a**3 + a**2 + 3 * a + 4) % 5 == 0 for a in range(5)):
-        raise CertificateError("selected cubic is reducible over F5")
-    if f125_pow(F125_THETA, 31) != F125_ONE or F125_THETA == F125_ONE:
-        raise CertificateError("theta does not have order 31")
-    if f125["theta_order"] != 31:
-        raise CertificateError("unexpected theta order metadata")
+        raise CertificateError("prime-2 normalization metadata mismatch")
+    branches = trace["branches"]
+    if not isinstance(branches, list) or len(branches) != 2:
+        raise CertificateError("expected zero and infinity branches")
+    expected_branch_headers = [
+        (
+            "zero",
+            "A odd and C even",
+            "v_2(t)>0",
+            "formula (30)",
+            [[-4, -10], [-14, 10]],
+        ),
+        (
+            "infinity",
+            "A even and C odd",
+            "v_2(t)<0",
+            "formula (31)",
+            [[-4, 10], [6, -10]],
+        ),
+    ]
+    results: dict[str, int] = {}
+    residual_results: dict[str, int] = {}
+    for branch, header in zip(branches, expected_branch_headers):
+        name, parity, behavior, formula, exponents = header
+        if (
+            branch["name"] != name
+            or branch["parity_condition"] != parity
+            or branch["parameter_behavior"] != behavior
+            or branch["formula"] != formula
+            or branch["jacobi_character_exponents"] != exponents
+        ):
+            raise CertificateError(f"{name} branch metadata mismatch")
+        integral, residual = verify_trace_branch(branch, logs, phi21, q)
+        results[name] = integral
+        residual_results[name] = residual
+    if results != {"zero": -16, "infinity": 9} or set(residual_results.values()) != {4}:
+        raise CertificateError(f"unexpected parity-complete traces: {results}")
 
     character = data["character_certificate"]
     exact_keys(
@@ -369,10 +447,10 @@ def validate(data: dict[str, Any]) -> str:
             "class_number_conclusion",
             "K7_prime_2_norm",
             "F_over_K_residue_degree",
-            "reducible_full_field_equation",
-            "forced_v_mod5",
-            "required_v_power",
-            "actual_v_power_mod5",
+            "full_field_determinant_mod5",
+            "forced_full_field_eigenvalue_mod5",
+            "required_eigenvalue_power",
+            "actual_eigenvalue_power_mod5",
         },
         "character_certificate",
     )
@@ -384,9 +462,8 @@ def validate(data: dict[str, Any]) -> str:
         for signature in itertools.product((0, 1), repeat=3)
         if (84 * sum(s * w for s, w in zip(signature, weights))) % 31 == 0
     ]
-    if allowed != character["allowed_signatures"] or allowed != [[0, 0, 0], [1, 1, 1]]:
+    if allowed != [[0, 0, 0], [1, 1, 1]] or character["allowed_signatures"] != allowed:
         raise CertificateError(f"finite-flat signatures mismatch: {allowed}")
-
     if not (
         character["minkowski_numerator"] == 42
         and character["minkowski_denominator"] == 27
@@ -394,68 +471,83 @@ def validate(data: dict[str, Any]) -> str:
         and character["class_number_conclusion"] == 1
     ):
         raise CertificateError("Minkowski class-number certificate mismatch")
-    if character["K7_prime_2_norm"] != 8 or character["F_over_K_residue_degree"] != 2:
+    if (
+        character["K7_prime_2_norm"] != 8
+        or character["F_over_K_residue_degree"] != 2
+    ):
         raise CertificateError("prime-2 residue-degree metadata mismatch")
-
-    trace_mod5 = trace["weight2_trace_mod5"]
-    determinant_mod5 = (character["K7_prime_2_norm"] ** 2) % 5
+    determinant = (
+        character["K7_prime_2_norm"] ** character["F_over_K_residue_degree"]
+    ) % 5
+    if determinant != 4 or character["full_field_determinant_mod5"] != determinant:
+        raise CertificateError("full-field determinant must be 64=4 mod5")
+    # Both branches have full-field trace 4 mod5, so a reducible characteristic
+    # polynomial is X^2-4X+4=(X-2)^2 over the algebraic closure.
     roots = [
         value
-        for value in range(1, 5)
-        if (value * value - trace_mod5 * value + determinant_mod5) % 5 == 0
+        for value in range(5)
+        if (value * value - 4 * value + determinant) % 5 == 0
     ]
-    if roots != [2]:
-        raise CertificateError(f"unexpected reducible Frobenius roots: {roots}")
-    forced_v = roots[0]
-    if forced_v != character["forced_v_mod5"]:
-        raise CertificateError("forced v metadata mismatch")
+    if roots != [2] or character["forced_full_field_eigenvalue_mod5"] != 2:
+        raise CertificateError(f"unexpected forced full-field eigenvalue: {roots}")
     required_power = 84 // character["F_over_K_residue_degree"]
-    if required_power != character["required_v_power"]:
-        raise CertificateError("required v power mismatch")
-    actual_power = pow(forced_v, required_power, 5)
-    if actual_power != character["actual_v_power_mod5"] or actual_power == 1:
-        raise CertificateError("the final character contradiction was not obtained")
+    actual_power = pow(2, required_power, 5)
+    if (
+        character["required_eigenvalue_power"] != required_power
+        or required_power != 42
+    ):
+        raise CertificateError("required eigenvalue power must be 42")
+    if (
+        character["actual_eigenvalue_power_mod5"] != actual_power
+        or actual_power != 4
+    ):
+        raise CertificateError("the character contradiction 2^42=-1 was not obtained")
 
-    expected_sha = data["certificate_sha256"]
+    expected_conclusion = {
+        "mod5": "B odd implies the residual mod-5 plus HGM is absolutely irreducible",
+        "parity_cover": "B even implies A and C odd, hence C odd and the independent fixed-7 irreducibility theorem applies; every primitive solution has at least one absolutely irreducible Frey representation",
+    }
+    if data["conclusion"] != expected_conclusion:
+        raise CertificateError("conclusion metadata mismatch")
+
     actual_sha = canonical_sha256(data)
-    if expected_sha != actual_sha:
+    if data["certificate_sha256"] != actual_sha:
         raise CertificateError(
-            f"certificate digest mismatch: expected {expected_sha}, got {actual_sha}"
+            f"certificate digest mismatch: expected {data['certificate_sha256']}, got {actual_sha}"
         )
-    return actual_sha
+    return actual_sha, {
+        "weight2_traces": results,
+        "residual_trace": 4,
+        "allowed_signatures": allowed,
+        "forced_eigenvalue": 2,
+        "forced_power": actual_power,
+    }
 
 
 def self_test() -> None:
     base = load_json(DEFAULT_MANIFEST)
-
-    mutated = copy.deepcopy(base)
-    mutated["trace_certificate"]["jacobi_values"][0] = 7
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted a mutated Jacobi sum")
-
-    mutated = copy.deepcopy(base)
-    mutated["character_certificate"]["allowed_signatures"] = [[0, 0, 0]]
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted an incomplete signature list")
-
-    mutated = copy.deepcopy(base)
-    mutated["character_certificate"]["required_v_power"] = 6
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted a weakened character contradiction")
-
-    duplicate = '{"schema_version":1,"schema_version":1}'
+    mutations = [
+        lambda data: data["trace_certificate"]["branches"][1].__setitem__(
+            "weight2_trace", 8
+        ),
+        lambda data: data["trace_certificate"]["branches"][1][
+            "jacobi_character_exponents"
+        ].__setitem__(0, [-4, -10]),
+        lambda data: data["character_certificate"].__setitem__(
+            "allowed_signatures", [[0, 0, 0]]
+        ),
+        lambda data: data["conclusion"].__setitem__("mod5", "Beal is proved"),
+    ]
+    for mutate in mutations:
+        data = copy.deepcopy(base)
+        mutate(data)
+        try:
+            validate(data)
+        except CertificateError:
+            pass
+        else:
+            raise RuntimeError("checker accepted a mutated certificate")
+    duplicate = '{"schema_version":2,"schema_version":2}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -465,11 +557,10 @@ def self_test() -> None:
         except CertificateError:
             pass
         else:
-            raise RuntimeError("checker accepted a duplicate JSON key")
+            raise RuntimeError("checker accepted duplicate JSON keys")
     finally:
         path.unlink(missing_ok=True)
-
-    print("mod-5 prime-2 negative fixtures rejected")
+    print("mod-5 prime-2 parity-cover negative fixtures rejected")
 
 
 def main() -> int:
@@ -480,10 +571,10 @@ def main() -> int:
     if args.self_test:
         self_test()
         return 0
-    digest = validate(load_json(args.manifest))
-    print("mod-5 prime-2 obstruction certificate valid")
+    digest, details = validate(load_json(args.manifest))
+    print("mod-5 prime-2 parity-complete certificate valid")
     print(f"certificate sha256: {digest}")
-    print("conclusion (conditional on imported local lemmas): absolute irreducibility")
+    print(json.dumps(details, sort_keys=True))
     return 0
 
 
