@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "literature-assisted-global-non-CM-reduction",
+  "equation": "A^3+B^5=C^7",
+  "compatible_system": {
+    "orientation": "(-C)^7+B^5+A^3=0",
+    "paper_variables": [
+      "a=-C",
+      "b=B",
+      "c=A",
+      "q=7",
+      "p=5",
+      "r=3"
+    ],
+    "source": "Pacetti--Villagra Torcomian, arXiv:2512.17845v1, Proposition 5.8",
+    "source_statement": "a CM specialization has every prime divisor of the paper variable b in {q,r}"
+  },
+  "branch_support": {
+    "even": {
+      "inputs": [
+        "30 divides C",
+        "7 does not divide A*B",
+        "gcd(A,B,C)=1"
+      ],
+      "conclusion": "3 does not divide B and 7 does not divide B"
+    },
+    "odd": {
+      "inputs": [
+        "3 does not divide A*B*C",
+        "7 divides A",
+        "gcd(A,B,C)=1"
+      ],
+      "conclusion": "3 does not divide B and 7 does not divide B"
+    }
+  },
+  "cm_consequence": {
+    "allowed_prime_support_for_B": [
+      3,
+      7
+    ],
+    "coprime_to": 21,
+    "forced_value": 1,
+    "equation_after_substitution": "C^7-A^3=1"
+  },
+  "catalan_input": {
+    "source": "Mihailescu, Primary Cyclotomic Units and a Proof of Catalan's Conjecture, J. reine angew. Math. 572 (2004)",
+    "theorem": "the only solution X^m-Y^n=1 with X,Y,m,n>1 is 3^2-2^3=1",
+    "bases_are_greater_than_one": true,
+    "exponents": [
+      7,
+      3
+    ],
+    "not_catalan_exception": true
+  },
+  "conclusion": "no hypothetical primitive positive (3,5,7) solution gives a CM specialization of the independent mod-5 HGM",
+  "nonclaim": "the CM-support theorem and Catalan's theorem are literature inputs; this certificate is not a proof of the full signature",
+  "certificate_sha256": "9fbfb91d27d4d1c937c17edde59c0de9df499740f8ad11b31a851f54b4070927"
+}
