@@ -58,7 +58,7 @@ def main() -> int:
     norms = [level for level, _a, _b in LEVELS]
     sql = """
         SELECT label, level_norm, level_ideal, dimension,
-               is_CM, is_base_change, parallel_weight
+               "is_CM", is_base_change, parallel_weight
           FROM hmf_forms
          WHERE field_label = %s
            AND level_norm = ANY(%s)
