@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "8c84d73b5fd8c242ffe265a49615794c436ea725d33b1f312a74454af387dde4",
+  "certificate_sha256": "8b3d99f39e68860710cb7649ffda01f8e40456f21c340289fd2e15033bedfa17",
   "conclusion": "no primitive (3,5,7) solution lowers on the mod-5 side to any Hilbert-newform level of norm at most 2059; the complete LMFDB low-level frontier is empty",
   "fixed7_prime41_obstruction": {
     "base_field": "Q(sqrt(5))",
@@ -95,7 +95,7 @@
     "equation": "A^3+B^5=C^7",
     "fixed7_candidate_source_blob_sha1": "9c96357834f2298b4d91ab97812c38e84b8ef7a2",
     "low_level_filter_path": "Research/Signature357/lmfdb_low_level_filter.json",
-    "low_level_filter_sha256": "e2e098e8a1d3f6c30ddd978ae3038e88cdaf15db0b3f914db4cf5c611a5ff1a0",
+    "low_level_filter_sha256": "fadf1a219227b97ed0a7265dfd64249563a84ac1b7796f6c5512bbe20b546673",
     "mod5_trace_producer": "scripts/produce_signature_357_mod5_complete_local.py",
     "mod5_trace_producer_output_sha256": "fa48486605caa9c9a897566ea3109483615a65b8acbbcac29f13d2ac0bb3ba09",
     "only_preclosure_packet": "3.3.49.1-189.1-a"
