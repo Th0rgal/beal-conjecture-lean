@@ -1,0 +1,38 @@
+name: Signature 357 fixed7 residual level 33
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_residual_space.py"
+      - ".github/workflows/signature357_fixed7_residual_33.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_residual_space.py"
+      - ".github/workflows/signature357_fixed7_residual_33.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  residual:
+    strategy:
+      fail-fast: false
+      matrix:
+        prime: [11, 13, 17, 19, 29, 31, 41, 59, 61, 71]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Filter fixed-7 level (3,3) in the residual Hecke module
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_residual_space.py
+          --prime "${{ matrix.prime }}"
+          > "fixed7-residual-33-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-residual-33-${{ matrix.prime }}
+          path: "fixed7-residual-33-${{ matrix.prime }}.json"
+          if-no-files-found: error
