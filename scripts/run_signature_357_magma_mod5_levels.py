@@ -7,8 +7,8 @@ Besides the marginal local filter, the producer applies coefficient-field-safe
 constraints from the fixed-7 reducibility analysis in the even branch.
 
 The coupled regimes at 13, 29 and 41 are determined on the fixed-7 side before
-inspecting the mod-5 Hecke field.  A separate fixed-7 ray-character sieve forces
-19*71 | C, hence u=C^7/A^3 is the zero specialization at 19 and 71.
+inspecting the mod-5 Hecke field. The strengthened ray-character sieve forces
+19*71*79*89*131 | C, hence u=C^7/A^3 is zero at all five primes.
 """
 from __future__ import annotations
 import argparse, hashlib, html, http.cookiejar, json, pathlib, re, urllib.parse, urllib.request
@@ -16,6 +16,7 @@ from typing import Any
 
 CALCULATOR_URL="https://magma.maths.usyd.edu.au/calc/"
 LEVEL_PAIRS=[(2,1),(1,3),(3,0),(2,2),(3,1),(2,3),(3,2)]
+FORCED_ZERO_PRIMES=[19,71,79,89,131]
 MAX_INPUT=49000
 USER_AGENT="Mozilla/5.0 beal-conjecture-lean-research/1.0"
 class ResearchError(RuntimeError): pass
@@ -57,7 +58,8 @@ def candidate_rows(local:dict[str,Any])->list[tuple[int,list[str],list[str],list
 
 def forced_zero_rows(data:dict[str,Any])->list[tuple[int,list[str],int,int]]:
     result=[]
-    if data.get('primes') != [19,71]: raise ResearchError('forced-zero data must cover exactly 19 and 71')
+    if data.get('schema_version')!=2: raise ResearchError('forced-zero data schema mismatch')
+    if data.get('primes') != FORCED_ZERO_PRIMES: raise ResearchError(f'forced-zero data must cover exactly {FORCED_ZERO_PRIMES}')
     for prime in data['primes']:
         metadata=data['residue_metadata'][str(prime)]
         polynomials=[row['trace_polynomial'] for row in data['zero_rows'] if row['prime']==prime]
@@ -146,6 +148,7 @@ def main()->int:
             text=submit(code); record.update({'status':'completed','space_dimension':parse_int(text,'SPACE_DIMENSION'),'packet_count':parse_int(text,'PACKET_COUNT'),'packet_dimensions':parse_list(text,'PACKET_DIMS'),'norm8_survivors':parse_list(text,'NORM8_SURVIVORS'),'local_survivors':parse_list(text,'LOCAL_SURVIVORS'),'even_coupled_survivors':parse_list(text,'EVEN_COUPLED_SURVIVORS'),'output_tail':text[-1200:]})
         except Exception as exc: record.update({'status':'failed','error':f'{type(exc).__name__}: {exc}'})
         outputs.append(record)
-    body={'schema_version':4,'status':'public-Magma mod-5 high-level packet enumeration with marginal and coefficient-field-safe even-coupled filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'source_forced_zero_data_sha256':forced_data['certificate_sha256'],'even_coupled_primes':[13,19,29,41,71],'even_coupled_regimes':{'13':['zero','infinity'],'19':['zero'],'29':['generic','zero'],'41':['generic','zero','infinity'],'71':['zero']},'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
+    regimes={'13':['zero','infinity'],'19':['zero'],'29':['generic','zero'],'41':['generic','zero','infinity'],'71':['zero'],'79':['zero'],'89':['zero'],'131':['zero']}
+    body={'schema_version':5,'status':'public-Magma mod-5 high-level packet enumeration with marginal and strengthened coefficient-field-safe even filters','calculator':CALCULATOR_URL,'field':'K7=Q(zeta_7)^+','source_local_data_sha256':local['certificate_sha256'],'source_forced_zero_data_sha256':forced_data['certificate_sha256'],'even_coupled_primes':[13,19,29,41,71,79,89,131],'even_coupled_regimes':regimes,'levels':outputs,'nonclaim':'failed levels are unresolved; the marginal and even-coupled filters are necessary but not sufficient for a solution'}
     result=dict(body); result['certificate_sha256']=canonical_sha256(body); print(json.dumps(result,sort_keys=True,indent=2)); return 0
 if __name__=='__main__': raise SystemExit(main())
