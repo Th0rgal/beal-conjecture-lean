@@ -1,4 +1,4 @@
-name: Signature 357 isolated fixed7 combined residual level 33
+name: Signature 357 isolated fixed7 prime-11 marginal sieve
 
 concurrency:
   group: signature357-isolated-fixed7-level33
@@ -10,10 +10,12 @@ on:
       - agent/signature357-fixed7-level33-run
     paths:
       - "scripts/run_signature_357_magma_fixed7_combined_residual.py"
+      - "scripts/run_signature_357_magma_fixed7_prime11_marginal.py"
       - ".github/workflows/signature357_fixed7_combined_residual.yml"
   pull_request:
     paths:
       - "scripts/run_signature_357_magma_fixed7_combined_residual.py"
+      - "scripts/run_signature_357_magma_fixed7_prime11_marginal.py"
       - ".github/workflows/signature357_fixed7_combined_residual.yml"
   workflow_dispatch:
 
@@ -21,17 +23,17 @@ permissions:
   contents: read
 
 jobs:
-  combined:
+  prime11:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
-      - name: Intersect superspecial, local and semilinear Hecke conditions
+      - name: Apply the cheapest fixed-7 local trace obstruction
         run: >-
-          python3 scripts/run_signature_357_magma_fixed7_combined_residual.py
-          > fixed7-combined-residual-33.json
+          python3 scripts/run_signature_357_magma_fixed7_prime11_marginal.py
+          > fixed7-prime11-marginal-33.json
       - uses: actions/upload-artifact@v4
         with:
-          name: signature357-fixed7-combined-residual-33
-          path: fixed7-combined-residual-33.json
+          name: signature357-fixed7-prime11-marginal-33
+          path: fixed7-prime11-marginal-33.json
           if-no-files-found: error
