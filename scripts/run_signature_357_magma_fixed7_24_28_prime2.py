@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Check the universal odd-C trace at 2 on fixed-7 packets 24 and 28.
+"""Check the corrected universal odd-C base trace at 2 on packets 24 and 28.
 
-At the unique prime above 2 in Q(sqrt(5)), every odd-C Frey specialization has
-trace -1 or -8, hence trace 6 modulo 7.  This packetwise test is independent of
-the mod-5 norm-8 packet argument and therefore audits the complete e3=2 closure
-across both parity cases.
+The pinned degenerate HGM values -1 and -8 are traces after the relative
+residue-degree-two extension to Q(zeta_15).  For the base trace a_P and
+Norm(P)=4, w=a_P^2-8.  Hence a_P=0 modulo 7 in both parity branches.  This test
+audits the e3=2 closure independently of the mod-5 norm-8 packet argument.
 """
 from __future__ import annotations
 
@@ -18,7 +18,6 @@ import urllib.request
 from typing import Any
 
 CALCULATOR_URL = "https://magma.maths.usyd.edu.au/calc/"
-MAX_INPUT = 49_000
 USER_AGENT = "Mozilla/5.0 beal-conjecture-lean-research/1.0"
 PACKETS = [24, 28]
 
@@ -92,7 +91,7 @@ printf "PACKET_COUNT=%o\n",#D;
 for i in [24,28] do
   f := Eigenform(D[i]); a := HeckeEigenvalue(f,I2); P := MinimalPolynomial(a);
   P7 := R7![F7!Coefficient(P,j) : j in [0..Degree(P)]];
-  G := GreatestCommonDivisor(P7,X-6);
+  G := GreatestCommonDivisor(P7,X);
   printf "ROW|%o|%o|",i,Degree(P);
   for c in Eltseq(P) do printf "%o,",c; end for;
   printf "|%o\n",Degree(G);
@@ -102,17 +101,25 @@ end for;
 
 def main() -> int:
     source = code()
+    full_traces = [-1, -8]
+    base_trace_squares = [value + 8 for value in full_traces]
     body: dict[str, Any] = {
-        "schema_version": 1,
-        "status": "fixed-7 packet-24/28 universal odd-C prime-2 trace audit",
+        "schema_version": 2,
+        "status": "fixed-7 packet-24/28 corrected odd-C base-trace-at-2 audit",
         "level_exponents": [2, 3],
         "level_norm": 10125,
         "packets": PACKETS,
-        "prime_ideal_norm": 4,
-        "required_trace_mod7": 6,
+        "base_prime_norm": 4,
+        "full_cyclotomic_residue_degree_over_base": 2,
+        "full_cyclotomic_trace_integers": full_traces,
+        "base_trace_square_integers": base_trace_squares,
+        "required_base_trace_mod7": 0,
+        "trace_transform": "w=a_P^2-8",
         "rows": [],
-        "soundness": "a packet survives only when its Hecke polynomial has 6 as a root modulo 7",
+        "soundness": "a packet survives only when its Hecke polynomial has zero as a root modulo 7",
     }
+    if [value % 7 for value in base_trace_squares] != [0, 0]:
+        raise ResearchError("base/full trace normalization failed")
     output = ""
     try:
         output = submit(source)
@@ -130,7 +137,7 @@ def main() -> int:
                     "packet": packet,
                     "trace_polynomial_degree": degree,
                     "trace_coefficients_low_to_high": coefficients,
-                    "gcd_with_x_minus_6_degree_mod7": int(match.group(4)),
+                    "gcd_with_x_degree_mod7": int(match.group(4)),
                     "survives": int(match.group(4)) > 0,
                 }
             )
