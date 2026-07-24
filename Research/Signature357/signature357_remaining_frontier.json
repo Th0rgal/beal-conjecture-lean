@@ -15,13 +15,28 @@
       "exact_e7": 2,
       "exact_prime7_conductor_path": "Research/Signature357/odd_p7_twist.json",
       "exact_prime7_conductor_sha256": "1ac352af8ce0d9d324112c6741bebef06124734d4708e9737bace6804c5931fc",
+      "fixed7_pairing": {
+        "e3_2": {
+          "closed_level": [2, 2],
+          "reason": "level (2,2) is CM-only and impossible; level (2,3) fixed-7 plus superspecial plus CM filters leave packets 24 and 28",
+          "remaining_level": [2, 3],
+          "remaining_packets": [24, 28]
+        },
+        "e3_3": {
+          "closed_level": [3, 2],
+          "closure_path": "Research/Signature357/fixed7_level32_superspecial_closure.json",
+          "closure_sha256": "21f7873efea58b8bbad191d486de2d3ace5288cde059be3064cfe76728ee63c6",
+          "reason": "level (3,2) superspecial survivors are exactly CM packets 65 and 78, which are impossible in the odd branch",
+          "remaining_level": [3, 3]
+        }
+      },
       "global_mod5_irreducibility_path": "Research/Signature357/mod5_irreducibility_at3.json",
       "global_mod5_irreducibility_sha256": "df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e",
       "remaining_exponent_pairs": [[2, 2], [3, 2]],
       "remaining_level_norms": [35721, 964467]
     }
   },
-  "certificate_sha256": "f4aacfe00052d13bd5d0e7588ae6bb39b23d33349d19dcdde24d7cc799c1a713",
+  "certificate_sha256": "b50d3729e90b549e5bf26b9d249ac04e9f07f4ef5ac7d5df039d12d94bdb3ef9",
   "compression": {
     "even_branch_levels_removed_by_complete_closure": [189, 5103],
     "final_remaining_level_count": 2,
@@ -31,15 +46,15 @@
     "previous_branch_specific_level_norms": [189, 729, 5103, 19683, 35721, 137781, 964467],
     "previous_high_level_norms_after_low_closure": [5103, 19683, 35721, 137781, 964467]
   },
-  "conclusion": "the even branch is empty and the odd branch can lower modulo 5 only to level norms 35721 or 964467",
+  "conclusion": "the even branch is empty; the odd mod-5 frontier has levels 35721 and 964467, paired respectively with fixed-7 level (2,3) packets 24/28 and the still-unresolved fixed-7 level (3,3)",
   "equation": "A^3+B^5=C^7",
   "next_computation": {
-    "level_35721": "e3=2 block; synchronize with fixed-7 conductor exponent 2",
-    "level_964467": "e3=3 block; synchronize with fixed-7 conductor exponent 3",
-    "method": "residual Hecke-module kernel intersection over F_5",
+    "level_35721": "e3=2 block; pair only with fixed-7 packets 24 and 28 at level (2,3)",
+    "level_964467": "e3=3 block; fixed-7 level (3,2) is closed, so pair only with p=7-specific non-CM superspecial survivors at level (3,3)",
+    "method": "residual Hecke-module kernel intersection over F_5, coupled to the surviving fixed-7 packet data",
     "zero_kernel_consequence": "eliminates every residual eigensystem at that level conditional on the imported local trace and level-lowering theorems"
   },
-  "nonclaim": "the two remaining residual Hecke modules have not yet both been proved zero; this certificate does not prove the full (3,5,7) equation or Beal",
+  "nonclaim": "the two remaining residual Hecke modules and fixed-7 level (3,3) have not all been proved empty; this certificate does not prove the full (3,5,7) equation or Beal",
   "schema_version": 1,
-  "status": "literature-assisted-two-level-odd-branch-frontier"
+  "status": "literature-assisted-two-level-odd-branch-and-fixed7-pairing-frontier"
 }
