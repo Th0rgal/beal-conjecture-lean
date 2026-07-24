@@ -31,26 +31,20 @@
     }
   },
   "coarse_level_count": 16,
-  "branch_specific_exponent_pairs": [
-    [1, 0], [1, 1], [1, 2], [1, 3],
-    [2, 0], [2, 1], [2, 2], [2, 3],
-    [3, 0], [3, 1], [3, 2]
-  ],
-  "branch_specific_level_norms": [
-    27, 189, 729, 1323, 5103, 9261, 19683, 35721, 137781, 250047, 964467
-  ],
+  "branch_specific_exponent_pairs": [[1, 0], [1, 1], [1, 2], [1, 3], [2, 0], [2, 1], [2, 2], [2, 3], [3, 0], [3, 1], [3, 2]],
+  "branch_specific_level_norms": [27, 189, 729, 1323, 5103, 9261, 19683, 35721, 137781, 250047, 964467],
   "removed_exponent_pairs": [[0, 0], [0, 1], [0, 2], [0, 3], [3, 3]],
   "branch_specific_level_count": 11,
   "maximum_level_norm": 964467,
   "maximum_norm_reduction_factor": 7,
   "complete_low_level_closure": {
     "path": "Research/Signature357/low_level_complete_closure.json",
-    "sha256": "8b3d99f39e68860710cb7649ffda01f8e40456f21c340289fd2e15033bedfa17",
+    "sha256": "8386331173c63f51a2fb9357216e0fb5098ff5c3104d7df706bd05c677ea7575",
     "closed_admissible_norms_at_most_2059": [27, 189, 729, 1323]
   },
   "remaining_high_level_norms": [5103, 9261, 19683, 35721, 137781, 250047, 964467],
   "remaining_high_level_count": 7,
   "conclusion": "after exact branch-specific conductor restrictions and the complete low-level closure, only seven mod-5 Hilbert-newform levels remain, all of norm at most 964467",
   "nonclaim": "the seven remaining Hilbert-newform spaces have not been enumerated and this certificate does not prove the full (3,5,7) equation",
-  "certificate_sha256": "449902ab1189b7f0e12c6bcf9d55928e40425552736da2c642c074c280fec8ec"
+  "certificate_sha256": "d0d69a16e0d0fd7c9bfaa02ebdb41956ddfe97a48b2cde9fac8e3df8c753f8fa"
 }
