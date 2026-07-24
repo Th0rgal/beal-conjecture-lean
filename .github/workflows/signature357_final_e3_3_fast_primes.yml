@@ -1,92 +1,20 @@
-name: Signature 357 final e3=3 primewise probes
+name: Signature 357 final e3=3 primewise probes (manual fallback)
 
 on:
-  push:
-    branches:
-      - research/signature357-final-e3-3-probe
-    paths:
-      - ".github/workflows/signature357_final_e3_3_fast_primes.yml"
-  pull_request:
-    paths:
-      - ".github/workflows/signature357_final_e3_3_fast_primes.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: signature357-final-e3-3-fast-${{ github.ref }}
-  cancel-in-progress: false
+  group: signature357-final-e3-3-fast-manual
+  cancel-in-progress: true
 
 jobs:
-  fixed7-prime:
-    strategy:
-      fail-fast: false
-      max-parallel: 5
-      matrix:
-        prime: [11, 13, 17, 19, 29, 31, 41, 59, 61, 71]
+  note:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
-      - name: Test one fixed-7 auxiliary prime
-        run: >-
-          python3 scripts/run_signature_357_magma_fixed7_residual_fast.py
-          --prime "${{ matrix.prime }}"
-          > "fixed7-prime-${{ matrix.prime }}.json"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signature357-final-fixed7-prime-${{ matrix.prime }}
-          path: "fixed7-prime-${{ matrix.prime }}.json"
-          if-no-files-found: error
-
-  mod5-prime:
-    strategy:
-      fail-fast: false
-      max-parallel: 4
-      matrix:
-        include:
-          - {e7: 0, norm: 19683, prime: 11, kind: inert}
-          - {e7: 0, norm: 19683, prime: 23, kind: inert}
-          - {e7: 0, norm: 19683, prime: 13, kind: split}
-          - {e7: 0, norm: 19683, prime: 29, kind: split}
-          - {e7: 0, norm: 19683, prime: 41, kind: split}
-          - {e7: 0, norm: 19683, prime: 43, kind: split}
-          - {e7: 1, norm: 137781, prime: 11, kind: inert}
-          - {e7: 1, norm: 137781, prime: 23, kind: inert}
-          - {e7: 1, norm: 137781, prime: 13, kind: split}
-          - {e7: 1, norm: 137781, prime: 29, kind: split}
-          - {e7: 1, norm: 137781, prime: 41, kind: split}
-          - {e7: 1, norm: 137781, prime: 43, kind: split}
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install PARI/GP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pari-gp
-      - name: Produce split local data
-        if: matrix.kind == 'split'
-        run: >-
-          python3 scripts/produce_signature_357_mod5_complete_local.py
-          > local.json
-      - name: Produce inert local data
-        if: matrix.kind == 'inert'
-        run: >-
-          python3 scripts/produce_signature_357_mod5_inert_local.py
-          > local.json
-      - name: Test one mod-5 auxiliary prime
-        run: >-
-          python3 scripts/run_signature_357_magma_mod5_residual_fast.py
-          --local-data local.json
-          --pair "3,${{ matrix.e7 }}"
-          --prime "${{ matrix.prime }}"
-          > "mod5-${{ matrix.norm }}-prime-${{ matrix.prime }}.json"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signature357-final-mod5-${{ matrix.norm }}-prime-${{ matrix.prime }}
-          path: |
-            local.json
-            mod5-${{ matrix.norm }}-prime-${{ matrix.prime }}.json
-          if-no-files-found: error
+      - run: >-
+          echo "Primewise public-Magma fan-out is disabled by default; use the
+          serial low-memory probe workflow first and enable targeted primes only
+          for a retained nonzero survivor space."
