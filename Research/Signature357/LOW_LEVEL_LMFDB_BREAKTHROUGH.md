@@ -107,7 +107,7 @@ Research/Signature357/low_level_complete_closure.json
 with digest
 
 ```text
-8c84d73b5fd8c242ffe265a49615794c436ea725d33b1f312a74454af387dde4.
+8b3d99f39e68860710cb7649ffda01f8e40456f21c340289fd2e15033bedfa17.
 ```
 
 A detailed derivation, including every candidate polynomial and imported theorem
