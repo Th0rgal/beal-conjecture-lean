@@ -6,11 +6,13 @@ on:
       - agent/signature-345-357-certificates
     paths:
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
+      - "scripts/run_signature_357_magma_mod5_residual_fast.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - ".github/workflows/signature357_mod5_residual_964467.yml"
   pull_request:
     paths:
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
+      - "scripts/run_signature_357_magma_mod5_residual_fast.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - ".github/workflows/signature357_mod5_residual_964467.yml"
   workflow_dispatch:
@@ -36,9 +38,9 @@ jobs:
         run: >-
           python3 scripts/produce_signature_357_mod5_complete_local.py
           > mod5-complete-local.json
-      - name: Filter level 964467 in the residual Hecke module
+      - name: Filter level 964467 in the repaired residual Hecke module
         run: >-
-          python3 scripts/run_signature_357_magma_mod5_residual_spaces.py
+          python3 scripts/run_signature_357_magma_mod5_residual_fast.py
           --local-data mod5-complete-local.json
           --pair "3,2"
           --prime "${{ matrix.prime }}"
