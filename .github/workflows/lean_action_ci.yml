@@ -45,6 +45,12 @@ jobs:
       - run: python3 scripts/check_signature_357_mod5_irreducibility.py
       - run: python3 scripts/check_signature_357_mod5_prime2.py --self-test
       - run: python3 scripts/check_signature_357_mod5_prime2.py
+      - run: python3 scripts/check_signature_357_mod5_bodd.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_bodd.py
+      - run: python3 scripts/check_signature_357_mod5_global.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_global.py
+      - run: python3 scripts/check_signature_357_mod5_hecke_filter.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_hecke_filter.py
       - run: python3 scripts/check_signature_357_prime7_local.py --self-test
       - run: python3 scripts/check_signature_357_prime7_local.py
       - run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json
