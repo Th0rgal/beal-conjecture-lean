@@ -23,7 +23,18 @@ permissions:
   contents: read
 
 jobs:
-  enumerate-and-filter:
+  mod5-level:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {e3: 2, e7: 1, norm: 5103}
+          - {e3: 1, e7: 3, norm: 9261}
+          - {e3: 3, e7: 0, norm: 19683}
+          - {e3: 2, e7: 2, norm: 35721}
+          - {e3: 3, e7: 1, norm: 137781}
+          - {e3: 2, e7: 3, norm: 250047}
+          - {e3: 3, e7: 2, norm: 964467}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -35,25 +46,40 @@ jobs:
         run: >-
           python3 scripts/produce_signature_357_mod5_complete_local.py
           > mod5-complete-local.json
+      - name: Query and filter this Hilbert level
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_levels.py
+          --local-data mod5-complete-local.json
+          --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
+          > "mod5-magma-${{ matrix.norm }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-magma-${{ matrix.norm }}
+          path: |
+            mod5-complete-local.json
+            mod5-magma-${{ matrix.norm }}.json
+          if-no-files-found: error
+
+  fixed7-local-and-level33:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
       - name: Produce complete local fixed-7 HGM data at 43
         run: >-
           python3 scripts/produce_signature_357_fixed7_complete_local.py
           > fixed7-complete-local.json
-      - name: Query and filter all seven high Hilbert levels
-        run: >-
-          python3 scripts/run_signature_357_magma_mod5_levels.py
-          --local-data mod5-complete-local.json
-          > mod5-magma-high-levels.json
       - name: Query the fixed-7 level-(3,3) space
         run: >-
           python3 scripts/run_signature_357_magma_level33.py
           > fixed7-magma-level33.json
       - uses: actions/upload-artifact@v4
         with:
-          name: signature357-mod5-magma-high-levels
+          name: signature357-fixed7-local43-level33
           path: |
-            mod5-complete-local.json
             fixed7-complete-local.json
-            mod5-magma-high-levels.json
             fixed7-magma-level33.json
           if-no-files-found: error
