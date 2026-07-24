@@ -11,19 +11,17 @@ on:
     paths:
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
       - "scripts/run_signature_357_magma_fixed7_residual_space.py"
-      - "scripts/run_signature_357_magma_joint_5103.py"
-      - "scripts/run_signature_357_magma_even5103_trace.py"
-      - "scripts/produce_signature_357_joint_hgm.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "Research/Signature357/odd_p7_twist.json"
+      - "Research/Signature357/signature357_remaining_frontier.json"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   pull_request:
     paths:
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
       - "scripts/run_signature_357_magma_fixed7_residual_space.py"
-      - "scripts/run_signature_357_magma_joint_5103.py"
-      - "scripts/run_signature_357_magma_even5103_trace.py"
-      - "scripts/produce_signature_357_joint_hgm.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "Research/Signature357/odd_p7_twist.json"
+      - "Research/Signature357/signature357_remaining_frontier.json"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   workflow_dispatch:
 
@@ -31,33 +29,18 @@ permissions:
   contents: read
 
 jobs:
-  even5103-traces:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v5
-      - name: Compute the final even-branch packet traces
-        run: >-
-          python3 scripts/run_signature_357_magma_even5103_trace.py
-          > even5103-traces.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signature357-even5103-traces
-          path: even5103-traces.json
-          if-no-files-found: error
-
   mod5-residual-space:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - {e3: 3, e7: 0, norm: 19683, prime: 13}
-          - {e3: 3, e7: 0, norm: 19683, prime: 43}
           - {e3: 2, e7: 2, norm: 35721, prime: 13}
+          - {e3: 2, e7: 2, norm: 35721, prime: 29}
+          - {e3: 2, e7: 2, norm: 35721, prime: 41}
           - {e3: 2, e7: 2, norm: 35721, prime: 43}
-          - {e3: 3, e7: 1, norm: 137781, prime: 13}
-          - {e3: 3, e7: 1, norm: 137781, prime: 43}
           - {e3: 3, e7: 2, norm: 964467, prime: 13}
+          - {e3: 3, e7: 2, norm: 964467, prime: 29}
+          - {e3: 3, e7: 2, norm: 964467, prime: 41}
           - {e3: 3, e7: 2, norm: 964467, prime: 43}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -84,38 +67,6 @@ jobs:
           path: |
             mod5-complete-local.json
             mod5-residual-${{ matrix.norm }}-${{ matrix.prime }}.json
-          if-no-files-found: error
-
-  odd-joint-5103:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install PARI/GP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pari-gp
-      - name: Produce parameter-labelled joint HGM traces
-        run: >-
-          python3 scripts/produce_signature_357_joint_hgm.py
-          > joint-hgm-traces.json
-      - name: Produce complete local mod-5 traces
-        run: >-
-          python3 scripts/produce_signature_357_mod5_complete_local.py
-          > mod5-complete-local.json
-      - name: Test the two odd-branch modular pairs
-        run: >-
-          python3 scripts/run_signature_357_magma_joint_5103.py
-          --joint-data joint-hgm-traces.json
-          --mod5-local mod5-complete-local.json
-          > joint-5103.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signature357-odd-joint-5103
-          path: |
-            joint-hgm-traces.json
-            mod5-complete-local.json
-            joint-5103.json
           if-no-files-found: error
 
   fixed7-residual-space:
