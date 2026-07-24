@@ -9,6 +9,12 @@ on:
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_mod5_levels.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_fixed7_complete_local.py"
+      - ".github/workflows/signature357_mod5_magma_levels.yml"
   workflow_dispatch:
 
 permissions:
