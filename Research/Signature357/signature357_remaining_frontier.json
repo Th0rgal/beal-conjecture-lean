@@ -1,7 +1,4 @@
 {
-  "schema_version": 2,
-  "status": "literature-assisted-exact-twisted-odd-frontier-with-fixed7-pairing",
-  "equation": "A^3+B^5=C^7",
   "branch_status": {
     "even": {
       "certificate_path": "Research/Signature357/even_branch_complete_closure.json",
@@ -9,72 +6,168 @@
       "conclusion": "empty"
     },
     "odd": {
+      "allowed_e3": [
+        2,
+        3
+      ],
+      "closed_e3": [
+        2
+      ],
       "conditions": [
         "3 does not divide A*B*C",
         "7 divides A",
         "7 does not divide B*C"
       ],
-      "allowed_e3": [2, 3],
-      "global_mod5_irreducibility_path": "Research/Signature357/mod5_irreducibility_at3.json",
-      "global_mod5_irreducibility_sha256": "df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e",
       "cyclotomic_untwist_path": "Research/Signature357/odd_mod5_cyclotomic_untwist.json",
       "cyclotomic_untwist_sha256": "c7efdc4aa114eb7884d8199b45acaddc14e7416ed3d2a8721c99068eb71870a0",
       "exact_monodromy_path": "Research/Signature357/odd_mod5_exact_monodromy.json",
       "exact_monodromy_sha256": "971a84764f9843956ea14097e0635ef187b0a1300fe6f32a97a18ae8adebb71c",
-      "valuation_split": {
-        "v7A_congruent_3_mod5": {
-          "twisted_e7": 0,
-          "candidate_pairs": [[2, 0], [3, 0]],
-          "candidate_level_norms": [729, 19683],
-          "closed_level_norms": [729],
-          "remaining_pairs": [[3, 0]],
-          "remaining_level_norms": [19683]
-        },
-        "other_v7A_classes": {
-          "twisted_e7": 1,
-          "candidate_pairs": [[2, 1], [3, 1]],
-          "candidate_level_norms": [5103, 137781],
-          "closed_level_norms": [],
-          "remaining_pairs": [[2, 1], [3, 1]],
-          "remaining_level_norms": [5103, 137781]
-        }
-      },
       "fixed7_pairing": {
         "e3_2": {
-          "closed_level": [2, 2],
-          "remaining_level": [2, 3],
-          "remaining_packets": [24, 28],
-          "reason": "level (2,2) is CM-only and impossible; level (2,3) fixed-7 plus superspecial plus CM filters leave packets 24 and 28"
+          "closed_levels": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "prime29_closure_path": "Research/Signature357/odd_e3_2_prime29_closure.json",
+          "prime29_closure_sha256": "a1c2dd050b7fec302796bca1df7818496d06367aef7f22d313a62c4d524abae8",
+          "reason": "level (2,2) is CM-only and impossible; at level (2,3), corrected coupling at 29 forces trace +/-30 mod 7 and eliminates packets 24 and 28",
+          "remaining_packets": []
         },
         "e3_3": {
-          "closed_level": [3, 2],
-          "remaining_level": [3, 3],
+          "closed_level": [
+            3,
+            2
+          ],
           "closure_path": "Research/Signature357/fixed7_level32_superspecial_closure.json",
           "closure_sha256": "21f7873efea58b8bbad191d486de2d3ace5288cde059be3064cfe76728ee63c6",
-          "reason": "level (3,2) superspecial survivors are exactly CM packets 65 and 78, which are impossible in the odd branch"
+          "reason": "level (3,2) superspecial survivors are exactly CM packets 65 and 78, which are impossible in the odd branch",
+          "remaining_level": [
+            3,
+            3
+          ]
         }
       },
-      "remaining_exponent_pairs": [[2, 1], [3, 0], [3, 1]],
-      "remaining_level_norms": [5103, 19683, 137781]
+      "global_mod5_irreducibility_path": "Research/Signature357/mod5_irreducibility_at3.json",
+      "global_mod5_irreducibility_sha256": "df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e",
+      "remaining_e3": [
+        3
+      ],
+      "remaining_exponent_pairs": [
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "remaining_level_norms": [
+        19683,
+        137781
+      ],
+      "valuation_split": {
+        "other_v7A_classes": {
+          "candidate_level_norms": [
+            5103,
+            137781
+          ],
+          "candidate_pairs": [
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          "closed_level_norms": [
+            5103
+          ],
+          "remaining_level_norms": [
+            137781
+          ],
+          "remaining_pairs": [
+            [
+              3,
+              1
+            ]
+          ],
+          "twisted_e7": 1
+        },
+        "v7A_congruent_3_mod5": {
+          "candidate_level_norms": [
+            729,
+            19683
+          ],
+          "candidate_pairs": [
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              0
+            ]
+          ],
+          "closed_level_norms": [
+            729
+          ],
+          "remaining_level_norms": [
+            19683
+          ],
+          "remaining_pairs": [
+            [
+              3,
+              0
+            ]
+          ],
+          "twisted_e7": 0
+        }
+      }
     }
   },
+  "certificate_sha256": "ac9a1e01ee998426cfe7ab7cda007436fca105fdc232ea37c790e1b3529ce27e",
   "compression": {
-    "obsolete_untwisted_odd_levels": [35721, 964467],
-    "twisted_candidate_level_norms": [729, 5103, 19683, 137781],
-    "low_level_norms_closed": [729],
-    "final_remaining_level_count": 3,
-    "final_remaining_level_norms": [5103, 19683, 137781],
+    "closed_level_norms": [
+      729,
+      5103
+    ],
+    "final_remaining_level_count": 2,
+    "final_remaining_level_norms": [
+      19683,
+      137781
+    ],
     "maximum_level_norm": 137781,
-    "maximum_norm_reduction_from_untwisted_frontier": 7
+    "maximum_norm_reduction_from_untwisted_frontier": 7,
+    "obsolete_untwisted_odd_levels": [
+      35721,
+      964467
+    ],
+    "twisted_candidate_level_norms": [
+      729,
+      5103,
+      19683,
+      137781
+    ]
   },
-  "conclusion": "the even branch is empty; after the cyclotomic untwist and exact monodromy pairing, the odd mod-5 frontier is 5103, 19683 and 137781, with the e3=2 block paired only with fixed-7 packets 24/28 and the e3=3 blocks paired only with fixed-7 level (3,3)",
+  "conclusion": "the even branch and the complete odd e3=2 block are empty; every hypothetical primitive (3,5,7) solution lies in the odd e3=3 block, with twisted mod-5 level 19683 or 137781 and fixed-7 level (3,3)",
+  "equation": "A^3+B^5=C^7",
   "next_computation": {
-    "level_5103": "e3=2 and v7(A)!=3 mod 5; pair only with fixed-7 packets 24 and 28 at level (2,3)",
-    "level_19683": "e3=3 and v7(A)=3 mod 5; impose the removed-prime-7 trace a_p7=+/-8 mod 5 and pair with fixed-7 level (3,3)",
+    "fixed7_level_33": "intersect superspecial, local HGM and semilinear Hecke conditions; a zero common residual module closes the remaining fixed-7 block",
     "level_137781": "e3=3 and v7(A)!=3 mod 5; pair with fixed-7 level (3,3)",
-    "method": "combined residual Hecke-module kernel intersection over F_5 with semilinear trace constraints and the surviving fixed-7 data",
+    "level_19683": "e3=3 and v7(A)=3 mod 5; impose the removed-prime-7 trace a_p7=+/-8 mod 5 and pair with fixed-7 level (3,3)",
+    "method": "combined residual Hecke-module kernel intersection over F_5 and F_7 with semilinear trace constraints",
     "zero_kernel_consequence": "eliminates every residual eigensystem at that level conditional on the imported local trace, monodromy and level-lowering theorems"
   },
-  "nonclaim": "the three remaining residual Hecke modules and fixed-7 level (3,3) have not all been proved empty; this certificate does not prove the full (3,5,7) equation or Beal",
-  "certificate_sha256": "f896e9d0fbbda0677b987ddd3756f0d19b3d402f1903fa306ba0abf8319400a3"
+  "nonclaim": "the two remaining e3=3 residual Hecke modules and fixed-7 level (3,3) have not all been proved empty; this certificate does not prove the full (3,5,7) equation or Beal",
+  "schema_version": 3,
+  "status": "literature-assisted-exact-twisted-odd-frontier-after-e3-2-closure"
 }
