@@ -1,0 +1,54 @@
+name: Signature 357 decisive fixed7 trace-zero at 2
+
+on:
+  push:
+    branches:
+      - research/signature357-fixed7-prime2-zero
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_prime2_trace.py"
+      - "scripts/run_signature_357_magma_fixed7_24_28_prime2.py"
+      - ".github/workflows/signature357_fixed7_prime2_zero.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_prime2_trace.py"
+      - "scripts/run_signature_357_magma_fixed7_24_28_prime2.py"
+      - ".github/workflows/signature357_fixed7_prime2_zero.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signature357-fixed7-prime2-zero-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  level33:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compute the universal level-(3,3) T2 kernel modulo 7
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_prime2_trace.py
+          > fixed7-level33-prime2-zero.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-level33-prime2-zero
+          path: fixed7-level33-prime2-zero.json
+          if-no-files-found: error
+
+  packets24-28:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Audit packets 24 and 28 under the corrected base trace
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_24_28_prime2.py
+          > fixed7-packets24-28-prime2-zero.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-packets24-28-prime2-zero
+          path: fixed7-packets24-28-prime2-zero.json
+          if-no-files-found: error
