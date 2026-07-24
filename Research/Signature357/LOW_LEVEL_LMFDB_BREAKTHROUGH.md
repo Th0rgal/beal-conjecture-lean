@@ -174,7 +174,7 @@ The optimized conductor range contains sixteen levels.  Eight lie above the
 LMFDB completeness bound and are not covered by this result:
 
 ```text
-2401, 5103, 9261, 19683, 64827, 137781, 964467, 6751269.
+5103, 9261, 19683, 35721, 137781, 250047, 964467, 6751269.
 ```
 
 They still require an explicit Hilbert-newform computation or a theorem that
