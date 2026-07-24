@@ -1,14 +1,14 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "research-certificate-with-imported-local-lemmas",
   "scope": {
     "equation": "A^3+B^5=C^7",
     "hypotheses": [
       "pairwise coprime positive A,B,C",
-      "C odd",
-      "A even"
+      "B odd"
     ],
     "orientation": "(-C)^7+B^5+A^3=0",
+    "parameter": "t=C^7/A^3",
     "field": "K7=Q(zeta_7)^+",
     "residual_prime": 5,
     "claim": "the plus mod-5 HGM representation is absolutely irreducible"
@@ -17,7 +17,8 @@
     "the plus HGM is finite flat at the prime above 5 and has cyclotomic determinant after the weight-2 Tate normalization",
     "a rank-one finite-flat character over the unramified cubic completion has signature in {0,1}^3",
     "away from 5 the residual inertia exponents divide lcm(12,28)=84",
-    "after inversion, formula (30) over Q(zeta_21) applies at the prime above 2 and the modular weight-2 trace is the residue-field norm times its normalized trace"
+    "formulas (30) and (31) compute the degenerate traces over Q(zeta_21), with the weight-2 trace equal to the residue norm times the normalized HGM value",
+    "the direct fixed-7 character theorem gives absolute irreducibility whenever C is odd"
   ],
   "finite_fields": {
     "F64": {
@@ -56,39 +57,75 @@
     }
   },
   "trace_certificate": {
-    "inverse_parameter": "A^3/C^7",
-    "valuation_at_2": "3*v_2(A)",
-    "unit_reduction": 1,
-    "parameters": [
-      [
-        "1/7",
-        "-1/7"
-      ],
-      [
-        "1/3",
-        "-1/3"
-      ]
-    ],
-    "jacobi_character_exponents": [
-      [
-        -4,
-        -10
-      ],
-      [
-        -14,
-        10
-      ]
-    ],
-    "jacobi_values": [
-      8,
-      8
-    ],
     "residue_field_norm": 64,
     "jacobi_motive_factor": 64,
-    "normalized_trace": "-1/4",
     "weight2_tate_multiplier": 64,
-    "weight2_trace": -16,
-    "weight2_trace_mod5": 4
+    "branches": [
+      {
+        "name": "zero",
+        "parity_condition": "A odd and C even",
+        "parameter_behavior": "v_2(t)>0",
+        "formula": "formula (30)",
+        "jacobi_character_exponents": [
+          [
+            -4,
+            -10
+          ],
+          [
+            -14,
+            10
+          ]
+        ],
+        "expected_jacobi_sum": [
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "weight2_trace": -16,
+        "weight2_trace_mod5": 4
+      },
+      {
+        "name": "infinity",
+        "parity_condition": "A even and C odd",
+        "parameter_behavior": "v_2(t)<0",
+        "formula": "formula (31)",
+        "jacobi_character_exponents": [
+          [
+            -4,
+            10
+          ],
+          [
+            6,
+            -10
+          ]
+        ],
+        "expected_jacobi_sum": [
+          -9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "weight2_trace": 9,
+        "weight2_trace_mod5": 4
+      }
+    ]
   },
   "character_certificate": {
     "inertia_killing_exponent": 84,
@@ -114,18 +151,22 @@
     "class_number_conclusion": 1,
     "K7_prime_2_norm": 8,
     "F_over_K_residue_degree": 2,
-    "reducible_full_field_equation": "v+4/v=4",
-    "forced_v_mod5": 2,
-    "required_v_power": 42,
-    "actual_v_power_mod5": 4
+    "full_field_determinant_mod5": 4,
+    "forced_full_field_eigenvalue_mod5": 2,
+    "required_eigenvalue_power": 42,
+    "actual_eigenvalue_power_mod5": 4
   },
-  "certificate_sha256": "2ae977e0495b3d46199dcbecc6d6b76f07fcf3b137ca4d4b93d4ce34a71721bc",
   "source_audit": {
     "hypergeometric_paper": "arXiv:2412.08804v2",
-    "inversion": "equation (15)",
+    "inversion": "equation (15), which swaps the two parameter pairs",
     "jacobi_motive": "Definitions 2.3-2.4 and Remark 3",
-    "finite_monodromy_trace": "equation (30), proved over F=Q(zeta_21)",
+    "finite_monodromy_trace": "formulas (30) and (31), proved over F=Q(zeta_21)",
     "weight2_normalization": "Remark 6 and the public GPcode candidate routine multiplying the normalized HGM value by the residue-field norm",
     "finite_flat_character_input": "standard rank-one finite-flat signature classification at the inert prime above 5"
-  }
+  },
+  "conclusion": {
+    "mod5": "B odd implies the residual mod-5 plus HGM is absolutely irreducible",
+    "parity_cover": "B even implies A and C odd, hence C odd and the independent fixed-7 irreducibility theorem applies; every primitive solution has at least one absolutely irreducible Frey representation"
+  },
+  "certificate_sha256": "2db512bc99fb5dce051083146f2e4fc61ac09a5b484c0d6c7343a2b6bd47360c"
 }
