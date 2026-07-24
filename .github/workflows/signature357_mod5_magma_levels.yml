@@ -7,6 +7,8 @@ on:
     paths:
       - "scripts/run_signature_357_magma_mod5_levels.py"
       - "scripts/run_signature_357_magma_level33.py"
+      - "scripts/run_signature_357_magma_joint_5103.py"
+      - "scripts/produce_signature_357_joint_hgm.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "scripts/produce_signature_357_mod5_forced_zero.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
@@ -15,6 +17,8 @@ on:
     paths:
       - "scripts/run_signature_357_magma_mod5_levels.py"
       - "scripts/run_signature_357_magma_level33.py"
+      - "scripts/run_signature_357_magma_joint_5103.py"
+      - "scripts/produce_signature_357_joint_hgm.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
       - "scripts/produce_signature_357_mod5_forced_zero.py"
       - "scripts/produce_signature_357_fixed7_complete_local.py"
@@ -66,6 +70,37 @@ jobs:
             mod5-complete-local.json
             mod5-forced-zero.json
             mod5-magma-${{ matrix.norm }}.json
+          if-no-files-found: error
+
+  odd-joint-5103:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce parameter-labelled joint HGM traces
+        run: >-
+          python3 scripts/produce_signature_357_joint_hgm.py
+          > joint-hgm-traces.json
+      - name: Produce complete local mod-5 traces
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+      - name: Test the two odd-branch modular pairs
+        run: >-
+          python3 scripts/run_signature_357_magma_joint_5103.py
+          --joint-data joint-hgm-traces.json
+          --mod5-local mod5-complete-local.json
+          > joint-5103.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-odd-joint-5103
+          path: |
+            joint-hgm-traces.json
+            mod5-complete-local.json
+            joint-5103.json
           if-no-files-found: error
 
   fixed7-local-and-level33:
