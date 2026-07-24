@@ -1,36 +1,18 @@
 {
-  "certificate_sha256": "46e1c80cc47113794e1a2c1da5c7ab2baba0a5e30b3a114b78699fb036df78fd",
+  "conclusion": {
+    "arithmetic": "7 does not divide 900",
+    "representation": "the residual mod-7 plus-Frey representation is absolutely irreducible",
+    "strengthening": "the corrected finite computation gives C(2)=5 rather than the published value 13"
+  },
   "imported_lemmas": [
-    "the exact prime-2 degenerate HGM values -1 and -8 are computed over Q(zeta_15)",
-    "under a residue-degree-two extension the Frobenius trace transforms by w=a_P^2-2*Norm(P)",
-    "the source resultant computation gives reducible => residual prime divides 6084 when b is odd",
+    "the BCDF/Pacetti--Villagra reducibility theorem applies to the potentially good prime above 2 and forces the residual prime to divide the corrected resultant obstruction",
+    "the genus-2 Jacobian realizes the two-dimensional plus representation over Q(sqrt(5))",
     "irreducibility and absolute irreducibility agree for this odd residual representation over the totally real base field"
   ],
-  "nonclaim": "the checker replays the integer factorization and residue-degree trace normalization; the source reducibility implication and the representation-theoretic absolute-irreducibility step remain imported literature inputs",
-  "prime2_normalization_correction": {
-    "base_field": "Q(sqrt(5))",
-    "base_prime_norm": 4,
-    "base_residue_degree": 2,
-    "base_trace_mod7": 0,
-    "base_trace_square_candidates": [
-      7,
-      0
-    ],
-    "full_cyclotomic_field": "Q(zeta_15)",
-    "full_cyclotomic_trace_candidates": [
-      -1,
-      -8
-    ],
-    "full_residue_degree": 4,
-    "new_use": "every odd-C specialization supplies the necessary Hecke condition a_P=0 mod 7 at the unique prime P above 2",
-    "rational_prime": 2,
-    "relative_residue_degree": 2,
-    "trace_transform": "w=a_P^2-2*Norm(P)=a_P^2-8",
-    "withdrawn_argument": "the previous certificate incorrectly treated the full-cyclotomic traces -1 and -8 as base traces and formed x^2+x+4; that direct character contradiction is withdrawn"
-  },
-  "schema_version": 3,
+  "nonclaim": "The finite trace correction is replayed independently; the reducibility theorem, motive/Jacobian identification and absolute-irreducibility implication remain imported literature inputs.",
+  "schema_version": 4,
   "scope": {
-    "claim": "the residual mod-7 plus-Frey representation is absolutely irreducible",
+    "claim": "the plus residual mod-7 Frey representation is absolutely irreducible",
     "equation": "A^3+B^5=C^7",
     "field": "K=Q(sqrt(5))",
     "hypotheses": [
@@ -40,18 +22,29 @@
     "orientation": "B^5+(-C)^7+A^3=0",
     "residual_prime": 7
   },
-  "source_irreducibility": {
-    "conclusion": "7 does not divide 6084, so the residual representation is irreducible; the cited totally-real oddness lemma identifies this with absolute irreducibility",
-    "exact_resultant_obstruction": 6084,
-    "factorization": {
-      "13": 2,
-      "2": 2,
-      "3": 2
-    },
-    "imported_implication": "if the residual representation is reducible and b is odd, then the residual prime divides 6084",
-    "oddness_condition": "C odd implies b odd",
-    "paper_variable_b": "-C",
-    "residual_prime_divides_obstruction": false
+  "status": "research-certificate-with-imported-reducibility-theorem-and-corrected-prime2-traces",
+  "trace_correction": {
+    "corrected_absolute_norm_obstruction": 900,
+    "corrected_base_traces": [
+      0,
+      -1
+    ],
+    "path": "Research/Signature357/fixed7_prime2_trace_correction.json",
+    "prime_support": [
+      2,
+      3,
+      5
+    ],
+    "sha256": "875640813abfd1ff8fcb4d1a153f8f25727a65033699de71a445bc93615d578f"
   },
-  "status": "research-certificate-with-imported-source-resultant-lemma-and-corrected-prime2-normalization"
+  "withdrawn": {
+    "old_bound_C2": 13,
+    "old_obstruction": 6084,
+    "published_trace_pair": [
+      -1,
+      -8
+    ],
+    "reason": "the published pair mixes the base trace -1 from one parity case with the degree-two trace -8 from the other; the exact base traces are 0 and -1"
+  },
+  "certificate_sha256": "c3ad9df684192ecec6bc789744b0462e969b516cafdf4505ee96d72aa48fcafd"
 }
