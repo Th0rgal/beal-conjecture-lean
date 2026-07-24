@@ -51,10 +51,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {e3: 3, e7: 0, norm: 19683}
-          - {e3: 2, e7: 2, norm: 35721}
-          - {e3: 3, e7: 1, norm: 137781}
-          - {e3: 3, e7: 2, norm: 964467}
+          - {e3: 3, e7: 0, norm: 19683, prime: 13}
+          - {e3: 3, e7: 0, norm: 19683, prime: 43}
+          - {e3: 2, e7: 2, norm: 35721, prime: 13}
+          - {e3: 2, e7: 2, norm: 35721, prime: 43}
+          - {e3: 3, e7: 1, norm: 137781, prime: 13}
+          - {e3: 3, e7: 1, norm: 137781, prime: 43}
+          - {e3: 3, e7: 2, norm: 964467, prime: 13}
+          - {e3: 3, e7: 2, norm: 964467, prime: 43}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -67,18 +71,19 @@ jobs:
         run: >-
           python3 scripts/produce_signature_357_mod5_complete_local.py
           > mod5-complete-local.json
-      - name: Filter the residual Hecke module
+      - name: Test the residual Hecke module
         run: >-
           python3 scripts/run_signature_357_magma_mod5_residual_spaces.py
           --local-data mod5-complete-local.json
           --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
-          > "mod5-residual-${{ matrix.norm }}.json"
+          --prime "${{ matrix.prime }}"
+          > "mod5-residual-${{ matrix.norm }}-${{ matrix.prime }}.json"
       - uses: actions/upload-artifact@v4
         with:
-          name: signature357-mod5-residual-${{ matrix.norm }}
+          name: signature357-mod5-residual-${{ matrix.norm }}-${{ matrix.prime }}
           path: |
             mod5-complete-local.json
-            mod5-residual-${{ matrix.norm }}.json
+            mod5-residual-${{ matrix.norm }}-${{ matrix.prime }}.json
           if-no-files-found: error
 
   odd-joint-5103:
