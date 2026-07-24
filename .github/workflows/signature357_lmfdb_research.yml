@@ -7,16 +7,29 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   fetch-lowest-level:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: python3 scripts/fetch_signature_357_lmfdb.py > signature357-lmfdb-level729.json
+        with:
+          ref: agent/signature-345-357-certificates
+      - run: python3 scripts/fetch_signature_357_lmfdb.py > Research/Signature357/lmfdb_level729.json
       - uses: actions/upload-artifact@v4
         with:
           name: signature357-lmfdb-level729
-          path: signature357-lmfdb-level729.json
+          path: Research/Signature357/lmfdb_level729.json
           if-no-files-found: error
+      - name: Pin canonical LMFDB response
+        run: |
+          if git diff --quiet -- Research/Signature357/lmfdb_level729.json; then
+            echo "LMFDB response already pinned"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/lmfdb_level729.json
+          git commit -m "Pin LMFDB level-729 Hilbert forms"
+          git push origin HEAD:agent/signature-345-357-certificates
