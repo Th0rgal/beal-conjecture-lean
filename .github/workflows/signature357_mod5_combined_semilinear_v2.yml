@@ -1,19 +1,21 @@
-name: Signature 357 odd mod5 combined semilinear residual sieve v2
+name: Signature 357 isolated odd e3=3 mod5 residual sieves
 
 concurrency:
-  group: signature357-mod5-combined-v2-${{ github.ref }}
+  group: signature357-isolated-mod5-e3-3
   cancel-in-progress: true
 
 on:
   push:
     branches:
-      - agent/signature-345-357-certificates
+      - agent/signature357-mod5-e3-3-run
     paths:
+      - "scripts/run_signature_357_magma_mod5_combined_semilinear.py"
       - "scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py"
       - "Research/Signature357/ODD_REMOVED_PRIME7_TRACE_BREAKTHROUGH.md"
       - ".github/workflows/signature357_mod5_combined_semilinear_v2.yml"
   pull_request:
     paths:
+      - "scripts/run_signature_357_magma_mod5_combined_semilinear.py"
       - "scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py"
       - "Research/Signature357/ODD_REMOVED_PRIME7_TRACE_BREAKTHROUGH.md"
       - ".github/workflows/signature357_mod5_combined_semilinear_v2.yml"
@@ -29,11 +31,10 @@ jobs:
       max-parallel: 1
       matrix:
         include:
-          - {e3: 2, e7: 1, norm: 5103}
           - {e3: 3, e7: 0, norm: 19683}
           - {e3: 3, e7: 1, norm: 137781}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
       - name: Install PARI/GP
