@@ -3,15 +3,15 @@
     "the fixed-7 reducibility character is psi_(2,0)",
     "41 does not divide B"
   ],
-  "certificate_sha256": "c77ed09fc45fb61e24f4e1807117ebdd4ac48b3c963c3fc5071ce429e521ef0f",
+  "certificate_sha256": "a53f915ebfff36c7078b0d507a77d3bc56449c2f7b353a58cbd3bd51c89cecde",
   "equation": "A^3+B^5=C^7",
-  "forced_divisor_of_C": 106800330,
+  "forced_divisor_of_C": 98369618750130,
   "inputs": {
     "Dahmen_Siksek_even_branch": "30 divides C",
     "fixed7_prime7_hasse_path": "Research/Signature357/fixed7_prime7_hasse_obstruction.json",
-    "fixed7_prime7_hasse_sha256": "f5e588bcdda3954d1a994b94066793d3fd53d18c0ade05424e9ed4e2c1f6c441",
+    "fixed7_prime7_hasse_sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1",
     "global_fixed7_path": "Research/Signature357/fixed7_global_reducibility_sieve.json",
-    "global_fixed7_sha256": "82ecb0e373c8b604c30690aeb9d2d2ddc3b8e0d8d14ed60d95c2f55513f93cc7",
+    "global_fixed7_sha256": "d09fafd74cb4513067372721b15327e23d386e26a87933fee744240458cdd46d",
     "rational_two_frey_path": "Research/Signature357/even_rational_two_frey_sieve.json",
     "rational_two_frey_sha256": "e5cb118804cf1fadcd8d1c19b7a2feaa235ef759423550e31b84ca26408da3ad"
   },
@@ -24,7 +24,10 @@
     13,
     19,
     29,
-    71
+    71,
+    79,
+    89,
+    131
   ],
   "schema_version": 2,
   "scope": "hypothetical primitive solutions in the even branch whose lowered mod-5 Hilbert packet has rational Hecke field",
