@@ -18,7 +18,8 @@ jobs:
           ref: agent/signature-345-357-certificates
       - name: Install public-mirror client
         run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
-      - name: Query complete low-level HMF and norm-8 Hecke frontier
+
+      - name: Query complete low-level mod-5 HMF and norm-8 Hecke frontier
         run: >-
           python3 scripts/fetch_signature_357_lmfdb_sql.py
           > Research/Signature357/lmfdb_low_levels.json
@@ -27,14 +28,44 @@ jobs:
           name: signature357-lmfdb-low-levels
           path: Research/Signature357/lmfdb_low_levels.json
           if-no-files-found: error
-      - name: Pin canonical LMFDB response
+
+      - name: Fetch pinned fixed-7 candidate polynomials
+        run: >-
+          python3 scripts/fetch_signature_357_fixed7_inputs.py
+          > fixed7-Data.txt
+      - name: Query all four fixed-7 Hilbert spaces
+        run: >-
+          python3 scripts/fetch_signature_357_fixed7_lmfdb_sql.py
+          > fixed7-hmf.json
+      - name: Self-test fixed-7 replay checker
+        run: python3 scripts/check_signature_357_fixed7_lmfdb.py --self-test
+      - name: Replay fixed-7 elimination at all four levels
+        run: >-
+          python3 scripts/check_signature_357_fixed7_lmfdb.py
+          --data fixed7-Data.txt
+          --hmf fixed7-hmf.json
+          > Research/Signature357/fixed7_all_levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-all-levels
+          path: |
+            fixed7-Data.txt
+            fixed7-hmf.json
+            Research/Signature357/fixed7_all_levels.json
+          if-no-files-found: error
+
+      - name: Pin canonical research responses
         run: |
-          if git diff --quiet -- Research/Signature357/lmfdb_low_levels.json; then
-            echo "LMFDB response already pinned"
+          if git diff --quiet -- \
+            Research/Signature357/lmfdb_low_levels.json \
+            Research/Signature357/fixed7_all_levels.json; then
+            echo "Research responses already pinned"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Research/Signature357/lmfdb_low_levels.json
-          git commit -m "Pin low-level signature-357 Hecke frontier"
+          git add \
+            Research/Signature357/lmfdb_low_levels.json \
+            Research/Signature357/fixed7_all_levels.json
+          git commit -m "Pin complete low-level and fixed-7 frontiers"
           git push origin HEAD:agent/signature-345-357-certificates
