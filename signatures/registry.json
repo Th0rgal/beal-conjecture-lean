@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "signature-3-3-3",
+      "signature": "(3,3,3)",
+      "status": "solved",
+      "formal_declaration": "BealUnified.beal_case_pow_three",
+      "assumptions": "none",
+      "literature_source": "Mathlib.NumberTheory.FLT.Three (fermatLastTheoremThree)",
+      "certificate_dependency": "none",
+      "last_audit": "2026-07-21"
+    },
+    {
+      "id": "family-all-exponents-divisible-by-3",
+      "signature": "family: 3|x, 3|y, 3|z",
+      "status": "reduction-solved",
+      "formal_declaration": "BealUnified.beal_case_all_exponents_divisible_by_three",
+      "assumptions": "positive Solution with each exponent divisible by 3",
+      "literature_source": "Mathlib.NumberTheory.FLT.Three (fermatLastTheoremThree)",
+      "certificate_dependency": "none",
+      "last_audit": "2026-07-21"
+    },
+    {
+      "id": "signature-3-4-5",
+      "signature": "(3,4,5)",
+      "status": "open_source_audit_pending",
+      "formal_declaration": null,
+      "assumptions": "none; no formal certificate is checked in this repository",
+      "literature_source": "Siksek–Stoll (2012) locator recorded in roadmap/ROADMAP.md; source audit pending",
+      "certificate_dependency": "pending independent certificate and replay design",
+      "last_audit": "2026-07-21"
+    }
+  ]
+}

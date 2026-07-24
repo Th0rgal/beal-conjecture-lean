@@ -1,0 +1,27 @@
+name: Trust gates
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  trusted-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: python3 scripts/check_research_checkpoints.py
+      - run: python3 scripts/tests/test_research_checkpoints.py
+      - uses: leanprover/lean-action@v1
+      - run: lake exe cache get
+      - run: python3 scripts/check_trusted_boundary.py --self-test
+      - run: python3 scripts/check_trusted_boundary.py
+      - run: lake build
+      - run: lake env lean BealUnified/Challenge/NormalizedCore.lean
+      - run: python3 scripts/check_signature_registry.py
+      - run: python3 scripts/check_computational_evidence.py --self-test
+      - run: git diff --check

@@ -2,6 +2,27 @@
 
 > Generated 2026-06-26 from four parallel research missions (A: state-of-the-art survey, B: Mathlib gap audit, C: modular method feasibility, D: alternative elementary paths). All four reports are in this repository at `roadmap/state-of-the-art.md`, `roadmap/mission-C-modular-method.md`, `roadmap/mission-D-alternative-paths.md`.
 
+## Architecture roadmap (v1, 2026-07-21)
+
+This repository now has an executable checkpoint boundary in addition to the
+trusted Lean boundary. `Research/checkpoints/*.json` records only historical,
+reachable source commits and exact artifact hashes. The validator reads those
+artifacts with `git show <source_commit>:<path>`, rejects self-references and
+unreachable commits, and runs before Lean in CI. A checkpoint is provenance,
+not a mathematical result or certificate.
+
+Follow-up PRs, in order of dependency:
+
+1. Formalize an asymmetric ABC radical theorem and derive a uniform 11/12 bound
+   under its stated assumptions.
+2. Build a signature-aware certificate engine with independent replay.
+3. Integrate an official Lean comparator/challenge module once its API and trust
+   model are reviewed.
+4. Extend the durable checkpoint manifests with independently replayed research
+   certificates and retained source-audit evidence.
+
+None of these follow-ups is implemented by the checkpoint format itself.
+
 ## Bottom line first
 
 The Beal conjecture **cannot be proved in Lean 4 + Mathlib with currently available formal mathematics**. The bottleneck is genuinely mathematical, not formalization: every known attack either solves only fixed signature families (not all Beal), gives finiteness without enumeration, or is conditional on conjectures at least as strong as ABC.
@@ -9,7 +30,7 @@ The Beal conjecture **cannot be proved in Lean 4 + Mathlib with currently availa
 What an AI-assisted Lean team **can realistically do** in 2026-2028 is:
 
 1. Build a formal generalized Fermat / Beal signature library
-2. Formalize the proven `(3,4,5)` mixed-exponent sub-case (Siksek-Stoll, 2012) via certified descent
+2. Audit the `(3,4,5)` literature locator and formalize a certified descent only after verification
 3. Import Faltings / Darmon-Granville / Stewart-Yu as precisely named theorem interfaces
 4. Convert "known islands" into Lean theorems with Magma/Sage-checkable certificates
 5. Build reusable Mathlib infrastructure (elliptic curves, modular forms, Jacobians) that supports future arithmetic-geometry formalization
@@ -29,7 +50,7 @@ After the existing `beal-unified/` Lean 4 project, the open frontier is exactly 
 A^x + B^y = C^z,  x,y,z >= 3,  x,y,z not all equal,  gcd(A,B,C) = 1
 ```
 
-with at least one exponent not divisible by 3 or 4. The cleanest such cases are `(3,4,5)`, `(3,5,7)`, `(4,5,7)`, etc. The flagship solved case in this regime is **`(3,4,5)`** — Siksek-Stoll (2012).
+with at least one exponent not divisible by 3 or 4. The cleanest such cases are `(3,4,5)`, `(3,5,7)`, `(4,5,7)`, etc. `(3,4,5)` has a Siksek--Stoll (2012) locator, but this repository records it as open pending a source audit and checked certificate.
 
 ## DGX computational checkpoint — 2026-07-17
 
@@ -60,9 +81,9 @@ theorem and does not advance the single open Beal core by itself.
 
 ## The 3 prioritized paths
 
-### Path 1 — Formalize the `(3,4,5)` descent (Siksek-Stoll)
+### Path 1 — Audit then formalize a `(3,4,5)` descent
 
-**The single most actionable Lean 4 target.** A real Beal mixed-exponent case, solved in the literature, avoids formalizing Wiles.
+**A promising Lean 4 target, subject to source audit.** It may avoid formalizing Wiles.
 
 | Milestone | LOC estimate | Effort |
 |---|---|---|
@@ -151,7 +172,7 @@ Payoff for Beal progress
 
 **Quarter 3-4:** Path 1, phase 1-2 (reduction + certificate format). Sets up the `(3,4,5)` attack.
 
-**Year 2:** Path 1, phase 3-4 (Selmer-set verification). **First publishable result**: a Lean 4 theorem that no primitive `A³ + B⁴ = C⁵` exists, certified against Siksek-Stoll 2012.
+**Year 2:** Path 1, phase 3-4 (Selmer-set verification). Potential result: a Lean 4 theorem that no primitive `A³ + B⁴ = C⁵` exists, but only after a reviewed source and independently replayed certificate.
 
 **Year 3+:** Path 3, one modular paper at a time. Closes `(p,p,3)`, `(a²,b⁶,cⁿ)`-style families.
 
@@ -171,7 +192,7 @@ It does **not** change the fundamental bottleneck: the modular method's proof ma
 
 A formal Lean 4 proof of the general Beal conjecture in 2026-2028. The mathematics doesn't exist. ABC is unproven. Wiles' machinery is decades of formalization away from Beal applicability. No amount of AI assistance substitutes for the missing theorems.
 
-The honest deliverable is: a Beal signature library, a closed `(3,4,5)` case, certified interfaces for the modern finiteness theorems, and a roadmap for future paths. This is publishable and useful work — and it is what AI-assisted formalization can achieve in this window.
+The honest deliverable is: a Beal signature library, an audited candidate `(3,4,5)` program, certified interfaces for modern finiteness theorems, and a roadmap for future paths.
 
 ---
 

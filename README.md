@@ -1,6 +1,27 @@
 # Beal Conjecture — Formal Verification in Lean 4 + Mathlib
 
-> **Honest status:** This repository formalizes the [Beal conjecture](https://en.wikipedia.org/wiki/Beal_conjecture) in [Lean 4](https://lean-lang.org/) with [Mathlib](https://github.com/leanprover-community/mathlib4). It is **not a proof**. The conjecture is an open problem in number theory (unresolved since 1993, $1M prize unclaimed). What this repository contains is a clean modular formalization of the conjecture together with **all of the reductions and special cases that the existing Lean/Mathlib library can prove**. There is exactly one `sorry`, isolated to the open core after every known reduction has been discharged.
+> **Honest status:** This repository is **not a proof** of the open Beal conjecture. `import BealUnified` exposes only checked trusted reductions. The open normalized target is opt-in: `import BealUnified.Challenge.NormalizedCore`.
+
+## Trust boundary
+
+The default root has no path to `Challenge` or the legacy placeholder module.
+`Challenge.NormalizedPrimitiveCore` is a named proposition for pairwise-coprime
+positive solutions with normalized exponents (`4` or an odd prime). It is not
+asserted as a theorem. `beal_conjecture_of_normalized_core` conditionally
+assembles `BealConjecture` from its emptiness, and
+`beal_conjecture_iff_normalized_core_empty` proves the exact equivalence using
+`beal_normalize`. `(3,3,3)` is separately excluded with Mathlib FLT-3; the
+remaining target is named `non333`, not “hyperbolic”.
+
+Run `python3 scripts/check_trusted_boundary.py` for the trusted import closure,
+placeholder scan, and an environment audit of every loaded `BealUnified`
+declaration. It permits only `propext`, `Classical.choice`, and `Quot.sound`;
+its controlled temporary fixture confirms rejection of both a new axiom and
+`sorryAx`. Run `python3 scripts/check_signature_registry.py` for the
+machine-readable registry in `signatures/registry.json`. Run
+`python3 scripts/check_research_checkpoints.py` for historical research
+provenance. Checkpoints validate artifact bytes with `git show <commit>:<path>`;
+they are evidence records, never theorem claims.
 
 ---
 
@@ -16,7 +37,11 @@ Equivalently (the contrapositive used internally): there is no *primitive* solut
 
 ## What is proved in this repository
 
-Every theorem below compiles under `lake build` with `0 errors` and was verified by `#print axioms` to depend only on standard Mathlib axioms (`propext`, `Quot.sound`, `Classical.choice`) — **none of them depend on `sorryAx`**.
+Every table entry, except the explicitly marked **Opt-in** row, compiles under
+`lake build` with `0 errors` and is covered by the environment audit, which
+permits only standard Mathlib axioms (`propext`, `Quot.sound`,
+`Classical.choice`) — **none depend on `sorryAx`**. The opt-in row is
+deliberately outside that boundary.
 
 | Subcase | Theorem | Method |
 |---|---|---|
@@ -41,8 +66,7 @@ Every theorem below compiles under `lake build` with `0 errors` and was verified
 | LTE modular obstruction ⇒ no matching Beal equation | `no_beal_equal_left_exponents_of_lte_mod_obstruction` | rewrite |
 | `rad n = ∏ primeFactors(n)` | `rad`, `rad_dvd`, `rad_pow_of_pos` | Mathlib `Nat.prod_primeFactors_dvd` |
 | ABC applies to `(A^x, B^y, C^z)` of any primitive triple | `abc_applies_to_primitive_beal_counterexample` | assuming `ABCConjecture` |
-| Bounded search: no counterexample for bases `< 2` | `noCounterexample_bases_lt_two` | omega + decide |
-| Bounded search: no primitive counterexample `8 × 8 × 8 × 8 × 8 × 8` | `noCounterexampleUpTo_8_8` | `native_decide` |
+| **Opt-in, outside `Trusted`:** no counterexample for bases `< 2` | `noCounterexample_bases_lt_two` | omega + decide |
 | Radical/minimum-exponent bridge | `rad_base_pow_min_le_max_cube` | elementary inequalities |
 | Coprime-sum valuation side condition | `padicValNat_prime_dvd_coprime_sum_pows_eq_zero` | `padicValNat` |
 | Primitive-divisor data ⇒ exact order and `n ∣ p - 1` | `orderOf_primitivePowSubRatio_eq`, `PrimitivePowSubDivisor.dvd_prime_sub_one` | finite-group order |
@@ -52,11 +76,21 @@ Every theorem below compiles under `lake build` with `0 errors` and was verified
 
 The original 24-theorem suite and the consolidated research lemmas above contain no `sorry` and no `sorryAx`. They are structural reductions: in particular, the primitive-divisor module consumes primitive-divisor data but does not prove that such a divisor exists.
 
+`BealUnified.Computational` is an explicit, separately audited opt-in module
+for finite-search evidence (`python3 scripts/check_computational_evidence.py`).
+It is not imported by `BealUnified` or `BealUnified.Trusted`, because its
+`native_decide` certificate uses its generated native-decision axiom, which is
+intentionally outside the strict trusted allowlist. The audit records the exact
+pinned generated axiom together with `propext` and `Quot.sound`, and rejects
+every other axiom; it does not elevate the finite computation to trusted theorem
+evidence.
+
 ---
 
 ## What is open
 
-There is exactly **one `sorry`**, in `BealConjecture.lean`:
+The legacy `BealConjecture.lean` module remains outside the default import
+boundary for compatibility with historical work; it is not production API.
 
 ```lean
 theorem beal_no_coprime_solution
@@ -104,6 +138,8 @@ Even an elementary attempt at `A³ + B⁴ = C⁵` quickly runs into needing eith
 ├── BealUnified.lean           — top-level imports
 ├── lakefile.toml              — Mathlib project, Lean 4.31.0
 ├── lean-toolchain             — pinned toolchain
+├── Research/checkpoints/      — versioned, historical-source checkpoint manifests
+├── scripts/check_research_checkpoints.py — fail-closed provenance validator
 ├── BealUnified/
 │   ├── Statement.lean         — conjecture, coprimality reduction, contrapositive equivalence
 │   ├── FLTReduction.lean      — x=y=z reductions via Mathlib FLT-3 / FLT-4
@@ -116,7 +152,7 @@ Even an elementary attempt at `A³ + B⁴ = C⁵` quickly runs into needing eith
 │   ├── PrimitiveDivisors.lean  — consequences of supplied primitive-divisor data
 │   ├── Research/BR20.lean      — coprime-sum valuation side condition
 │   ├── ABC.lean               — radical, ABC conjecture, primitive-triple application
-│   ├── Computational.lean     — bounded boolean search, `native_decide` certificate
+│   ├── Computational.lean     — opt-in bounded search, `native_decide` certificate
 │   └── BealConjecture.lean    — collected main theorem + isolated `sorry` on the open core
 ├── experiments/dgx_spark/     — reproducible external finite-field, LTE, cyclotomic, and CUDA experiments
 ├── Research/                   — bounded research checkpoints and explicit status notes
