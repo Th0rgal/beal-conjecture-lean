@@ -1,0 +1,31 @@
+name: Signature 357 fast frontier checks
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+  pull_request:
+    paths:
+      - "Research/Signature357/**"
+      - "scripts/check_signature_357_*.py"
+      - ".github/workflows/signature357_fast_frontier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 scripts/check_signature_357_mod5_noncm.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_noncm.py
+      - run: python3 scripts/check_signature_357_mod5_even_7unit.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_even_7unit.py
+      - run: python3 scripts/check_signature_357_lmfdb_low_levels.py --self-test
+      - run: python3 scripts/check_signature_357_lmfdb_low_levels.py
+      - run: python3 scripts/check_signature_357_low_level_closure.py --self-test
+      - run: python3 scripts/check_signature_357_low_level_closure.py
+      - run: python3 scripts/check_signature_357_odd_low_level_bridge.py --self-test
+      - run: python3 scripts/check_signature_357_odd_low_level_bridge.py
