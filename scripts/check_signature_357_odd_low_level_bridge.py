@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Replay the odd-branch low-level multi-Frey bridge for signature (3,5,7).
+"""Replay the pre-non-CM odd-branch low-level multi-Frey bridge.
 
-The complete LMFDB range leaves one mod-5 packet in the Dahmen--Siksek odd
-branch: 3.3.49.1-729.1-b.  Its base-change elliptic curve has Kodaira type III
-at 3, hence semistability defect 4.  The source HGM local table has defect
-12,4,12 for u=C^7/A^3 congruent to 2,5,8 modulo 9.  Prime-to-5 local-type
-compatibility therefore forces u=5 modulo 9.
+Before applying the global CM-support theorem, the norm-8 LMFDB filter leaves one
+mod-5 packet in the Dahmen--Siksek odd branch: 3.3.49.1-729.1-b. Its base-change
+elliptic curve has Kodaira type III at 3, hence semistability defect 4. The source
+HGM local table has defect 12,4,12 for u=C^7/A^3 congruent to 2,5,8 modulo 9.
+Prime-to-5 local-type compatibility therefore forces u=5 modulo 9.
 
-Exact unit enumeration then gives B^5=4*A^3 modulo 9, which is precisely the
-condition forcing epsilon_3=2 for the first, fixed-7 Frey representation.  The
-fixed-7 level-(2,2) packets are all CM and already excluded in the odd branch,
-so only fixed-7 level (2,3) remains.
+Exact unit enumeration then gives B^5=4*A^3 modulo 9, precisely the condition
+forcing epsilon_3=2 for the first, fixed-7 Frey representation. The fixed-7
+level-(2,2) packets are all CM and already excluded in the odd branch, so only
+fixed-7 level (2,3) remains at this intermediate stage.
 
-The local-type compatibility, LMFDB local data, and conductor theorem are explicit
-literature/database inputs.  The checker independently replays the finite
-arithmetic and cross-checks all repository manifests.
+The current schema-3 low-level filter subsequently removes the packet globally
+by the independent mod-5 CM-support theorem. Thus this checker records a valid
+historical bridge, not the final low-level frontier.
 """
 
 from __future__ import annotations
@@ -105,9 +105,11 @@ def validate_data(data: dict[str, Any]) -> dict[str, Any]:
     branch = low.get("branch_filters", {}).get("odd_branch")
     if not isinstance(branch, dict):
         raise CertificateError("low-level filter lacks the odd branch")
-    survivors = branch.get("survivors")
-    if survivors != [data["mod5_packet"]["label"]]:
-        raise CertificateError("the complete low-level odd frontier is not one packet")
+    pre_noncm = branch.get("pre_noncm_survivors")
+    if pre_noncm != [data["mod5_packet"]["label"]]:
+        raise CertificateError("the pre-non-CM odd frontier is not one packet")
+    if branch.get("low_level_survivors") != []:
+        raise CertificateError("the current final odd low-level frontier should be empty")
     if data["mod5_packet"]["label"] != "3.3.49.1-729.1-b":
         raise CertificateError("unexpected surviving mod-5 packet")
     if data["mod5_packet"]["semistability_defect"] != 4:
@@ -143,9 +145,15 @@ def validate_data(data: dict[str, Any]) -> dict[str, Any]:
     if level22 is None:
         raise CertificateError("odd CM filter lacks level (2,2)")
     reduction = data["fixed7_reduction"]
-    if level22.get("fixed7_survivors") != reduction["level_22_survivors_before_cm_filter"]:
+    if (
+        level22.get("fixed7_survivors")
+        != reduction["level_22_survivors_before_cm_filter"]
+    ):
         raise CertificateError("level-(2,2) fixed-7 survivors mismatch")
-    if level22.get("odd_branch_survivors_after_cm_filter") != reduction["level_22_survivors_after_odd_cm_filter"]:
+    if (
+        level22.get("odd_branch_survivors_after_cm_filter")
+        != reduction["level_22_survivors_after_odd_cm_filter"]
+    ):
         raise CertificateError("level-(2,2) CM filtering mismatch")
     if reduction["possible_levels_before_cm_filter"] != [[2, 2], [2, 3]]:
         raise CertificateError("epsilon_3=2 must leave exactly levels (2,2),(2,3)")
@@ -185,7 +193,7 @@ def self_test() -> None:
     else:
         raise RuntimeError("checker accepted the wrong fixed-7 level")
 
-    print("odd low-level bridge negative fixtures passed")
+    print("odd pre-non-CM low-level bridge negative fixtures passed")
 
 
 def main() -> int:
@@ -198,10 +206,11 @@ def main() -> int:
         return 0
     result = validate_data(load(args.manifest))
     print(
-        f"validated odd low-level bridge: mod5={result['mod5_packet']}, "
+        f"validated historical odd bridge: mod5={result['mod5_packet']}, "
         f"u={result['forced_u_mod9']} mod 9, "
         f"fixed7={tuple(result['remaining_fixed7_level'])}"
     )
+    print("current final odd low-level frontier: empty by global non-CM filtering")
     return 0
 
 
