@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Read and filter one decisive Hecke trace for fixed-7 packet 24 or 28.
 
-The request emits both trace polynomials through coefficient records. At rational
-primes inert in ``Q(sqrt(5))`` (13 and 43 in the selected set), semilinear Galois
-trace symmetry additionally requires the residual trace to lie in ``F_7``. The
-producer therefore records ``gcd(P mod 7, X^7-X)`` directly.
+The public calculator previously constructed an algebraic eigenform and its
+Hecke eigenvalue. At prime 43 that field construction exceeded the memory
+limit, although the packet had already been isolated by ``NewformDecomposition``.
+This producer instead computes the Hecke matrix on the packet itself and records
+its characteristic polynomial. For a Hecke-irreducible packet this has exactly
+the residual spectrum needed by every subsequent compatibility test, without
+constructing an explicit eigenvalue field.
 
+At rational primes inert in ``Q(sqrt(5))`` (13 and 43 in the selected set),
+semilinear Galois trace symmetry additionally requires the residual trace to lie
+in ``F_7``. The producer therefore records ``gcd(P mod 7, X^7-X)`` directly.
 Every packet-prime request is independent and fail closed.
 """
 from __future__ import annotations
@@ -30,13 +36,18 @@ F7 := GF(7); R7<X> := PolynomialRing(F7);
 M := HilbertCuspForms(K,3^2*I5^3);
 decomp := NewformDecomposition(NewSubspace(M));
 if #decomp ne 35 then error "unexpected packet count"; end if;
-form := Eigenform(decomp[{packet}]);
+packet_space := decomp[{packet}];
 l := {prime}; I := Factorisation(l*OK)[1][1];
-Eig := HeckeEigenvalue(form,I); Pbase := MinimalPolynomial(Eig);
+printf "PACKET_DIM=%o\n",Dimension(packet_space);
+Tbase := HeckeOperator(packet_space,I);
+printf "PHASE=packet-hecke-ready\n";
+Pbase := CharacteristicPolynomial(Tbase);
 fK := InertiaDegree(I); fF := InertiaDegree(Factorisation(l*OF15)[1][1]);
-Efull := Eig;
-if fF/fK eq 2 then Efull := Eig^2-2*l^fK; end if;
-Pfull := MinimalPolynomial(Efull);
+Tfull := Tbase;
+if fF/fK eq 2 then
+  Tfull := Tbase*Tbase-2*l^fK*IdentityMatrix(Rationals(),Nrows(Tbase));
+end if;
+Pfull := CharacteristicPolynomial(Tfull);
 printf "TRACE_START|%o|%o|%o|%o|%o|%o\n",{packet},l,fK,fF,Degree(Pbase),Degree(Pfull);
 printf "BASE_COEFFS";
 for c in Eltseq(Pbase) do printf "|%o",c; end for;
@@ -64,6 +75,13 @@ def parse_scalar(output: str) -> tuple[int, list[int]]:
     return degree, coefficients
 
 
+def parse_packet_dimension(output: str) -> int:
+    match = re.search(r"PACKET_DIM=(\d+)", output)
+    if match is None:
+        raise base.ResearchError("output lacked packet dimension")
+    return int(match.group(1))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--packet", type=int, choices=base.PACKETS, required=True)
@@ -72,8 +90,8 @@ def main() -> int:
 
     code = make_code(args.packet, args.prime)
     record: dict[str, Any] = {
-        "schema_version": 4,
-        "status": "public-Magma single fixed-7 packet trace with inert scalar filter",
+        "schema_version": 5,
+        "status": "public-Magma packet Hecke characteristic-polynomial trace test",
         "calculator": base.CALCULATOR_URL,
         "level_exponents": [2, 3],
         "level_norm": 10125,
@@ -81,9 +99,12 @@ def main() -> int:
         "prime": args.prime,
         "rational_prime_inert_in_K5": args.prime in INERT_PRIMES,
         "input_bytes": len(code.encode("utf-8")),
+        "trace_polynomial_kind": "characteristic polynomial on the Hecke-irreducible packet",
+        "full_trace_transform": "T_full=T_base^2-2*l^fK when fF/fK=2",
         "soundness": (
-            "at an inert rational prime, scalar_gcd_degree zero eliminates this "
-            "packet under the imported semilinear Galois trace symmetry"
+            "the packet characteristic polynomial contains the complete Hecke "
+            "spectrum; at an inert rational prime scalar_gcd_degree zero "
+            "eliminates the packet under imported semilinear Galois symmetry"
         ),
         "nonclaim": "a failed request leaves this packet-prime pair unresolved",
     }
@@ -100,13 +121,14 @@ def main() -> int:
         record.update(
             {
                 "request_status": "completed",
+                "packet_dimension": parse_packet_dimension(output),
                 **row,
                 "scalar_gcd_degree": scalar_degree,
                 "scalar_gcd_coefficients_low_to_high": scalar_coefficients,
                 "inert_scalar_compatible": (
                     True if args.prime not in INERT_PRIMES else scalar_degree > 0
                 ),
-                "output_tail": output[-5000:],
+                "output_tail": output[-6000:],
             }
         )
     except Exception as exc:
