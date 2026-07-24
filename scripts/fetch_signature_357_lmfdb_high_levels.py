@@ -19,7 +19,7 @@ import psycopg
 
 FIELD_LABEL = "3.3.49.1"
 LEVELS = [5103, 9261, 19683, 35721, 137781, 250047, 964467]
-AUXILIARY_RATIONAL_PRIMES = [2, 13, 17, 29, 41, 43]
+AUXILIARY_RATIONAL_PRIMES = [2, 13, 29, 41, 43]
 DSN = os.environ.get(
     "LMFDB_DSN",
     "host=devmirror.lmfdb.xyz port=5432 dbname=lmfdb user=lmfdb password=lmfdb",
