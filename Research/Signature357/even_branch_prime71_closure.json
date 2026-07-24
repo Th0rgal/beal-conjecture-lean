@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "7532782fc74f29b9300fcada2b166086f6f4c04da1eeb3bed8725da43774a633",
+  "certificate_sha256": "2ce989bbc726ef2aa9a115b72d8a62f031cec66db2f123e26adaed7adfada20a",
   "conclusion": {
     "logic": [
       "71 divides C, so u=C^7/A^3 is the zero specialization modulo 71",
@@ -43,7 +43,7 @@
     "branch_frontier": {
       "consequence": "after low-level closure, the even branch can only lower to mod-5 level norm 5103",
       "path": "Research/Signature357/branch_specific_level_frontier.json",
-      "sha256": "197eb8ba7e77dc615aeb591f794f84408795b8ab1b8166be7932cd64c016b316"
+      "sha256": "963e1e0d1b7a399d3cd823aff75c5d0f8a6c0154bec0b5ac8934040902c14aa4"
     },
     "fixed7_global_sieve": {
       "consequence": "71 divides C",
