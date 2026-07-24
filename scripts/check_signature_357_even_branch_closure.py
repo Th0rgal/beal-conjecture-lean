@@ -118,7 +118,12 @@ def validate(data: dict[str, Any]) -> str:
         raise CertificateError("Magma level mismatch")
     if magma["space_dimension"] != 73 or magma["packet_count"] != 10:
         raise CertificateError("Magma space summary mismatch")
-    if sum(magma["packet_dimensions"]) != 73 or len(magma["packet_dimensions"]) != 10:
+    if magma["packet_space_dimension"] != 51:
+        raise CertificateError("Magma packet-space summary mismatch")
+    if (
+        sum(magma["packet_dimensions"]) != magma["packet_space_dimension"]
+        or len(magma["packet_dimensions"]) != 10
+    ):
         raise CertificateError("packet dimensions do not replay")
     if magma["norm8_survivors"] != [1] or magma["marginal_local_survivors"] != [1]:
         raise CertificateError("marginal survivor chain mismatch")
