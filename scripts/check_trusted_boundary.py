@@ -15,10 +15,10 @@ FORBIDDEN = re.compile(r"\b(sorry|admit|axiom)\b|sorryAx")
 # Lean permits commands to be indented.  Restrict the leading whitespace to a
 # command's whitespace so import module names may be continued across indented
 # lines without confusing an unrelated unindented command for an import.
-# Lean module headers may qualify imports with `public`, `meta`, or `all`.
-# Recognize those modifiers so a forbidden local import cannot escape the
-# closure merely by using the module-header spelling.
-IMPORT_COMMAND = re.compile(r"^[ \t]*(?:(?:public|meta|all)[ \t]+)*import[ \t]+([^\n]*(?:\n[ \t]+[^\n]*)*)", re.M)
+# Lean module headers may start with `module` and may qualify imports with
+# `public`, `meta`, or `all`.  Recognize all of those spellings so a forbidden
+# local import cannot escape the closure merely by using header syntax.
+IMPORT_COMMAND = re.compile(r"^[ \t]*(?:module[ \t]+)?(?:(?:public|meta|all)[ \t]+)*import[ \t]+([^\n]*(?:\n[ \t]+[^\n]*)*)", re.M)
 MODULE_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*")
 
 def module_path(module, root=ROOT): return root.joinpath(*module.split(".")).with_suffix(".lean")
@@ -188,7 +188,18 @@ end Hidden
                 raise
         else:
             raise RuntimeError("trusted closure accepted a modifier-qualified forbidden import")
-    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local, non-first, indented, multiline, and modifier-qualified forbidden imports rejected")
+    with tempfile.TemporaryDirectory() as directory:
+        fixture_root = pathlib.Path(directory)
+        (fixture_root / "BealUnified.lean").write_text(
+            "module public import Mathlib BealUnified.Challenge.NormalizedCore\n", encoding="utf-8")
+        try:
+            closure(root=fixture_root)
+        except RuntimeError as exc:
+            if "forbidden trusted import BealUnified.Challenge.NormalizedCore" not in str(exc):
+                raise
+        else:
+            raise RuntimeError("trusted closure accepted a module-header forbidden import")
+    print("trusted environment negative fixture rejected (unrecognizable-name, Hidden namespace, and sorryAx axioms); local, non-first, indented, multiline, modifier-qualified, and module-header forbidden imports rejected")
 
 try:
     if "--self-test" in sys.argv:
