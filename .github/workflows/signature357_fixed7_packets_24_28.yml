@@ -1,0 +1,33 @@
+name: Signature 357 fixed7 packets 24 28 traces
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_24_28_traces.py"
+      - ".github/workflows/signature357_fixed7_packets_24_28.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_24_28_traces.py"
+      - ".github/workflows/signature357_fixed7_packets_24_28.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  traces:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read Hecke traces for packets 24 and 28
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_24_28_traces.py
+          > fixed7-packets-24-28-traces.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-packets-24-28-traces
+          path: fixed7-packets-24-28-traces.json
+          if-no-files-found: error
