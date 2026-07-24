@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Query and filter the seven open mod-5 Hilbert spaces on public Magma.
+"""Query and filter open mod-5 Hilbert spaces on public Magma.
 
-Each level is submitted independently. A failed or timed-out level is retained as
-an explicit error record and is never interpreted as an empty newform space.
+Each requested level is submitted independently. A failed or timed-out level is
+retained as an explicit error record and is never interpreted as an empty space.
 Besides the marginal local filter, the producer applies the exact even-branch
 coupling at 13, 29 and 41.
 """
@@ -51,32 +51,26 @@ def candidate_rows(local:dict[str,Any])->list[tuple[int,list[str],list[str],list
     return result
 PREFIX=r'''
 _<x> := PolynomialRing(Rationals());
-K<w> := NumberField(x^3-x^2-2*x+1);
-OK := Integers(K);
+K<w> := NumberField(x^3-x^2-2*x+1); OK := Integers(K);
 I3 := Factorisation(3*OK)[1][1]; I7 := Factorisation(7*OK)[1][1]; I2 := Factorisation(2*OK)[1][1];
 F5 := GF(5); R5<X> := PolynomialRing(F5);
 Red := function(P) return R5![F5!Coefficient(P,i) : i in [0..Degree(P)]]; end function;
 Common := function(P,Q) return Degree(GreatestCommonDivisor(Red(P),Red(Q))) gt 0; end function;
 AnyCommon := function(P,L) for Q in L do if Common(P,Q) then return true; end if; end for; return false; end function;
 TracePolynomials := function(form,row)
-  l:=row[1]; fK:=row[5]; fF:=row[6]; I:=Factorisation(l*OK)[1][1];
-  Eig:=HeckeEigenvalue(form,I); Pbase:=MinimalPolynomial(Eig); Efull:=Eig;
+  l:=row[1]; fK:=row[5]; fF:=row[6]; I:=Factorisation(l*OK)[1][1]; Eig:=HeckeEigenvalue(form,I); Pbase:=MinimalPolynomial(Eig); Efull:=Eig;
   if fF/fK eq 2 then Efull:=Eig^2-2*l^fK; end if;
   return Pbase,MinimalPolynomial(Efull),Integers()!Norm(I);
 end function;
 PossibleAt := function(form,row)
   l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
   if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
-  if Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1)) then return true; end if;
-  return false;
+  return Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1));
 end function;
 PossibleEvenAt := function(form,row)
   l:=row[1]; G:=row[2]; Z:=row[3]; Inf:=row[4]; Pbase,Pfull,q:=TracePolynomials(form,row);
-  if l eq 13 or l eq 29 then
-    return AnyCommon(Pfull,Z);
-  elif l eq 41 then
-    return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf);
-  end if;
+  if l eq 13 or l eq 29 then return AnyCommon(Pfull,Z); end if;
+  if l eq 41 then return AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf); end if;
   if AnyCommon(Pfull,G) or AnyCommon(Pfull,Z) or AnyCommon(Pfull,Inf) then return true; end if;
   return Common(Pbase,x-(q+1)) or Common(Pbase,x+(q+1));
 end function;
@@ -100,8 +94,7 @@ for i in [1..#decomp] do
     if aliveEven then Append(~Seven,i); end if;
   end if;
 end for;
-printf "LEVEL_PAIR=[{e3},{e7}]\n"; printf "LEVEL_NORM=%o\n",27^{e3}*7^{e7};
-printf "SPACE_DIMENSION=%o\n",Dimension(M); printf "PACKET_COUNT=%o\n",#decomp;
+printf "LEVEL_PAIR=[{e3},{e7}]\n"; printf "LEVEL_NORM=%o\n",27^{e3}*7^{e7}; printf "SPACE_DIMENSION=%o\n",Dimension(M); printf "PACKET_COUNT=%o\n",#decomp;
 printf "PACKET_DIMS=%o\n",Dims; printf "NORM8_SURVIVORS=%o\n",S8; printf "LOCAL_SURVIVORS=%o\n",Slocal; printf "EVEN_COUPLED_SURVIVORS=%o\n",Seven;
 '''
     return PREFIX+data+suffix
@@ -110,16 +103,20 @@ def parse_list(text:str,marker:str)->list[int]:
     match=re.search(rf'{marker}=\[\s*([^\]]*)\]',text)
     if match is None: raise ResearchError(f'output lacked {marker}')
     body=match.group(1).strip(); return [] if not body else [int(value.strip()) for value in body.split(',')]
-
 def parse_int(text:str,marker:str)->int:
     match=re.search(rf'{marker}=(\d+)',text)
     if match is None: raise ResearchError(f'output lacked {marker}')
     return int(match.group(1))
+def parse_pair(raw:str)->tuple[int,int]:
+    try: pair=tuple(int(value) for value in raw.split(','))
+    except ValueError as exc: raise argparse.ArgumentTypeError('pair must be e3,e7') from exc
+    if len(pair)!=2 or pair not in LEVEL_PAIRS: raise argparse.ArgumentTypeError(f'unsupported pair {raw}')
+    return pair
 
 def main()->int:
-    parser=argparse.ArgumentParser(); parser.add_argument('--local-data',type=pathlib.Path,required=True); args=parser.parse_args()
-    local=json.loads(args.local_data.read_text()); rows=candidate_rows(local); outputs=[]
-    for e3,e7 in LEVEL_PAIRS:
+    parser=argparse.ArgumentParser(); parser.add_argument('--local-data',type=pathlib.Path,required=True); parser.add_argument('--pair',type=parse_pair); args=parser.parse_args()
+    local=json.loads(args.local_data.read_text()); rows=candidate_rows(local); outputs=[]; pairs=[args.pair] if args.pair else LEVEL_PAIRS
+    for e3,e7 in pairs:
         code=make_code(e3,e7,rows); record={'level_exponents':[e3,e7],'level_norm':27**e3*7**e7,'input_bytes':len(code.encode()),'even_only_level':e3==1 or e7==3}
         try:
             text=submit(code); record.update({'status':'completed','space_dimension':parse_int(text,'SPACE_DIMENSION'),'packet_count':parse_int(text,'PACKET_COUNT'),'packet_dimensions':parse_list(text,'PACKET_DIMS'),'norm8_survivors':parse_list(text,'NORM8_SURVIVORS'),'local_survivors':parse_list(text,'LOCAL_SURVIVORS'),'even_coupled_survivors':parse_list(text,'EVEN_COUPLED_SURVIVORS'),'output_tail':text[-1200:]})
