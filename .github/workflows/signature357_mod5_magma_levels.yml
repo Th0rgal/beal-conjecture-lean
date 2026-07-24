@@ -6,6 +6,7 @@ on:
       - agent/signature-345-357-certificates
     paths:
       - "scripts/run_signature_357_magma_mod5_levels.py"
+      - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
       - "scripts/run_signature_357_magma_level33.py"
       - "scripts/run_signature_357_magma_joint_5103.py"
       - "scripts/produce_signature_357_joint_hgm.py"
@@ -16,6 +17,7 @@ on:
   pull_request:
     paths:
       - "scripts/run_signature_357_magma_mod5_levels.py"
+      - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
       - "scripts/run_signature_357_magma_level33.py"
       - "scripts/run_signature_357_magma_joint_5103.py"
       - "scripts/produce_signature_357_joint_hgm.py"
@@ -70,6 +72,43 @@ jobs:
             mod5-complete-local.json
             mod5-forced-zero.json
             mod5-magma-${{ matrix.norm }}.json
+          if-no-files-found: error
+
+  residual-space:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {e3: 2, e7: 1, norm: 5103}
+          - {e3: 1, e7: 3, norm: 9261}
+          - {e3: 3, e7: 0, norm: 19683}
+          - {e3: 2, e7: 2, norm: 35721}
+          - {e3: 3, e7: 1, norm: 137781}
+          - {e3: 2, e7: 3, norm: 250047}
+          - {e3: 3, e7: 2, norm: 964467}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce complete local mod-5 HGM candidate polynomials
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+      - name: Filter the residual Hecke module
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_residual_spaces.py
+          --local-data mod5-complete-local.json
+          --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
+          > "mod5-residual-${{ matrix.norm }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-residual-${{ matrix.norm }}
+          path: |
+            mod5-complete-local.json
+            mod5-residual-${{ matrix.norm }}.json
           if-no-files-found: error
 
   odd-joint-5103:
