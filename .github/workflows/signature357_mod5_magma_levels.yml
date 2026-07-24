@@ -1,31 +1,29 @@
-name: Signature 357 public-Magma mod-5 high levels
+name: Signature 357 public-Magma residual frontier
+
+concurrency:
+  group: signature357-public-magma-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   push:
     branches:
       - agent/signature-345-357-certificates
     paths:
-      - "scripts/run_signature_357_magma_mod5_levels.py"
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
-      - "scripts/run_signature_357_magma_level33.py"
+      - "scripts/run_signature_357_magma_fixed7_residual_space.py"
       - "scripts/run_signature_357_magma_joint_5103.py"
       - "scripts/run_signature_357_magma_even5103_trace.py"
       - "scripts/produce_signature_357_joint_hgm.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
-      - "scripts/produce_signature_357_mod5_forced_zero.py"
-      - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   pull_request:
     paths:
-      - "scripts/run_signature_357_magma_mod5_levels.py"
       - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
-      - "scripts/run_signature_357_magma_level33.py"
+      - "scripts/run_signature_357_magma_fixed7_residual_space.py"
       - "scripts/run_signature_357_magma_joint_5103.py"
       - "scripts/run_signature_357_magma_even5103_trace.py"
       - "scripts/produce_signature_357_joint_hgm.py"
       - "scripts/produce_signature_357_mod5_complete_local.py"
-      - "scripts/produce_signature_357_mod5_forced_zero.py"
-      - "scripts/produce_signature_357_fixed7_complete_local.py"
       - ".github/workflows/signature357_mod5_magma_levels.yml"
   workflow_dispatch:
 
@@ -35,6 +33,7 @@ permissions:
 jobs:
   even5103-traces:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - name: Compute the final even-branch packet traces
@@ -47,62 +46,17 @@ jobs:
           path: even5103-traces.json
           if-no-files-found: error
 
-  mod5-level:
+  mod5-residual-space:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - {e3: 2, e7: 1, norm: 5103}
-          - {e3: 1, e7: 3, norm: 9261}
           - {e3: 3, e7: 0, norm: 19683}
           - {e3: 2, e7: 2, norm: 35721}
           - {e3: 3, e7: 1, norm: 137781}
-          - {e3: 2, e7: 3, norm: 250047}
           - {e3: 3, e7: 2, norm: 964467}
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install PARI/GP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pari-gp
-      - name: Produce complete local mod-5 HGM candidate polynomials
-        run: >-
-          python3 scripts/produce_signature_357_mod5_complete_local.py
-          > mod5-complete-local.json
-      - name: Produce strengthened even-branch forced-zero polynomials
-        run: >-
-          python3 scripts/produce_signature_357_mod5_forced_zero.py
-          > mod5-forced-zero.json
-      - name: Query and filter this Hilbert level
-        run: >-
-          python3 scripts/run_signature_357_magma_mod5_levels.py
-          --local-data mod5-complete-local.json
-          --forced-zero-data mod5-forced-zero.json
-          --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
-          > "mod5-magma-${{ matrix.norm }}.json"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signature357-mod5-magma-${{ matrix.norm }}
-          path: |
-            mod5-complete-local.json
-            mod5-forced-zero.json
-            mod5-magma-${{ matrix.norm }}.json
-          if-no-files-found: error
-
-  residual-space:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {e3: 2, e7: 1, norm: 5103}
-          - {e3: 1, e7: 3, norm: 9261}
-          - {e3: 3, e7: 0, norm: 19683}
-          - {e3: 2, e7: 2, norm: 35721}
-          - {e3: 3, e7: 1, norm: 137781}
-          - {e3: 2, e7: 3, norm: 250047}
-          - {e3: 3, e7: 2, norm: 964467}
-    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - name: Install PARI/GP
@@ -129,6 +83,7 @@ jobs:
 
   odd-joint-5103:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - name: Install PARI/GP
@@ -158,26 +113,22 @@ jobs:
             joint-5103.json
           if-no-files-found: error
 
-  fixed7-local-and-level33:
+  fixed7-residual-space:
+    strategy:
+      fail-fast: false
+      matrix:
+        prime: [11, 13, 17, 19, 29, 31, 41, 59, 61, 71]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
-      - name: Install PARI/GP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pari-gp
-      - name: Produce complete local fixed-7 HGM data at 43
+      - name: Test level-(3,3) in the residual Hecke module
         run: >-
-          python3 scripts/produce_signature_357_fixed7_complete_local.py
-          > fixed7-complete-local.json
-      - name: Query the fixed-7 level-(3,3) space
-        run: >-
-          python3 scripts/run_signature_357_magma_level33.py
-          > fixed7-magma-level33.json
+          python3 scripts/run_signature_357_magma_fixed7_residual_space.py
+          --prime "${{ matrix.prime }}"
+          > "fixed7-residual-${{ matrix.prime }}.json"
       - uses: actions/upload-artifact@v4
         with:
-          name: signature357-fixed7-local43-level33
-          path: |
-            fixed7-complete-local.json
-            fixed7-magma-level33.json
+          name: signature357-fixed7-residual-${{ matrix.prime }}
+          path: "fixed7-residual-${{ matrix.prime }}.json"
           if-no-files-found: error
