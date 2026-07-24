@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Run the fixed-7 level-(3,3) residual test without a redundant basis conversion.
+"""Run the fixed-7 level-(3,3) residual test with Galois trace symmetry.
 
 Parallel-weight newspaces already have a fixed rational basis in Magma. The
-previous producer called SetRationalBasis again before printing any marker and
-therefore failed closed on the public calculator. This wrapper removes that
-conversion, restricts the auxiliary Hecke operator with Magma's native Restrict
-intrinsic, and retains raw output whenever a request fails.
+wrapper removes a redundant basis conversion, uses Magma's native ``Restrict``
+intrinsic, and at rational primes inert in ``Q(sqrt(5))`` intersects the local
+trace union with ``X^7-X``. The latter is the scalar-trace condition supplied by
+the semilinear Galois symmetry of a rational specialization.
+
+Every failure remains explicit and retains the raw output tail.
 """
 from __future__ import annotations
 
@@ -14,6 +16,9 @@ import json
 from typing import Any
 
 import run_signature_357_magma_fixed7_residual_space as base
+
+
+INERT_PRIMES = {13, 17}
 
 
 def repaired_code(row: str) -> str:
@@ -26,6 +31,12 @@ def repaired_code(row: str) -> str:
         "TS := Matrix(F7,d,d,&cat[Coordinates(S,S.i*T) : i in [1..d]]);",
         "TS := Restrict(T,S);",
     )
+    code = code.replace(
+        "  return P;\nend function;",
+        "  if KroneckerSymbol(5,l) eq -1 then "
+        "P:=GreatestCommonDivisor(P,X^7-X); end if;\n"
+        "  return P;\nend function;",
+    )
     return code
 
 
@@ -37,16 +48,21 @@ def main() -> int:
     row = base.selected_row(base.fetch_data(), args.prime)
     code = repaired_code(row)
     record: dict[str, Any] = {
-        "schema_version": 2,
-        "status": "fixed-7 level-(3,3) residual test with native stable-subspace restriction",
+        "schema_version": 3,
+        "status": "fixed-7 level-(3,3) residual test with semilinear inert-prime filter",
         "calculator": base.CALCULATOR_URL,
         "candidate_blob_sha1": base.EXPECTED_DATA_BLOB,
         "level_exponents": [3, 3],
         "level_norm": 91125,
         "auxiliary_prime": args.prime,
+        "rational_prime_inert_in_K5": args.prime in INERT_PRIMES,
         "input_bytes": len(code.encode("utf-8")),
         "rational_basis_policy": "NewSubspace parallel weight 2; no redundant SetRationalBasis call",
         "restriction_method": "Magma Restrict(T,S)",
+        "local_union_policy": (
+            "at inert rational primes replace the local trace union by its gcd "
+            "with X^7-X"
+        ),
         "soundness": (
             "gcd degree zero eliminates every superspecial residual eigensystem; "
             "positive degree is only a necessary survivor"
@@ -69,7 +85,7 @@ def main() -> int:
                     output, "RESTRICTED_CHARPOLY_DEGREE"
                 ),
                 "gcd_degree": base.parse_int(output, "GCD_DEGREE"),
-                "output_tail": output[-4000:],
+                "output_tail": output[-5000:],
             }
         )
     except Exception as exc:
