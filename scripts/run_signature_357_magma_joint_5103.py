@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
-"""Run the exact odd-branch two-Frey test at the mod-5 level 5103.
+"""Run the corrected odd-branch two-Frey test at mod-5 level 5103.
 
 The marginal mod-5 calculation leaves packet 1 at conductor exponents (2,1).
 Local-type synchronization forces the fixed-7 side to level (2,3), where the
-superspecial and CM filters leave packets 24 and 28.  This producer compares the
-two candidate pairs using the exact identity u+t7=1 at 13, 29 and 41.
+superspecial and CM filters leave packets 24 and 28.
 
-Generic traces retain their common parameter labels.  The three degenerate
-regimes are paired as follows:
+The mathematical parameters are
 
-  u=0        <-> t7=1,
-  u=1        <-> t7=0,
-  u=infinity <-> t7=infinity.
+    u=C^7/A^3,   v=-B^5/A^3,   u+v=1.
+
+The pinned PARI/GP ``hgm`` routine uses reciprocal implementation coordinates,
+so the generic producer supplies ``z5=u^(-1)`` and ``z7=v^(-1)`` with
+``(z5-1)*(z7-1)=1``.  This script validates those labels before comparing the
+two candidate pairs at 13, 29 and 41.  Degenerate regimes remain paired in the
+mathematical coordinates:
+
+    u=0        <-> v=1,
+    u=1        <-> v=0,
+    u=infinity <-> v=infinity.
 
 Failed requests are explicit and never interpreted as elimination.
 """
@@ -96,17 +102,40 @@ def magma_list(values: list[str]) -> str:
 
 
 def encoded_joint(data: dict[str, Any]) -> str:
-    if data.get("parameter_identity") != "t5=u,t7=1-u":
-        raise ResearchError("joint trace parameter identity mismatch")
+    if data.get("schema_version") != 2:
+        raise ResearchError("joint trace data must use reciprocal-coordinate schema 2")
+    if data.get("mathematical_parameter_identity") != (
+        "u=C^7/A^3,v=-B^5/A^3,u+v=1"
+    ):
+        raise ResearchError("joint mathematical-parameter identity mismatch")
+    if data.get("gp_parameter_identity") != (
+        "z5=u^(-1),z7=v^(-1),(z5-1)*(z7-1)=1"
+    ):
+        raise ResearchError("joint GP-coordinate identity mismatch")
     rows = []
     for prime in PRIMES:
-        pairs = [
-            f"<{row['mod5_trace_polynomial']},{row['fixed7_trace_polynomial']}>"
-            for row in data["rows"]
-            if row["prime"] == prime
-        ]
-        if len(pairs) != prime - 2:
+        selected = [row for row in data["rows"] if row["prime"] == prime]
+        if len(selected) != prime - 2:
             raise ResearchError(f"incomplete generic joint rows at {prime}")
+        pairs = []
+        seen_u: set[int] = set()
+        for row in selected:
+            u = int(row["u_mod_prime"])
+            v = int(row["v_mod_prime"])
+            z5 = int(row["gp_argument_mod5"])
+            z7 = int(row["gp_argument_fixed7"])
+            if u in seen_u:
+                raise ResearchError(f"duplicate mathematical parameter at {prime}")
+            seen_u.add(u)
+            if (u + v) % prime != 1:
+                raise ResearchError(f"u+v relation failed at {prime}")
+            if (u * z5) % prime != 1 or (v * z7) % prime != 1:
+                raise ResearchError(f"reciprocal GP coordinate failed at {prime}")
+            if ((z5 - 1) * (z7 - 1)) % prime != 1:
+                raise ResearchError(f"coupled GP relation failed at {prime}")
+            pairs.append(
+                f"<{row['mod5_trace_polynomial']},{row['fixed7_trace_polynomial']}>"
+            )
         rows.append(f"<{prime},{magma_list(pairs)}>")
     return "[" + ",".join(rows) + "]"
 
@@ -233,7 +262,7 @@ for j in {FIXED7_PACKETS} do
   end for;
   if alive then Append(~Survivors,j); end if;
 end for;
-printf "MOD5_PACKET=1\n"; printf "FIXED7_CANDIDATES=%o\n",{FIXED7_PACKETS}; printf "PAIR_SURVIVORS=%o\n",Survivors;
+printf "MOD5_PACKET=1\n"; printf "FIXED7_CANDIDATES=%o\n",[24, 28]; printf "PAIR_SURVIVORS=%o\n",Survivors;
 '''
 
 
@@ -254,14 +283,15 @@ def main() -> int:
     mod5 = json.loads(args.mod5_local.read_text(encoding="utf-8"))
     code = make_code(joint, mod5, split_rows(fetch_data()))
     record: dict[str, Any] = {
-        "schema_version": 1,
-        "status": "odd-branch level-5103 exact two-Frey pair test",
+        "schema_version": 2,
+        "status": "odd-branch level-5103 exact two-Frey pair test with reciprocal GP coordinates",
         "mod5_level_exponents": [2, 1],
         "mod5_packet": 1,
         "fixed7_level_exponents": [2, 3],
         "fixed7_candidates": FIXED7_PACKETS,
         "auxiliary_primes": PRIMES,
         "joint_data_sha256": joint["certificate_sha256"],
+        "joint_gp_parameter_identity": joint["gp_parameter_identity"],
         "mod5_local_data_sha256": mod5["certificate_sha256"],
         "input_bytes": len(code.encode("utf-8")),
     }
