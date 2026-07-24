@@ -1,79 +1,57 @@
 {
-  "schema_version": 2,
-  "status": "research-certificate-with-imported-finite-flat-lemma",
+  "certificate_sha256": "46e1c80cc47113794e1a2c1da5c7ab2baba0a5e30b3a114b78699fb036df78fd",
+  "imported_lemmas": [
+    "the exact prime-2 degenerate HGM values -1 and -8 are computed over Q(zeta_15)",
+    "under a residue-degree-two extension the Frobenius trace transforms by w=a_P^2-2*Norm(P)",
+    "the source resultant computation gives reducible => residual prime divides 6084 when b is odd",
+    "irreducibility and absolute irreducibility agree for this odd residual representation over the totally real base field"
+  ],
+  "nonclaim": "the checker replays the integer factorization and residue-degree trace normalization; the source reducibility implication and the representation-theoretic absolute-irreducibility step remain imported literature inputs",
+  "prime2_normalization_correction": {
+    "base_field": "Q(sqrt(5))",
+    "base_prime_norm": 4,
+    "base_residue_degree": 2,
+    "base_trace_mod7": 0,
+    "base_trace_square_candidates": [
+      7,
+      0
+    ],
+    "full_cyclotomic_field": "Q(zeta_15)",
+    "full_cyclotomic_trace_candidates": [
+      -1,
+      -8
+    ],
+    "full_residue_degree": 4,
+    "new_use": "every odd-C specialization supplies the necessary Hecke condition a_P=0 mod 7 at the unique prime P above 2",
+    "rational_prime": 2,
+    "relative_residue_degree": 2,
+    "trace_transform": "w=a_P^2-2*Norm(P)=a_P^2-8",
+    "withdrawn_argument": "the previous certificate incorrectly treated the full-cyclotomic traces -1 and -8 as base traces and formed x^2+x+4; that direct character contradiction is withdrawn"
+  },
+  "schema_version": 3,
   "scope": {
+    "claim": "the residual mod-7 plus-Frey representation is absolutely irreducible",
     "equation": "A^3+B^5=C^7",
+    "field": "K=Q(sqrt(5))",
     "hypotheses": [
       "pairwise coprime positive A,B,C",
       "C odd"
     ],
     "orientation": "B^5+(-C)^7+A^3=0",
-    "field": "K=Q(sqrt(5))",
-    "residual_prime": 7,
-    "claim": "the plus residual mod-7 Frey representation is absolutely irreducible"
+    "residual_prime": 7
   },
-  "imported_lemmas": [
-    "the residual plus-Frey representation is finite flat at the unique prime above 7, has cyclotomic determinant, and a rank-one finite-flat constituent has signature in {0,1}^2",
-    "the away-7 inertia orders of a reducible constituent divide 12 at 3 and 20 at 5, so exponent 60 kills them",
-    "at the unique prime above 2 the characteristic-zero Frey traces are -1 or -8 and the determinant is the norm 4",
-    "irreducibility and absolute irreducibility agree for this odd residual representation over the totally real base field"
-  ],
-  "unit_certificate": {
-    "minimal_polynomial_mod7_ascending": [
-      6,
-      6,
-      1
-    ],
-    "epsilon": [
-      0,
-      1
-    ],
-    "epsilon_conjugate": [
-      1,
-      6
-    ],
-    "epsilon_order": 16,
-    "inertia_killing_exponent": 60,
-    "signature_weights": [
-      1,
-      7
-    ],
-    "allowed_signatures": [
-      [
-        0,
-        0
-      ],
-      [
-        1,
-        1
-      ]
-    ]
+  "source_irreducibility": {
+    "conclusion": "7 does not divide 6084, so the residual representation is irreducible; the cited totally-real oddness lemma identifies this with absolute irreducibility",
+    "exact_resultant_obstruction": 6084,
+    "factorization": {
+      "13": 2,
+      "2": 2,
+      "3": 2
+    },
+    "imported_implication": "if the residual representation is reducible and b is odd, then the residual prime divides 6084",
+    "oddness_condition": "C odd implies b odd",
+    "paper_variable_b": "-C",
+    "residual_prime_divides_obstruction": false
   },
-  "class_number_certificate": {
-    "field_discriminant": 5,
-    "degree": 2,
-    "minkowski_bound_squared_numerator": 5,
-    "minkowski_bound_squared_denominator": 4,
-    "bound_lt_2_squared": true,
-    "class_number": 1
-  },
-  "frobenius_certificate": {
-    "auxiliary_rational_prime": 2,
-    "prime_norm": 4,
-    "trace_candidates": [
-      -1,
-      -8
-    ],
-    "trace_mod7": 6,
-    "reducible_polynomial_ascending_mod7": [
-      4,
-      1,
-      1
-    ],
-    "u4_mod7": 5,
-    "u12_mod7": 6,
-    "u60_mod7": 6,
-    "unramified_character_required_u60": 1
-  },
-  "certificate_sha256": "a41327696c1b5a8567d78c3757191d0ab816d99fdfa1479c76c0135b57814870"
+  "status": "research-certificate-with-imported-source-resultant-lemma-and-corrected-prime2-normalization"
 }
