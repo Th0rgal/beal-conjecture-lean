@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Replay the explicit prime-2 Hecke filter for four K7 packets.
+"""Replay the explicit residual prime-2 Hecke filter for four K7 packets.
 
 The checker counts points on the listed generalized Weierstrass equations over
-F_8, derives the norm-8 Hecke eigenvalues, and compares them with the exact
-B-odd prime-2 trace conditions. It deliberately makes no completeness claim for
-Hilbert-newform enumeration.
+F_8, derives the norm-8 Hecke eigenvalues, and compares their residues modulo 5
+with the level-lowered B-odd trace condition. It deliberately makes no
+completeness claim for Hilbert-newform enumeration.
 """
 from __future__ import annotations
 
@@ -93,7 +93,9 @@ def gf8_pow(value: int, exponent: int) -> int:
 
 
 def count_generalized_weierstrass(ainvs: list[int]) -> int:
-    if len(ainvs) != 5 or any(type(value) is not int or not 0 <= value < 8 for value in ainvs):
+    if len(ainvs) != 5 or any(
+        type(value) is not int or not 0 <= value < 8 for value in ainvs
+    ):
         raise CertificateError("ainvs_F8 must contain five canonical F8 integers")
     a1, a2, a3, a4, a6 = ainvs
     count = 1  # point at infinity
@@ -108,18 +110,10 @@ def count_generalized_weierstrass(ainvs: list[int]) -> int:
     return count
 
 
-def expected_classification(trace: int, branch_conditions: dict[str, Any]) -> str:
-    c_allowed = set(branch_conditions["C_even"]["allowed_K7_hecke_eigenvalues"])
-    a_allowed = set(branch_conditions["A_even"]["allowed_K7_hecke_eigenvalues"])
-    in_c = trace in c_allowed
-    in_a = trace in a_allowed
-    if in_c and in_a:
-        return "compatible with both B-odd parity branches"
-    if in_c:
-        return "compatible only with the C-even branch"
-    if in_a:
-        return "compatible only with the A-even branch"
-    return "eliminated in both B-odd parity branches"
+def classification(trace: int, required_residue: int) -> str:
+    if trace % 5 == required_residue:
+        return "survives the residual prime-2 trace"
+    return "eliminated by the residual prime-2 trace"
 
 
 def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
@@ -127,7 +121,7 @@ def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
         data,
         {
             "schema_version", "status", "scope", "source", "finite_field",
-            "branch_conditions", "packets", "summary", "nonclaim",
+            "residual_condition", "packets", "summary", "nonclaim",
             "certificate_sha256",
         },
         "manifest",
@@ -138,8 +132,19 @@ def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
         raise CertificateError("unexpected status")
 
     scope = data["scope"]
-    exact_keys(scope, {"equation", "field", "prime", "residue_field", "claim"}, "scope")
-    if scope["equation"] != "A^3+B^5=C^7" or scope["prime"] != 2:
+    exact_keys(
+        scope,
+        {
+            "equation", "field", "prime", "residual_characteristic",
+            "residue_field", "claim",
+        },
+        "scope",
+    )
+    if (
+        scope["equation"] != "A^3+B^5=C^7"
+        or scope["prime"] != 2
+        or scope["residual_characteristic"] != 5
+    ):
         raise CertificateError("scope metadata mismatch")
 
     source = data["source"]
@@ -172,23 +177,35 @@ def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
         "field_size": 8,
     }:
         raise CertificateError("F8 metadata mismatch")
-    if gf8_pow(2, 7) != 1 or any(gf8_pow(2, exponent) == 1 for exponent in range(1, 7)):
+    if gf8_pow(2, 7) != 1 or any(
+        gf8_pow(2, exponent) == 1 for exponent in range(1, 7)
+    ):
         raise CertificateError("selected F8 generator does not have order 7")
 
-    branches = data["branch_conditions"]
-    exact_keys(branches, {"formula", "C_even", "A_even"}, "branch_conditions")
-    for name in ("C_even", "A_even"):
-        exact_keys(
-            branches[name],
-            {"full_extension_trace", "allowed_K7_hecke_eigenvalues"},
-            f"branch_conditions.{name}",
-        )
-    norm = 8
-    for name in ("C_even", "A_even"):
-        full_trace = branches[name]["full_extension_trace"]
-        actual = [a for a in range(-5, 6) if a * a - 2 * norm == full_trace]
-        if actual != branches[name]["allowed_K7_hecke_eigenvalues"]:
-            raise CertificateError(f"{name} Hecke solutions mismatch: {actual}")
+    residual = data["residual_condition"]
+    exact_keys(
+        residual,
+        {
+            "norm_P", "C_even_full_trace", "A_even_full_trace",
+            "common_full_trace_mod5", "equation_mod5",
+            "required_hecke_eigenvalue_mod5",
+        },
+        "residual_condition",
+    )
+    if residual["norm_P"] != 8:
+        raise CertificateError("the unique prime over 2 must have norm 8")
+    full_residues = {
+        residual["C_even_full_trace"] % 5,
+        residual["A_even_full_trace"] % 5,
+    }
+    if full_residues != {4} or residual["common_full_trace_mod5"] != 4:
+        raise CertificateError("the two B-odd traces do not have common residue 4")
+    # Level lowering gives only a congruence modulo 5. From
+    # 4 = a_P^2 - 16 (mod 5), one obtains a_P = 0 (mod 5), not an exact
+    # characteristic-zero value.
+    required = [a for a in range(5) if (a * a - 16 - 4) % 5 == 0]
+    if required != [0] or residual["required_hecke_eigenvalue_mod5"] != 0:
+        raise CertificateError(f"unexpected residual Hecke condition: {required}")
 
     packets = data["packets"]
     if not isinstance(packets, list) or len(packets) != 4:
@@ -201,7 +218,7 @@ def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
             {
                 "hmf_label", "curve_label", "source_curve", "level_norm",
                 "ainvs_F8", "expected_point_count", "expected_hecke_eigenvalue",
-                "classification",
+                "expected_hecke_eigenvalue_mod5", "classification",
             },
             "packet",
         )
@@ -215,36 +232,27 @@ def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
             raise CertificateError(f"{label}: point count mismatch, got {points}")
         if trace != packet["expected_hecke_eigenvalue"]:
             raise CertificateError(f"{label}: Hecke trace mismatch, got {trace}")
-        classification = expected_classification(trace, branches)
-        if classification != packet["classification"]:
+        if trace % 5 != packet["expected_hecke_eigenvalue_mod5"]:
+            raise CertificateError(f"{label}: residual Hecke trace mismatch")
+        result = classification(trace, residual["required_hecke_eigenvalue_mod5"])
+        if result != packet["classification"]:
             raise CertificateError(f"{label}: classification mismatch")
-        results.append((label, trace, classification))
+        results.append((label, trace, result))
 
     summary = data["summary"]
     exact_keys(
         summary,
-        {
-            "explicit_packets_checked", "eliminated_in_both", "C_even_only",
-            "A_even_only", "allowed_trace_union",
-        },
+        {"explicit_packets_checked", "eliminated", "surviving", "surviving_packets"},
         "summary",
     )
-    counts = {
-        "eliminated_in_both": sum("eliminated in both" in row[2] for row in results),
-        "C_even_only": sum("only with the C-even" in row[2] for row in results),
-        "A_even_only": sum("only with the A-even" in row[2] for row in results),
-    }
+    surviving = [label for label, _trace, result in results if result.startswith("survives")]
+    eliminated = len(results) - len(surviving)
     if summary["explicit_packets_checked"] != len(results):
         raise CertificateError("summary packet count mismatch")
-    for key, value in counts.items():
-        if summary[key] != value:
-            raise CertificateError(f"summary {key} mismatch")
-    allowed_union = sorted(
-        set(branches["C_even"]["allowed_K7_hecke_eigenvalues"])
-        | set(branches["A_even"]["allowed_K7_hecke_eigenvalues"])
-    )
-    if summary["allowed_trace_union"] != allowed_union:
-        raise CertificateError("allowed trace union mismatch")
+    if summary["eliminated"] != eliminated or summary["surviving"] != len(surviving):
+        raise CertificateError("summary survivor counts mismatch")
+    if summary["surviving_packets"] != surviving:
+        raise CertificateError("summary survivor list mismatch")
     if "not claimed to be a complete enumeration" not in data["nonclaim"]:
         raise CertificateError("explicit incompleteness statement missing")
 
@@ -256,35 +264,34 @@ def validate(data: dict[str, Any]) -> tuple[list[tuple[str, int, str]], str]:
     return results, digest
 
 
+def expect_rejection(data: dict[str, Any], description: str) -> None:
+    try:
+        validate(data)
+    except CertificateError:
+        return
+    raise RuntimeError(f"checker accepted {description}")
+
+
 def self_test() -> None:
     source = load_json(DEFAULT_MANIFEST)
 
     mutated = copy.deepcopy(source)
     mutated["packets"][0]["ainvs_F8"][4] = 0
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted a mutated elliptic curve")
+    expect_rejection(mutated, "a mutated elliptic curve")
 
     mutated = copy.deepcopy(source)
-    mutated["packets"][1]["classification"] = "eliminated in both B-odd parity branches"
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted a false packet classification")
+    mutated["packets"][1]["classification"] = (
+        "eliminated by the residual prime-2 trace"
+    )
+    expect_rejection(mutated, "a false packet classification")
+
+    mutated = copy.deepcopy(source)
+    mutated["residual_condition"]["required_hecke_eigenvalue_mod5"] = 1
+    expect_rejection(mutated, "a false residual Hecke condition")
 
     mutated = copy.deepcopy(source)
     mutated["summary"]["explicit_packets_checked"] = 5
-    try:
-        validate(mutated)
-    except CertificateError:
-        pass
-    else:
-        raise RuntimeError("checker accepted a false summary")
+    expect_rejection(mutated, "a false summary")
 
     duplicate = '{"schema_version":1,"schema_version":1}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
@@ -300,7 +307,7 @@ def self_test() -> None:
     finally:
         path.unlink(missing_ok=True)
 
-    print("explicit mod-5 Hecke filter negative fixtures rejected")
+    print("explicit residual mod-5 Hecke filter negative fixtures rejected")
 
 
 def main() -> int:
@@ -312,9 +319,9 @@ def main() -> int:
         self_test()
         return 0
     results, digest = validate(load_json(args.manifest))
-    print("explicit signature-(3,5,7) mod-5 Hecke filter valid")
-    for label, trace, classification in results:
-        print(f"  {label}: a_2={trace}; {classification}")
+    print("explicit signature-(3,5,7) residual mod-5 Hecke filter valid")
+    for label, trace, result in results:
+        print(f"  {label}: a_P={trace}, a_P mod 5={trace % 5}; {result}")
     print(f"certificate sha256: {digest}")
     return 0
 
