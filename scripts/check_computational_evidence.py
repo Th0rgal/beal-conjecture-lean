@@ -41,7 +41,14 @@ EXPECTED_PROPOSITIONS = {
         "BealUnified.hasCounterexampleUpTo 8 8 = false"
     ),
 }
-AXIOM_FREE_OUTPUT = re.compile(r"^'[^'\n]+' does not depend on any axioms\s*$", re.M)
+# `#print axioms` has two output shapes.  A nonempty set is bracketed, while
+# an axiom-free declaration is reported as a sentence.  Match the latter as a
+# complete output line so an unrelated diagnostic cannot be mistaken for the
+# probe result.
+AXIOM_FREE_OUTPUT = re.compile(
+    r"^(?:info:\s*)?'[^'\n]+' does not depend on any axioms\s*$", re.M
+)
+MODULE_AUDIT_OUTPUT = re.compile(r"computational environment declarations audited:\s*(\d+)")
 
 # This audit runs before the full project build in the trust-gate workflow.
 # Build its one opt-in target explicitly so a clean checkout has the olean that
@@ -149,6 +156,10 @@ def self_test():
     run = run_environment_audit()
     if run.returncode:
         raise RuntimeError("computational environment audit rejected the production module:\n"
+                           + run.stdout)
+    audited = MODULE_AUDIT_OUTPUT.search(run.stdout)
+    if audited is None or int(audited.group(1)) == 0:
+        raise RuntimeError("computational environment audit did not report module-wide coverage:\n"
                            + run.stdout)
     print("computational environment audit accepted the production module")
 
