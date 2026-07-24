@@ -15,8 +15,8 @@ every hypothetical primitive positive A^3+B^5=C^7 solution
 
 The finite arithmetic is replayed by standard-library Python checkers. The
 Dahmen--Siksek dichotomy, finite-flat character classification, compatible-system
-local type transfer, modularity, and Hilbert level lowering remain explicit
-literature inputs.
+local type transfer, modularity, conductor bounds, and Hilbert level lowering
+remain explicit literature inputs.
 
 ## 1. Completing the prime-2 parity argument
 
@@ -117,7 +117,7 @@ python3 scripts/check_signature_357_mod5_global.py
 Certificate digest:
 
 ```text
-14dd5302d3a790aa1b83cf7d41e81703236044c92ae581f5a1b1f8fc70992660
+3ffd34b812498338af63108981cee5aa21d17d3600af2227d4e9bac1403ea29b
 ```
 
 ## 3. Finite automorphic frontier
@@ -125,24 +125,36 @@ Certificate digest:
 Golfieri--Pacetti's plus family is modular for the orientation above. Combining
 absolute irreducibility, finite flatness at `5`, residual ramification control,
 and standard Hilbert level lowering reduces the representation to a
-parallel-weight `(2,2,2)` Hilbert newform over `K7` whose prime-to-`5` level
-divides
+parallel-weight `(2,2,2)` Hilbert newform over `K7`.
+
+The exact wild-prime bounds must use Theorem 7.4, not only the coarser
+prime-to-base branch of Corollary 7.5:
+
+- at the prime over `3`, the even Dahmen--Siksek branch can have negative
+  parameter valuation not divisible by `3`, so the safe global exponent bound is
+  `5`;
+- at the prime over `7`, the odd branch has positive valuation divisible by `3`
+  and the even branch has either unit valuation or negative valuation divisible
+  by `7`; the exceptional `q+2` cases do not occur, so the bound is `3`.
+
+Thus the prime-to-`5` level divides
 
 ```text
-p3^3 * p7^3.
+p3^5 * p7^3.
 ```
 
 Here `3` is inert in `K7`, so `N(p3)=27`, while `7` is totally ramified and
 `N(p7)=7`. Consequently:
 
 ```text
-maximum level norm = 27^3 * 7^3 = 6,751,269;
-possible exponent pairs = (e3,e7) with 0 <= e3,e7 <= 3;
-number of level divisors = 16.
+maximum level norm = 27^5 * 7^3 = 4,921,675,101;
+possible exponent pairs = (e3,e7) with 0 <= e3 <= 5 and 0 <= e7 <= 3;
+number of level divisors = 24.
 ```
 
-This is a finite modular-form problem. The current certificate does not enumerate
-those spaces.
+This is still a finite modular-form problem. The current certificate does not
+enumerate those spaces. The earlier provisional `p3^3*p7^3` bound was too
+optimistic and has been removed from the checker.
 
 ## 4. Exact prime-2 Hecke filter
 
@@ -183,15 +195,14 @@ Certificate digest:
 1e293c16e00b5f71419cf5bc05718be58537f67d0acc1e7b207d2b72f9a61475
 ```
 
-These four packets are examples, not a complete enumeration of the sixteen
-levels.
+These four packets are examples, not a complete enumeration of the 24 levels.
 
 ## 5. Exact remaining task
 
 The global problem has been reduced to the following finite program:
 
-1. enumerate the parallel-weight-two Hilbert newforms over `K7` at the sixteen
-   levels dividing `p3^3*p7^3`;
+1. enumerate the parallel-weight-two Hilbert newforms over `K7` at the 24 levels
+   dividing `p3^5*p7^3`;
 2. apply the exact `a_P in {0,+/-5}` prime-2 filter, with the parity branch
    retained;
 3. attach the fixed-`7` form on `Q(sqrt(5))`;
