@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "literature-assisted-even-branch-conductor-at-7-correction",
+  "equation": "A^3+B^5=C^7",
+  "orientation": {
+    "paper_equation": "a^7+b^5+c^3=0",
+    "paper_variables": ["a=-C", "b=B", "c=A", "q=7", "p=5", "r=3"],
+    "parameter": "u=C^7/A^3"
+  },
+  "branch": {
+    "name": "Dahmen--Siksek even branch",
+    "conditions": ["30 divides C", "7 does not divide A*B", "gcd(A,B,C)=1"],
+    "paper_consequence": "q does not divide b*c"
+  },
+  "table_3_5_input": {
+    "source": "Pacetti--Villagra Torcomian, arXiv:2512.17845v1, Table 3.5",
+    "condition": "q does not divide b*c",
+    "reducible_degree_q_polynomial_exponent": 2,
+    "irreducible_degree_q_polynomial_exponent": 3,
+    "possible_exponents": [2, 3],
+    "excluded_exponent": 1
+  },
+  "complete_lmfdb_effect": {
+    "packet_excluded_by_conductor": "3.3.49.1-189.1-a",
+    "excluded_packet_exponent_pair": [1, 1],
+    "packet_remaining_before_existing_local_type_filter": "3.3.49.1-1323.1-a",
+    "remaining_packet_exponent_pair": [1, 2],
+    "existing_local_type_certificate": "Research/Signature357/mod5_even_7unit_local_type.json",
+    "conclusion": "the complete LMFDB low-level even branch is empty after the existing local-type filter"
+  },
+  "nonclaim": "Table 3.5 and the branch theorem are literature inputs; this certificate corrects the local conductor bookkeeping but does not enumerate higher levels or prove the full signature",
+  "certificate_sha256": "7e9c1d7dab68e16cf3444835f0e4ae8f21045306f4d970b09a7ee49c095bdc90"
+}

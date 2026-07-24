@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "retained-public-Magma fixed-7 and superspecial replay summary",
+  "source": {
+    "calculator": "https://magma.maths.usyd.edu.au/calc/",
+    "source_candidate_git_blob": "9c96357834f2298b4d91ab97812c38e84b8ef7a2",
+    "source_commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423"
+  },
+  "github_actions_artifact": {
+    "name": "signature357-fixed7-level23-online",
+    "digest": "sha256:ba92658b9cd44f7b7d35b7b3282b9a90b7b6d0d9028373c970705b8f7822add9",
+    "workflow_run_id": 30099726697
+  },
+  "level_exponents": [2, 3],
+  "packet_count": 35,
+  "batches": [
+    {
+      "batch": 1,
+      "auxiliary_primes": [7, 11, 13, 17, 19, 29, 31, 41, 59, 61, 71, 79, 89, 101, 109, 131, 139, 149, 151, 179, 181, 191, 199, 211, 229, 239],
+      "input_bytes": 46289,
+      "survivors": [1, 5, 7, 11, 12, 13, 16, 17, 21, 24, 28],
+      "superspecial_survivors": [1, 7, 11, 12, 13, 16, 21, 24, 28],
+      "output_tail_sha256": "66e08f8545b3e0076c4f1ea78dc7bf398bca632e16d09780be21e2eba6c13b36"
+    },
+    {
+      "batch": 2,
+      "auxiliary_primes": [241, 251, 269, 271, 281, 311, 331, 349, 359],
+      "input_bytes": 46653,
+      "survivors": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34],
+      "superspecial_survivors": [1, 7, 11, 12, 13, 16, 21, 24, 28, 33, 34],
+      "output_tail_sha256": "c6a334036930f877f07552c09483bb21b92c3ea4fe3c958e58255a3d2fd944c5"
+    },
+    {
+      "batch": 3,
+      "auxiliary_primes": [379, 389],
+      "input_bytes": 14798,
+      "survivors": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34],
+      "superspecial_survivors": [1, 7, 11, 12, 13, 16, 21, 24, 28, 33, 34],
+      "output_tail_sha256": "3fa6fb5cb63c8fa31052904151d39b12a8690eeb1f6a7d70da144623e1116379"
+    }
+  ],
+  "fixed7_survivors": [1, 5, 7, 11, 12, 13, 16, 17, 21, 24, 28],
+  "superspecial_survivors": [1, 7, 11, 12, 13, 16, 21, 24, 28],
+  "nonclaim": "the retained artifact digest pins the raw public-calculator output; this normalized summary does not by itself prove the modular-method source theorems",
+  "certificate_sha256": "fa07d9bc8718eb708b4b43a5964672d8098d7a502c045b1351ec2f2e8cd77db5"
+}
