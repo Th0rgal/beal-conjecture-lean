@@ -31,6 +31,16 @@ jobs:
             lmfdb-low-levels-sql.json
             lmfdb-low-levels-sql.err
           if-no-files-found: error
+      - name: Fetch low-norm traces for the four LMFDB survivors
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_lmfdb_survivor_traces.py > lmfdb-survivor-traces.json 2> lmfdb-survivor-traces.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-survivor-traces
+          path: |
+            lmfdb-survivor-traces.json
+            lmfdb-survivor-traces.err
+          if-no-files-found: error
       - name: Probe fixed-7 LMFDB level
         continue-on-error: true
         run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json 2> lmfdb-level18225.err
