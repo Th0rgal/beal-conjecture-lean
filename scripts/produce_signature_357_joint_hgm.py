@@ -70,24 +70,31 @@ def canonical_digest(value: Any) -> str:
 def gp_driver() -> str:
     primes = ",".join(str(prime) for prime in PRIMES)
     return rf'''
-default(parisizemax,2G);
+default(parisizemax,2000000000);
 K5=nfinit(x^2-5);
 K7=nfinit(x^3-x^2-2*x+1);
 P=[{primes}];
-for(ii=1,#P,
-  ell=P[ii];
-  f5=idealprimedec(K5,ell)[1][4];
-  f7=idealprimedec(K7,ell)[1][4];
-  for(u=2,ell-1,
-    t7=(1-u)%ell;
-    if(t7==0,t7=ell);
-    A7=algdep(ell^f5*hgm(t7,[1/5,-1/5],[1/3,-1/3],ell,f5),2);
-    A7=A7/content(A7);
-    A5=algdep(ell^f7*hgm(u,[1/7,-1/7],[1/3,-1/3],ell,f7),3);
-    A5=A5/content(A5);
-    print("JOINT|",ell,"|",u,"|",t7,"|",f5,"|",f7,"|",A7,"|",A5)
-  )
-);
+
+EmitRow(p0,u,f5,f7)=
+{{
+  local(t7,A7,A5);
+  t7=lift(Mod(1-u,p0));
+  A7=algdep(p0^f5*hgm(t7,[1/5,-1/5],[1/3,-1/3],p0,f5),2);
+  A7=A7/content(A7);
+  A5=algdep(p0^f7*hgm(u,[1/7,-1/7],[1/3,-1/3],p0,f7),3);
+  A5=A5/content(A5);
+  print("JOINT|",p0,"|",u,"|",t7,"|",f5,"|",f7,"|",A7,"|",A5);
+}};
+
+EmitPrime(p0)=
+{{
+  local(f5,f7);
+  f5=idealprimedec(K5,p0)[1][4];
+  f7=idealprimedec(K7,p0)[1][4];
+  for(u=2,p0-1,EmitRow(p0,u,f5,f7));
+}};
+
+for(ii=1,#P,EmitPrime(P[ii]));
 quit;
 '''
 
@@ -118,10 +125,12 @@ def main() -> int:
         match = pattern.match(line.strip())
         if match is None:
             continue
-        ell, u, t7, f5, f7 = (int(match.group(index)) for index in range(1, 6))
+        prime, u, t7, f5, f7 = (
+            int(match.group(index)) for index in range(1, 6)
+        )
         rows.append(
             {
-                "prime": ell,
+                "prime": prime,
                 "u_mod_prime": u,
                 "t7_mod_prime": t7,
                 "residue_degree_K5": f5,
@@ -135,6 +144,7 @@ def main() -> int:
     if len(rows) != expected_count:
         raise ProducerError(
             f"expected {expected_count} parameter rows, got {len(rows)}; "
+            f"GP stdout tail:\n{process.stdout[-4000:]}\n"
             f"GP stderr tail:\n{process.stderr[-4000:]}"
         )
     body = {
