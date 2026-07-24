@@ -156,7 +156,7 @@ This is still a finite modular-form problem. The current certificate does not
 enumerate those spaces. The earlier provisional `p3^3*p7^3` bound was too
 optimistic and has been removed from the checker.
 
-## 4. Exact prime-2 Hecke filter
+## 4. Residual prime-2 Hecke filter
 
 Let `P` be the unique prime of `K7` above `2`; `N(P)=8`. If `a_P` is the Hecke
 eigenvalue over `K7`, then after the degree-2 extension to `Q(zeta_21)^+`,
@@ -165,22 +165,32 @@ eigenvalue over `K7`, then after the degree-2 extension to `Q(zeta_21)^+`,
 Tr(Frob_P^2) = a_P^2 - 16.
 ```
 
-The two `B`-odd traces therefore impose:
+Both `B`-odd full-extension traces are congruent to `4 mod 5`. Level lowering
+therefore gives only the residual condition
 
 ```text
-C even: a_P = +/-5;
-A even: a_P = 0.
+4 = a_P^2 - 16 mod 5,
 ```
+
+and hence
+
+```text
+a_P = 0 mod 5.
+```
+
+It does **not** force the exact characteristic-zero values `0` or `+/-5`. The
+initial branch-specific exact-value interpretation was too strong and has been
+removed.
 
 A standard-library point counter over `F_8` checks four explicit rational
 Hilbert-newform packets:
 
-| packet | `a_P` | result |
-|---|---:|---|
-| `3.3.49.1-27.1-a` | `-4` | eliminated in both branches |
-| `3.3.49.1-49.1-a` | `-5` | compatible only when `C` is even |
-| `3.3.49.1-729.1-b` | `0` | compatible only when `A` is even |
-| `3.3.49.1-1323.1-b` | `-4` | eliminated in both branches |
+| packet | `a_P` | `a_P mod 5` | result |
+|---|---:|---:|---|
+| `3.3.49.1-27.1-a` | `-4` | `1` | eliminated |
+| `3.3.49.1-49.1-a` | `-5` | `0` | survives this filter |
+| `3.3.49.1-729.1-b` | `0` | `0` | survives this filter |
+| `3.3.49.1-1323.1-b` | `-4` | `1` | eliminated |
 
 Run:
 
@@ -192,7 +202,7 @@ python3 scripts/check_signature_357_mod5_hecke_filter.py
 Certificate digest:
 
 ```text
-1e293c16e00b5f71419cf5bc05718be58537f67d0acc1e7b207d2b72f9a61475
+6c9e5f506f06564b413a2663161fcdfd604816dc832d0015e72f22d28f09d191
 ```
 
 These four packets are examples, not a complete enumeration of the 24 levels.
@@ -203,8 +213,7 @@ The global problem has been reduced to the following finite program:
 
 1. enumerate the parallel-weight-two Hilbert newforms over `K7` at the 24 levels
    dividing `p3^5*p7^3`;
-2. apply the exact `a_P in {0,+/-5}` prime-2 filter, with the parity branch
-   retained;
+2. apply the exact residual condition `a_P=0 mod 5`;
 3. attach the fixed-`7` form on `Q(sqrt(5))`;
 4. use the exact parameter relation
 
