@@ -1,64 +1,211 @@
 {
-  "certificate_sha256": "99402cffdd500c72dc81d4c63332791401b1ff585062d7f45dd572ffa3122cb2",
+  "certificate_sha256": "8775d60876895a856e21762599b92c147e7bfb703c9d92ddd3e9d81107e89f54",
   "conditional_signature357_impact": {
     "assumption": "the candidate conditional proof of primitive signature (3,5,7) is correct",
-    "covered_prime_signatures_by_sum_below_19": [
-      [3, 3, 3],
-      [3, 3, 5],
-      [3, 3, 7],
-      [3, 3, 11],
-      [3, 5, 5],
-      [3, 5, 7],
-      [3, 7, 7],
-      [5, 5, 5],
-      [5, 5, 7]
+    "canonical_signatures_of_sum_below_16": [
+      {
+        "coverage": "Fermat's Last Theorem",
+        "signature": [
+          3,
+          3,
+          3
+        ]
+      },
+      {
+        "coverage": "solved special signature",
+        "signature": [
+          3,
+          3,
+          4
+        ]
+      },
+      {
+        "coverage": "solved (3,3,p) family",
+        "signature": [
+          3,
+          3,
+          5
+        ]
+      },
+      {
+        "coverage": "solved (3,3,p) family",
+        "signature": [
+          3,
+          3,
+          7
+        ]
+      },
+      {
+        "coverage": "solved special signature",
+        "signature": [
+          3,
+          4,
+          4
+        ]
+      },
+      {
+        "coverage": "solved special signature",
+        "signature": [
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "coverage": "reduce exponent 4 to 2; solved parent (2,3,7)",
+        "signature": [
+          3,
+          4,
+          7
+        ]
+      },
+      {
+        "coverage": "solved (p,p,3) family",
+        "signature": [
+          3,
+          5,
+          5
+        ]
+      },
+      {
+        "coverage": "candidate conditional proof in Signature357",
+        "signature": [
+          3,
+          5,
+          7
+        ]
+      },
+      {
+        "coverage": "Fermat's Last Theorem / solved special signature",
+        "signature": [
+          4,
+          4,
+          4
+        ]
+      },
+      {
+        "coverage": "reduce one exponent 4 to 2; solved special parent (2,4,5)",
+        "signature": [
+          4,
+          4,
+          5
+        ]
+      },
+      {
+        "coverage": "reduce one exponent 4 to 2; solved special parent (2,4,7)",
+        "signature": [
+          4,
+          4,
+          7
+        ]
+      },
+      {
+        "coverage": "reduce exponent 4 to 2; solved (p,p,2) family",
+        "signature": [
+          4,
+          5,
+          5
+        ]
+      },
+      {
+        "coverage": "Fermat's Last Theorem",
+        "signature": [
+          5,
+          5,
+          5
+        ]
+      }
     ],
-    "next_smallest_open_signature_by_exponent_sum": [3, 5, 11],
-    "proof_of_minimality": "enumerate sorted odd-prime triples of sum <19; FLT, the solved (3,3,n), the solved (n,n,3), the solved (5,5,7), and the solved (7,7,5) families cover every entry once (3,5,7) is assumed",
-    "solved_prime_signatures_of_sum_19": [[3, 3, 13], [5, 7, 7]]
+    "former_next_target_withdrawn": [
+      3,
+      5,
+      11
+    ],
+    "next_target": [
+      4,
+      5,
+      7
+    ],
+    "parent_prime_signature": [
+      2,
+      5,
+      7
+    ],
+    "parent_status": "the survey identifies (2,5,7) as the smallest currently open Fermat-Catalan signature",
+    "square_restriction": "the exponent-2 variable in the parent must itself be a square",
+    "unique_canonical_signature_of_sum_16": [
+      4,
+      5,
+      7
+    ]
   },
-  "equation": "A^x+B^y=C^z",
-  "nonclaim": "This certificate proves a global reduction of the exponent space and identifies the next finite frontier. It does not eliminate either infinite odd-prime core and therefore does not prove the Beal conjecture.",
-  "prime_core_partition": {
-    "equal_exponents": "p=p=p, excluded by Fermat's Last Theorem",
-    "three_distinct_exponents": "signatures (p,q,r) with distinct odd primes, an infinite open core",
-    "two_equal_exponents": "signatures (p,p,q), with several solved subfamilies but an infinite open core"
+  "corrected_canonical_core": {
+    "multiple_four_cases": {
+      "three_fours": "excluded by Fermat's Last Theorem at exponent 4",
+      "two_fours": "reduce one exponent 4 to 2; the resulting coefficient-one special/spherical signatures are in the solved survey inventory"
+    },
+    "odd_prime_core": {
+      "all_equal": "excluded by Fermat's Last Theorem",
+      "three_distinct": "an infinite distinct-prime core remains",
+      "two_equal": "an infinite repeated-prime core (p,p,q) remains after known subfamilies"
+    },
+    "one_four_core": {
+      "form": "(4,p,q) up to term placement, with p and q odd primes",
+      "interpretation": "a square-restricted subproblem of the prime signature (2,p,q), because X=A^2 turns A^4 into X^2",
+      "remaining_case": "p and q distinct",
+      "repeated_odd_prime_case": "(4,p,p) reduces to the solved prime signature (2,p,p)"
+    },
+    "statement": "every primitive Beal counterexample reduces to either an all-odd-prime signature or a signature with exactly one exponent 4 and two odd-prime exponents",
+    "withdrawn_claim": "canonical reduction does not imply that every counterexample has three odd-prime exponents"
   },
-  "prime_or_special_reduction": {
-    "beal_consequence": "every primitive Beal counterexample has three prime exponents; because all exponents are at least 3, they are odd primes",
-    "coefficient_one_beal_status": "all special signatures with minimum exponent at least 3 are solved and have no primitive positive solutions",
-    "remaining_non_all_prime_open_signatures": [[2, 3, 25], [2, 5, 9]],
-    "source_statement": "Ratcliffe--Grechuk classify every minimal non-all-prime hyperbolic signature as a special triple and state that only (2,5,9) and (2,3,25) remain open among coefficient-one non-all-prime signatures",
-    "special_signatures_with_minimum_at_least_3": [[3, 3, 4], [3, 3, 6], [3, 3, 9], [3, 4, 4], [3, 4, 5], [4, 4, 4]]
-  },
+  "nonclaim": "This certificate gives an unconditional canonical reduction and a literature-assisted corrected frontier. It does not eliminate the three infinite cores and does not prove Beal.",
   "required_uniform_breakthrough": {
-    "contractive_criterion": "a theorem excluding sorted prime signatures p<=q<=r whenever r>B(p,q), with B(p,q)<q outside a finite boundary, would eliminate the entire cofinal distinct-prime region",
-    "statement": "isolated signature proofs cannot terminate the global problem; one needs an infinite-family theorem covering the repeated-prime core and a cofinal region of the three-distinct-prime core"
+    "minimum_contract": "a finite-cover theorem for (4,p,q), (p,p,q), and distinct (p,q,r), with every imported modularity and level-lowering hypothesis discharged",
+    "statement": "isolated signature proofs cannot terminate Beal; all three remaining infinite cores must be covered by uniform theorems or reduced to a finite boundary"
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "scope": {
     "bases": "pairwise-coprime positive integers A,B,C",
-    "exponents": "integers x,y,z >= 3",
+    "equation": "A^x+B^y=C^z",
+    "exponents": "integers x,y,z>=3",
     "goal": "exclude primitive positive solutions"
   },
   "source_dependencies": {
-    "signature357": "candidate conditional research proof in Research/Signature357; not treated as a peer-reviewed theorem by this certificate",
+    "signature357": "candidate conditional research proof in Research/Signature357; not treated as a peer-reviewed theorem",
     "survey": {
       "arxiv": "2412.11933v2",
-      "authors": ["Ashleigh Ratcliffe", "Bogdan Grechuk"],
-      "relevant_items": ["Table 1.1", "Table 1.3", "Definition 1.5", "the statement that only (2,5,9) and (2,3,25) remain among non-all-prime coefficient-one signatures"],
-      "title": "Generalised Fermat equation: a survey of solved cases"
+      "published": "Expositiones Mathematicae 43 (2025), 125688",
+      "title": "Generalized Fermat equation: a survey of solved cases",
+      "used_for": [
+        "the prime-or-special reduction",
+        "the solved coefficient-one signature inventory",
+        "the statement that (2,5,7) is the smallest open Fermat-Catalan signature"
+      ]
     }
   },
-  "status": "literature-assisted-global-prime-exponent-reduction",
+  "status": "literature-assisted-canonical-beal-core-reduction",
   "unconditional_canonical_reduction": {
     "canonical_exponents": "4 or an odd prime",
     "equation_preservation": "(X^k)^e=X^(k*e)",
-    "existence_proof": "If n is odd, any prime divisor of n is odd. If n is even and 4 does not divide n, write n=2m with odd m>=3 and choose an odd prime divisor of m.",
-    "primitivity_preservation": "a prime dividing powers of two original pairwise-coprime bases would divide both original bases",
+    "existence_proof": "If 4 divides n use 4. Otherwise, if n is odd choose an odd prime divisor; if n=2m with m odd, choose an odd prime divisor of m.",
+    "lean_module": "BealUnified/ExponentReduction.lean",
+    "primitivity_preservation": "raising pairwise-coprime bases to positive powers preserves pairwise coprimality",
     "rule": [
-      {"condition": "4 divides n", "new_base": "X^(n/4)", "reduced_exponent": 4},
-      {"condition": "4 does not divide n", "new_base": "X^(n/p)", "reduced_exponent": "an odd prime p dividing n"}
+      {
+        "condition": "4 divides n",
+        "new_base": "X^(n/4)",
+        "reduced_exponent": 4
+      },
+      {
+        "condition": "4 does not divide n",
+        "new_base": "X^(n/p)",
+        "reduced_exponent": "an odd prime p dividing n"
+      }
     ]
-  }
+  },
+  "unresolved_infinite_cores": [
+    "square-constrained even core (4,p,q) with distinct odd primes p,q",
+    "repeated odd-prime core (p,p,q) with distinct odd primes p,q",
+    "three-distinct-odd-prime core (p,q,r)"
+  ]
 }
