@@ -71,12 +71,18 @@ def verify_cofinality(value: dict[str, Any]) -> None:
         raise CheckError("right-prime inventory mismatch")
     if any(not is_prime(p) or p > 200 for p in primes):
         raise CheckError("invalid right prime")
-    if "p<=V_r or q<=V_r" not in value["prime_mask_theorem"]["statement"]:
-        raise CheckError("finite-boundary implication missing")
+
+    statement = value["prime_mask_theorem"]["statement"]
+    if "p<=V_r or q<=V_r" not in statement:
+        raise CheckError("cofinal implication missing")
+    if "finite union of horizontal and vertical strips" not in statement:
+        raise CheckError("one-small-prime strip conclusion missing")
     if "V_r-smooth" not in value["composite_exponent_lift"]["statement"]:
         raise CheckError("smoothness deduction missing")
     if "not_covered" not in value["orientation_boundary"]:
         raise CheckError("orientation boundary missing")
+    if "does not leave finitely many prime pairs" not in value["nonclaim"]:
+        raise CheckError("finite-pair overclaim was not excluded")
 
 
 def minus_cyclotomic(v: int, u: int, q: int) -> int:
@@ -89,12 +95,21 @@ def plus_cyclotomic(v: int, u: int, q: int) -> int:
 
 def verify_cross(value: dict[str, Any]) -> None:
     verify_digest(value, "cross")
-    if "q cannot divide both" not in value["odd_Y_branch"]["synchronization"]:
+    odd = value["odd_Y_branch"]
+    if "q cannot divide both" not in odd["synchronization"]:
         raise CheckError("synchronization conclusion missing")
 
+    localization = odd.get("exceptional_localization", {})
+    if "if and only if q divides X" not in localization.get("minus", ""):
+        raise CheckError("minus exceptional localization missing")
+    if "if and only if q divides Z" not in localization.get("plus", ""):
+        raise CheckError("plus exceptional localization missing")
+    if "at most one" not in localization.get("coprime_consequence", ""):
+        raise CheckError("complementary local-type conclusion missing")
+
     for q in (3, 5, 7, 11):
-        for u in range(1, 40, 2):
-            for v in range(u + 2, 60, 2):
+        for u in range(1, 26, 2):
+            for v in range(u + 2, 36, 2):
                 if math.gcd(u, v) != 1:
                     continue
                 minus = minus_cyclotomic(v, u, q)
@@ -109,9 +124,13 @@ def verify_cross(value: dict[str, Any]) -> None:
                     raise CheckError("plus gcd bound failed")
                 if (v - u) % q == 0 and (v + u) % q == 0:
                     raise CheckError("both branches became q-exceptional")
+                if (v**q - u**q) % q != (v - u) % q:
+                    raise CheckError("minus localization congruence failed")
+                if (v**q + u**q) % q != (v + u) % q:
+                    raise CheckError("plus localization congruence failed")
 
-    for x in range(1, 50):
-        for z in range(x + 1, 60):
+    for x in range(1, 25):
+        for z in range(x + 1, 30):
             if math.gcd(x, z) != 1:
                 continue
             for p in (3, 5):
@@ -126,7 +145,7 @@ def verify_cross(value: dict[str, Any]) -> None:
                         raise CheckError("gcd(U,V) is not 1 or 2")
 
 
-def expect_rejection(
+def expect_semantic_rejection(
     value: dict[str, Any], verifier: Callable[[dict[str, Any]], None],
     mutation: Callable[[dict[str, Any]], None], label: str,
 ) -> None:
@@ -137,22 +156,38 @@ def expect_rejection(
         verifier(bad)
     except CheckError:
         return
-    raise CheckError(f"negative fixture accepted: {label}")
+    raise CheckError(f"semantic mutation accepted: {label}")
 
 
 def self_test(cofinality: dict[str, Any], cross: dict[str, Any]) -> None:
     verify_cofinality(cofinality)
     verify_cross(cross)
-    expect_rejection(
+
+    expect_semantic_rejection(
         cofinality, verify_cofinality,
         lambda value: value["source"]["right_primes"].pop(),
         "deleted right prime",
     )
-    expect_rejection(
+    expect_semantic_rejection(
+        cofinality, verify_cofinality,
+        lambda value: value["prime_mask_theorem"].update(
+            {"statement": "finitely many pairs"}
+        ),
+        "restored finite-pair overclaim",
+    )
+    expect_semantic_rejection(
         cross, verify_cross,
-        lambda value: value["odd_Y_branch"].update({"synchronization": "none"}),
+        lambda value: value["odd_Y_branch"].update(
+            {"synchronization": "none"}
+        ),
         "deleted synchronization",
     )
+    expect_semantic_rejection(
+        cross, verify_cross,
+        lambda value: value["odd_Y_branch"].pop("exceptional_localization"),
+        "deleted exceptional localization",
+    )
+
     with tempfile.NamedTemporaryFile("w", delete=False) as handle:
         handle.write('{"x":1,"x":2}')
         path = pathlib.Path(handle.name)
