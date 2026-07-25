@@ -1,0 +1,56 @@
+{
+  "certificate_sha256": "870b18a10355b37f987d5bd24b82d63e8ae908df439f18549253c3787439be43",
+  "conclusion": "for every primitive non-trivial solution and every prime p>13, at least one of rho_p^+ and rho_p^- is absolutely irreducible; if b is odd both are",
+  "even_b_branch": {
+    "conclusion": "the local restriction of rho_p^- at the prime above 2 is absolutely irreducible; hence rho_p^- is globally absolutely irreducible",
+    "condition": "2 divides b",
+    "conductor_source": "Pacetti--Villagra Torcomian, Proposition 3.15",
+    "local_type": {
+      "base_change": "the completion of Q(sqrt(5)) at 2 is the unramified quadratic extension, linearly disjoint from the ramified quadratic Q_2(i)",
+      "description": "supercuspidal induction from Q_2(i)/Q_2 of a character of order 4",
+      "residual_preservation": "all congruences have odd residual characteristic and the order-4 inducing character remains distinct from its conjugate modulo p",
+      "source": "Golfieri--Pacetti, Theorem 7.2"
+    },
+    "minus_conductor_at_2": 5,
+    "mod4_equation": "a^5 congruent to 3*c^3 modulo 4",
+    "primitive_parity": [
+      "a is odd",
+      "c is odd"
+    ]
+  },
+  "impact": "the residual-image obstruction is removed uniformly for the complete parity split of the (5,p,3) family",
+  "nonclaim": "This does not prove non-existence of solutions. In the even-b branch the source does not yet establish the fixed-5 modularity/large-image input needed to propagate modularity for rho_p^-; a separate automorphic and newform elimination remains necessary.",
+  "odd_b_branch": {
+    "conclusion": "both residual representations rho_p^+ and rho_p^- are absolutely irreducible for p>13",
+    "condition": "2 does not divide b",
+    "explicit_bound": "C(2)=13",
+    "source": "Pacetti--Villagra Torcomian, Corollary 7.7"
+  },
+  "schema_version": 1,
+  "scope": {
+    "base_field": "K=Q(sqrt(5))",
+    "equation": "a^5+b^p+c^3=0",
+    "representations": [
+      "rho_p^+",
+      "rho_p^-"
+    ],
+    "residual_exponent": "prime p>13",
+    "solution": "non-trivial primitive integers"
+  },
+  "source_dependencies": {
+    "gp": {
+      "arxiv": "2412.08804",
+      "items": [
+        "Theorem 7.2"
+      ]
+    },
+    "pvt": {
+      "arxiv": "2512.17845",
+      "items": [
+        "Proposition 3.15",
+        "Corollary 7.7"
+      ]
+    }
+  },
+  "status": "literature-assisted-parity-complete-residual-irreducibility"
+}
