@@ -6,6 +6,11 @@ be zero modulo 5. For B even, u-1=B^5/A^3 is 2-adically positive and the
 multiplicative local rule gives trace +/-9, namely 1 or 4 modulo 5. The three
 eigenvalues are distinct, so the same low-memory Hecke matrix gives separate
 B-odd, B-even, and complete parity-union dimensions.
+
+The request releases the ambient space and cached HMF data before computing the
+operator, releases the prime-specific quaternion precomputation before reducing
+the matrix modulo 5, and forms the parity union by summing three distinct
+Hecke eigenspaces instead of multiplying dense matrices.
 """
 from __future__ import annotations
 
@@ -33,34 +38,45 @@ def magma_code(e3: int, e7: int) -> str:
     return rf'''
 _<x> := PolynomialRing(Rationals());
 K<w> := NumberField(x^3-x^2-2*x+1); OK := Integers(K);
+SetStoreModularForms(K,false);
 I3 := Factorisation(3*OK)[1][1];
 I7 := Factorisation(7*OK)[1][1];
 I2 := Factorisation(2*OK)[1][1];
 F5 := GF(5);
 printf "PHASE=space-start\n";
 M0:=HilbertCuspForms(K,I3^{e3}*I7^{e7});
-printf "AMBIENT_DIM=%o\n",Dimension(M0);
+ambient:=Dimension(M0);
+printf "AMBIENT_DIM=%o\n",ambient;
 M:=NewSubspace(M0);
 n:=Dimension(M);
 printf "NEW_DIM=%o\n",n;
 O:=QuaternionOrder(M);
+delete M0;
+ClearStoredModularForms(K);
 DeleteHeckePrecomputation(O);
-printf "PHASE=old-hecke-cache-cleared\n";
+printf "PHASE=ambient-and-cache-cleared\n";
 printf "PHASE=T2-rational-start\n";
-TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,ThetaPrec:=0);
+TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=true,ThetaPrec:=0);
 printf "PHASE=T2-rational-ready\n";
+DeleteHeckePrecomputation(O,I2);
+ClearStoredModularForms(K);
+printf "PHASE=T2-precomputation-cleared\n";
 T:=Matrix(F5,TQ);
 delete TQ;
-DeleteHeckePrecomputation(O,I2);
 printf "PHASE=T2-mod5-ready\n";
 I:=IdentityMatrix(F5,n);
 Sodd:=Kernel(T);
-Seven:=Kernel((T-I)*(T+I));
-Sunion:=Kernel(T*(T-I)*(T+I));
+Seven_plus:=Kernel(T-I);
+Seven_minus:=Kernel(T+I);
+Seven:=Seven_plus+Seven_minus;
+Sunion:=Sodd+Seven;
 printf "B_ODD_TRACE0_DIM=%o\n",Dimension(Sodd);
+printf "B_EVEN_TRACE_PLUS1_DIM=%o\n",Dimension(Seven_plus);
+printf "B_EVEN_TRACE_MINUS1_DIM=%o\n",Dimension(Seven_minus);
 printf "B_EVEN_MULTIPLICATIVE_DIM=%o\n",Dimension(Seven);
 printf "TRACE_UNION_DIM=%o\n",Dimension(Sunion);
-printf "DIRECT_SUM_CHECK=%o\n",Dimension(Sodd)+Dimension(Seven)-Dimension(Sunion);
+printf "EVEN_DIRECT_SUM_CHECK=%o\n",Dimension(Seven_plus)+Dimension(Seven_minus)-Dimension(Seven);
+printf "PARITY_DIRECT_SUM_CHECK=%o\n",Dimension(Sodd)+Dimension(Seven)-Dimension(Sunion);
 printf "FINAL_DIM=%o\n",Dimension(Sunion);
 '''
 
@@ -79,7 +95,7 @@ def main() -> int:
     e3, e7 = args.pair
     code = magma_code(e3, e7)
     record: dict[str, Any] = {
-        "schema_version": 2,
+        "schema_version": 3,
         "status": "odd e3=3 mod-5 low-memory norm-8 parity decomposition",
         "calculator": base.CALCULATOR_URL,
         "field": "K7=Q(zeta_7)^+",
@@ -93,9 +109,11 @@ def main() -> int:
                 "residual_traces_mod5": [1, 4],
             },
         },
+        "union_implementation": "ker(T) direct-sum ker(T-1) direct-sum ker(T+1)",
         "memory_policy": (
-            "delete definite-Hecke precomputation before and after T_P2; "
-            "delete the low-memory rational matrix immediately after reduction modulo 5"
+            "delete ambient space and HMF cache after newspace construction; delete "
+            "prime-specific Hecke precomputation before reducing the rational matrix mod 5; "
+            "avoid dense matrix products"
         ),
         "soundness": (
             "zero B-odd trace-zero dimension closes the B-odd part of this level; "
@@ -111,20 +129,33 @@ def main() -> int:
     try:
         output = base.submit(code)
         odd_dimension = parse_int(output, "B_ODD_TRACE0_DIM")
+        even_plus_dimension = parse_int(output, "B_EVEN_TRACE_PLUS1_DIM")
+        even_minus_dimension = parse_int(output, "B_EVEN_TRACE_MINUS1_DIM")
         even_dimension = parse_int(output, "B_EVEN_MULTIPLICATIVE_DIM")
         union_dimension = parse_int(output, "TRACE_UNION_DIM")
-        direct_sum_error = parse_int(output, "DIRECT_SUM_CHECK")
-        if direct_sum_error != 0 or odd_dimension + even_dimension != union_dimension:
-            raise base.ResearchError("distinct norm-8 eigenspaces did not form a direct sum")
+        even_direct_sum_error = parse_int(output, "EVEN_DIRECT_SUM_CHECK")
+        parity_direct_sum_error = parse_int(output, "PARITY_DIRECT_SUM_CHECK")
+        if (
+            even_direct_sum_error != 0
+            or parity_direct_sum_error != 0
+            or even_plus_dimension + even_minus_dimension != even_dimension
+            or odd_dimension + even_dimension != union_dimension
+        ):
+            raise base.ResearchError(
+                "distinct norm-8 eigenspaces did not form the recorded direct sums"
+            )
         record.update(
             {
                 "request_status": "completed",
                 "ambient_dimension": parse_int(output, "AMBIENT_DIM"),
                 "new_dimension": parse_int(output, "NEW_DIM"),
                 "b_odd_trace0_dimension": odd_dimension,
+                "b_even_trace_plus1_dimension": even_plus_dimension,
+                "b_even_trace_minus1_dimension": even_minus_dimension,
                 "b_even_multiplicative_dimension": even_dimension,
                 "trace_union_dimension": union_dimension,
-                "direct_sum_check": direct_sum_error,
+                "even_direct_sum_check": even_direct_sum_error,
+                "parity_direct_sum_check": parity_direct_sum_error,
                 "final_dimension": parse_int(output, "FINAL_DIM"),
                 "output_tail": output[-6000:],
             }
