@@ -134,7 +134,6 @@
   },
   "nonclaim": "this reduction removes the infinite composite-exponent core but does not prove the repeated-prime or pairwise-distinct odd-prime cores, so it is not a proof of Beal",
   "reduction_conclusion": {
-    "candidate_signature357_impact": "assuming the candidate (3,5,7) theorem is correct, the first pairwise-distinct odd-prime node is removed, but no infinite prime-signature cone is closed because primes have no nontrivial exponent divisors",
     "literature_assisted": "after importing the three finite literature-solved boundary theorems, every primitive Beal counterexample has an all-odd-prime signature",
     "odd_prime_core": {
       "diagonal": "p=q=r, closed by Fermat's Last Theorem",
