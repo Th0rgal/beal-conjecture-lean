@@ -1,4 +1,4 @@
-# Breakthrough: the double-square summand mask is effectively finite
+# Breakthrough: the double-square summand large–large quadrant is empty
 
 Let
 
@@ -35,8 +35,10 @@ p\le V_r\text{ or }q\le V_r.
 }
 \]
 
-This is an effective finite-boundary theorem for the prime-signature sector
-whose two positive summand bases are squares.
+This is an effective **cofinal-quadrant theorem**. The surviving prime pairs
+lie in a finite union of horizontal and vertical strips indexed by primes
+at most \(V_r\). Those strips are still infinite; they are the next
+one-variable modular families.
 
 ## Lift to arbitrary even exponents
 
@@ -63,12 +65,26 @@ b\text{ is }V_r\text{-smooth}.
 }
 \]
 
-For fixed \(V_r\), smooth integers have density zero. Thus this theorem removes
-the entire double-square summand sector asymptotically, not merely a few
-individual signatures.
+For fixed \(V_r\), smooth integers have density zero. Thus the surviving
+composite half-exponent strips are infinite but density zero. The theorem
+removes the full large–large quadrant and contracts the rest to finitely many
+one-small-prime families.
 
 ## Orientation matters
 
 This theorem applies when the two **positive summands** are square-masked. A
 square on one summand and one on the right produces a difference of even
 powers and requires a different descent.
+
+## Exact remaining Type-I frontier
+
+For each listed \(r\), compute \(V_r\). For every prime
+\(p\le V_r\), the remaining strip is
+
+\[
+x^{2p}+y^{2q}=z^r,
+\qquad q\text{ prime and variable},
+\]
+
+together with the symmetric strips. This is a finite list of infinite
+one-parameter families, not a finite list of signatures.
