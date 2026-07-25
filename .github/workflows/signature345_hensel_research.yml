@@ -1,0 +1,23 @@
+name: Signature (3,4,5) Hensel research inventory
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hensel-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compute exhaustive p-adic solubility inventory
+        run: python3 scripts/inventory_signature_345_hensel.py > signature345-hensel-inventory.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature345-hensel-inventory
+          path: signature345-hensel-inventory.json
+          if-no-files-found: error

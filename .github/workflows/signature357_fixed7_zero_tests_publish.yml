@@ -1,0 +1,66 @@
+name: Signature 357 publish fixed7 packet zero tests
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - ".github/workflows/signature357_fixed7_zero_tests_publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/signature-345-357-certificates
+          fetch-depth: 0
+      - name: Run the four decisive tests
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py
+          > /tmp/fixed7-zero-tests.json
+      - name: Build fail-closed research manifest
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          source = json.loads(pathlib.Path('/tmp/fixed7-zero-tests.json').read_text())
+          if source.get('request_status') != 'completed' or len(source.get('rows', [])) != 4:
+              raise SystemExit('public Magma request did not return the four complete rows')
+          survivors = [int(packet) for packet, value in source['packet_survives_both_zero_tests'].items() if value]
+          body = {
+              'schema_version': 1,
+              'status': 'public-Magma-produced, standard-library-replayable fixed-7 packet trace certificate',
+              'equation': 'A^3+B^5=C^7',
+              'scope': 'Dahmen--Siksek odd branch, e3=2 fixed-7 level (2,3)',
+              'source_producer': 'scripts/run_signature_357_magma_fixed7_24_28_zero_tests.py',
+              'source_certificate_sha256': source['certificate_sha256'],
+              'required_condition': source['required_condition'],
+              'rows': source['rows'],
+              'surviving_packets': survivors,
+              'conclusion': (
+                  'the odd e3=2 block is eliminated'
+                  if not survivors
+                  else f'the decisive zero tests leave packets {survivors}'
+              ),
+              'nonclaim': 'the modular, local-collapse and semilinear-descent implications remain imported research inputs',
+          }
+          encoded = json.dumps(body, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+          result = dict(body)
+          result['certificate_sha256'] = hashlib.sha256(encoded).hexdigest()
+          path = pathlib.Path('Research/Signature357/fixed7_packets_24_28_zero_tests.json')
+          path.write_text(json.dumps(result, sort_keys=True, indent=2) + '\n')
+          PY
+      - name: Commit the produced certificate
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/fixed7_packets_24_28_zero_tests.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record fixed-7 packet 24/28 zero-trace result"
+          git pull --rebase origin agent/signature-345-357-certificates
+          git push origin HEAD:agent/signature-345-357-certificates

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "residual_prime": 7,
+  "source": {
+    "paper_arxiv": "2512.17845",
+    "repository": "lucasvillagra/GFE-5p3",
+    "commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423",
+    "path": "Outputs/TheoremA.txt",
+    "blob_sha": "890802467458f79b468738a90be4bf8e57f255ff",
+    "magma_version": "V2.29-2"
+  },
+  "levels": [
+    {
+      "level_exponents": [2, 2],
+      "dimension": 45,
+      "newform_count": 14,
+      "coefficient_field_equals_base_count": 4,
+      "transcript_mode": "summary",
+      "persistent_forms": [3, 9, 12],
+      "other_forms_exceptional_residual_primes": [2, 3, 5, 11, 19, 29],
+      "fixed7_complete": true,
+      "fixed7_survivors": [3, 9, 12],
+      "reason": "7 is absent from the exception set for every non-persistent form"
+    },
+    {
+      "level_exponents": [3, 2],
+      "dimension": 405,
+      "newform_count": 111,
+      "coefficient_field_equals_base_count": 11,
+      "transcript_mode": "flagged_per_form",
+      "forms_with_explicit_7": [21, 22, 26, 33, 61, 92, 98],
+      "failed_forms": [65, 78],
+      "fixed7_complete": true,
+      "fixed7_survivors": [21, 22, 26, 33, 61, 65, 78, 92, 98],
+      "reason": "the flagged transcript covers all 111 forms"
+    },
+    {
+      "level_exponents": [2, 3],
+      "dimension": 225,
+      "newform_count": 35,
+      "coefficient_field_equals_base_count": 21,
+      "transcript_mode": "summary",
+      "persistent_forms": [1, 7, 11, 12, 13, 16, 21],
+      "other_forms_exceptional_residual_primes": [2, 3, 5, 7, 11, 13, 19, 29, 31],
+      "fixed7_complete": false,
+      "fixed7_survivors_lower_bound": [1, 7, 11, 12, 13, 16, 21],
+      "required_rerun": "TheoremA(2,3,Data : flag := true)"
+    },
+    {
+      "level_exponents": [3, 3],
+      "dimension": 2025,
+      "newform_count": 112,
+      "coefficient_field_equals_base_count": 44,
+      "transcript_mode": "summary",
+      "persistent_forms": [22, 39],
+      "other_forms_exceptional_residual_primes": [2, 3, 5, 7, 11, 13, 19, 29, 31, 41, 61, 71, 79, 89, 101, 109],
+      "fixed7_complete": false,
+      "fixed7_survivors_lower_bound": [22, 39],
+      "required_rerun": "TheoremA(3,3,Data : flag := true)"
+    }
+  ],
+  "summary": {
+    "complete_levels": [[2, 2], [3, 2]],
+    "known_fixed7_survivor_counts": {"2,2": 3, "3,2": 9},
+    "incomplete_levels": [[2, 3], [3, 3]],
+    "total_newforms_in_complete_levels": 125,
+    "total_fixed7_survivors_in_complete_levels": 12
+  }
+}

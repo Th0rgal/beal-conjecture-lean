@@ -1,0 +1,43 @@
+name: LMFDB probe for signature 357
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - .github/workflows/lmfdb_probe_357.yml
+      - Research/Signature357/lmfdb_level18225_query.txt
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Query Hilbert forms at level norm 18225
+        run: |
+          set -euo pipefail
+          url="$(cat Research/Signature357/lmfdb_level18225_query.txt)"
+          curl --retry 3 --fail --silent --show-error "$url" -o hmf18225.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('hmf18225.json'))
+          print(json.dumps(data, indent=2, sort_keys=True))
+          records=data.get('data', [])
+          print('record_count',len(records))
+          open('hmf18225-summary.json','w').write(json.dumps({
+            'record_count':len(records),
+            'labels':[r.get('label') for r in records],
+            'records':records,
+          },indent=2,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lmfdb-level18225
+          path: |
+            hmf18225.json
+            hmf18225-summary.json
+          if-no-files-found: error

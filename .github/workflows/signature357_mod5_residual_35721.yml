@@ -1,0 +1,54 @@
+name: Signature 357 mod5 residual level 35721
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
+      - "scripts/run_signature_357_magma_mod5_residual_fast.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - ".github/workflows/signature357_mod5_residual_35721.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
+      - "scripts/run_signature_357_magma_mod5_residual_fast.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - ".github/workflows/signature357_mod5_residual_35721.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  residual:
+    strategy:
+      fail-fast: false
+      matrix:
+        prime: [13, 29, 41, 43]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce complete local mod-5 HGM candidate polynomials
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+      - name: Filter level 35721 in the repaired residual Hecke module
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_residual_fast.py
+          --local-data mod5-complete-local.json
+          --pair "2,2"
+          --prime "${{ matrix.prime }}"
+          > "mod5-residual-35721-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-residual-35721-${{ matrix.prime }}
+          path: |
+            mod5-complete-local.json
+            mod5-residual-35721-${{ matrix.prime }}.json
+          if-no-files-found: error

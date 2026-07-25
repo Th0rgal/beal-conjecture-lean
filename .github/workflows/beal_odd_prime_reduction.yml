@@ -1,0 +1,32 @@
+name: Beal odd-prime exponent reduction
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "Research/BEAL_ODD_PRIME_REDUCTION_2026-07-25.md"
+      - "Research/beal_odd_prime_reduction.json"
+      - "scripts/check_beal_odd_prime_reduction.py"
+      - ".github/workflows/beal_odd_prime_reduction.yml"
+  pull_request:
+    paths:
+      - "Research/BEAL_ODD_PRIME_REDUCTION_2026-07-25.md"
+      - "Research/beal_odd_prime_reduction.json"
+      - "scripts/check_beal_odd_prime_reduction.py"
+      - ".github/workflows/beal_odd_prime_reduction.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Reject mutated certificates
+        run: python3 scripts/check_beal_odd_prime_reduction.py --self-test
+      - name: Replay the retained certificate
+        run: python3 scripts/check_beal_odd_prime_reduction.py

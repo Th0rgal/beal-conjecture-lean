@@ -8,7 +8,7 @@ on:
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read # Read access to repository contents
-  pages: write # Write access to GitHub Pages
+  pages: write # Read access to GitHub Pages
   id-token: write # Write access to ID tokens
 
 jobs:
@@ -21,6 +21,159 @@ jobs:
           fetch-depth: 0
       - run: python3 scripts/check_research_checkpoints.py
       - uses: leanprover/lean-action@v1
+      - run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+      - name: Install PARI/GP research producer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce coupled mod-5/mod-7 HGM traces
+        continue-on-error: true
+        run: >-
+          python3 scripts/produce_signature_357_joint_hgm.py
+          > joint-hgm-traces.json
+          2> joint-hgm-traces.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-joint-hgm-traces
+          path: |
+            joint-hgm-traces.json
+            joint-hgm-traces.err
+          if-no-files-found: error
+      - name: Produce complete local mod-5 HGM traces
+        continue-on-error: true
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+          2> mod5-complete-local.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-complete-local
+          path: |
+            mod5-complete-local.json
+            mod5-complete-local.err
+          if-no-files-found: error
+      - name: Fetch LMFDB SQL-mirror low-level frontier
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_lmfdb_sql.py > lmfdb-low-levels-sql.json 2> lmfdb-low-levels-sql.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-low-levels-sql
+          path: |
+            lmfdb-low-levels-sql.json
+            lmfdb-low-levels-sql.err
+          if-no-files-found: error
+      - name: Fetch every indexed packet at the seven open high levels
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_lmfdb_high_levels.py > lmfdb-high-levels.json 2> lmfdb-high-levels.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-high-levels
+          path: |
+            lmfdb-high-levels.json
+            lmfdb-high-levels.err
+          if-no-files-found: error
+      - name: Fetch low-norm traces for the four LMFDB survivors
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_lmfdb_survivor_traces.py > lmfdb-survivor-traces.json 2> lmfdb-survivor-traces.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-survivor-traces
+          path: |
+            lmfdb-survivor-traces.json
+            lmfdb-survivor-traces.err
+          if-no-files-found: error
+      - name: Fetch pinned fixed-7 candidate polynomials
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_fixed7_inputs.py > fixed7-Data.txt 2> fixed7-Data.err
+      - name: Query all four fixed-7 Hilbert spaces
+        continue-on-error: true
+        run: python3 scripts/fetch_signature_357_fixed7_lmfdb_sql.py > fixed7-hmf.json 2> fixed7-hmf.err
+      - name: Replay all four fixed-7 levels
+        continue-on-error: true
+        run: >-
+          python3 scripts/check_signature_357_fixed7_lmfdb.py
+          --data fixed7-Data.txt
+          --hmf fixed7-hmf.json
+          > fixed7-all-levels.json
+          2> fixed7-all-levels.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-all-levels
+          path: |
+            fixed7-Data.txt
+            fixed7-Data.err
+            fixed7-hmf.json
+            fixed7-hmf.err
+            fixed7-all-levels.json
+            fixed7-all-levels.err
+          if-no-files-found: error
+      - name: Replay level-(2,3) on the public Magma calculator
+        continue-on-error: true
+        run: >-
+          python3 scripts/run_signature_357_magma_calculator.py
+          > fixed7-level23-online.json
+          2> fixed7-level23-online.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-level23-online
+          path: |
+            fixed7-level23-online.json
+            fixed7-level23-online.err
+          if-no-files-found: error
+      - name: Probe fixed-7 LMFDB level
+        continue-on-error: true
+        run: python3 scripts/probe_lmfdb_357.py > lmfdb-level18225-summary.json 2> lmfdb-level18225.err
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lmfdb-level18225
+          path: |
+            lmfdb-level18225-summary.json
+            lmfdb-level18225.err
+          if-no-files-found: error
+      - run: python3 scripts/check_signature_345_edwards.py --self-test
+      - run: python3 scripts/check_signature_345_edwards.py
+      - run: python3 scripts/check_signature_345_published_factorizations.py --self-test
+      - run: python3 scripts/check_signature_345_published_factorizations.py
+      - run: python3 scripts/inventory_signature_345_local.py > signature345-local-inventory.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature345-local-inventory
+          path: signature345-local-inventory.json
+          if-no-files-found: error
+      - run: python3 scripts/check_signature_357_fixed7.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7.py
+      - run: python3 scripts/check_signature_357_odd_irreducibility.py --self-test
+      - run: python3 scripts/check_signature_357_odd_irreducibility.py
+      - run: python3 scripts/check_signature_357_odd_cm_filter.py --self-test
+      - run: python3 scripts/check_signature_357_odd_cm_filter.py
+      - run: python3 scripts/check_signature_357_mod5_local.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_local.py
+      - run: python3 scripts/check_signature_357_mod5_irreducibility.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_irreducibility.py
+      - run: python3 scripts/check_signature_357_mod5_prime2.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_prime2.py
+      - run: python3 scripts/check_signature_357_mod5_bodd.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_bodd.py
+      - run: python3 scripts/check_signature_357_mod5_global.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_global.py
+      - run: python3 scripts/check_signature_357_mod5_noncm.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_noncm.py
+      - run: python3 scripts/check_signature_357_mod5_even_7unit.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_even_7unit.py
+      - run: python3 scripts/check_signature_357_lmfdb_low_levels.py --self-test
+      - run: python3 scripts/check_signature_357_lmfdb_low_levels.py
+      - run: python3 scripts/check_signature_357_fixed7_ray_characters.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7_ray_characters.py
+      - run: python3 scripts/check_signature_357_low_level_closure.py --self-test
+      - run: python3 scripts/check_signature_357_low_level_closure.py
+      - run: python3 scripts/check_signature_357_branch_levels.py --self-test
+      - run: python3 scripts/check_signature_357_branch_levels.py
+      - run: python3 scripts/check_signature_357_odd_low_level_bridge.py --self-test
+      - run: python3 scripts/check_signature_357_odd_low_level_bridge.py
+      - run: python3 scripts/check_signature_357_mod5_hecke_filter.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_hecke_filter.py
+      - run: python3 scripts/check_signature_357_prime7_local.py --self-test
+      - run: python3 scripts/check_signature_357_prime7_local.py
       # docgen-action@v1 only builds and deploys docs on push events, and its
       # Pages deployment 404s while GitHub Pages is disabled on this repo.
       # Re-add `leanprover-community/docgen-action@v1` once Pages is enabled.

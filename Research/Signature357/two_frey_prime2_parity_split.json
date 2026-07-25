@@ -1,0 +1,89 @@
+{
+  "certificate_sha256": "850104e9017c7c77192cd3683daa7dfd40022dad7bcd911c8ec50c1e5a00ea9e",
+  "equation": "A^3+B^5=C^7",
+  "fixed7_dependency": {
+    "certificate_sha256": "fa04a60320986ce5076a71a63f1b59bd69d7fd106f8ef08fb13822ae705d1dec",
+    "path": "Research/Signature357/fixed7_prime2_trace_union.json"
+  },
+  "local_fields": {
+    "fixed7": {
+      "field": "Q(sqrt(5))",
+      "prime_norm": 4,
+      "residual_characteristic": 7
+    },
+    "mod5": {
+      "cyclotomic_untwist_value_at_2": 1,
+      "field": "Q(zeta_7)^+",
+      "full_cyclotomic_residue_degree": 3,
+      "prime_norm": 8,
+      "real_subfield_residue_degree": 3,
+      "reason_untwist_is_trivial": "ord_7(2)=3, so the prime above 2 in the real cubic field splits in Q(zeta_7)/Q(zeta_7)^+",
+      "residual_characteristic": 5
+    }
+  },
+  "mod5_b_odd_dependency": {
+    "certificate_sha256": "bee6d05455bb7b8c04b165d6c80cb5275c6bf6e95da7abfbf7307c4a073ad022",
+    "path": "Research/Signature357/mod5_prime2_b_odd.json"
+  },
+  "nonclaim": "the fixed-7 point counts and parity arithmetic are replayed exactly; the mod-5 multiplicative local trace at u=1, the HGM identification, modularity and both level-lowering steps remain imported literature inputs",
+  "parity_branches": [
+    {
+      "fixed7_trace_integer": -1,
+      "fixed7_trace_mod7": 6,
+      "mod5_parameter_behavior": "u=C^7/A^3 has u=infinity because A is even",
+      "mod5_trace_integer": 0,
+      "mod5_trace_mod5": 0,
+      "name": "B_odd",
+      "parity": {
+        "A_mod2": 0,
+        "B_mod2": 1,
+        "C_mod2": 1
+      },
+      "residual_trace_pairs_mod5_mod7": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "fixed7_trace_integer": 0,
+      "fixed7_trace_mod7": 0,
+      "mod5_parameter_behavior": "u=C^7/A^3 satisfies v_2(u-1)=5*v_2(B)>0",
+      "mod5_trace_integers": [
+        -9,
+        9
+      ],
+      "mod5_trace_mod5": [
+        1,
+        4
+      ],
+      "name": "B_even",
+      "parity": {
+        "A_mod2": 1,
+        "B_mod2": 0,
+        "C_mod2": 1
+      },
+      "residual_trace_pairs_mod5_mod7": [
+        [
+          1,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "scope": {
+    "branch": "Dahmen--Siksek odd branch",
+    "conditions": [
+      "C odd",
+      "pairwise coprime positive A,B,C"
+    ],
+    "conclusion": "at the primes above 2 the two residual Frey traces lie in exactly three parity-labelled pairs"
+  },
+  "status": "literature-assisted-exact-two-Frey-prime2-parity-split"
+}

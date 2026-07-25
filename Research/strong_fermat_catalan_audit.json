@@ -1,0 +1,148 @@
+{
+  "concrete_arithmetic_counterexample": {
+    "absolute_q_split": false,
+    "ell": 2,
+    "explanation": "5 divides 10, so the relative decomposition-group intersection is trivial, but 2 is not 1 modulo 31",
+    "ord_p_ell": 10,
+    "ord_q_ell": 5,
+    "p": 11,
+    "q": 31,
+    "relative_split_condition": true
+  },
+  "conditional_salvage": {
+    "hypothesis": "accept all earlier arguments of the preprint through the relative splitting statement for the even prime divisor",
+    "necessary_condition": "ord_q(2) divides ord_p(2), hence q divides 2^ord_p(2)-1",
+    "small_p_table": [
+      {
+        "candidate_q_prime_divisors": [
+          3
+        ],
+        "ord_p_2": 4,
+        "p": 5
+      },
+      {
+        "candidate_q_prime_divisors": [],
+        "ord_p_2": 3,
+        "p": 7
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          31
+        ],
+        "ord_p_2": 10,
+        "p": 11
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          5,
+          7
+        ],
+        "ord_p_2": 12,
+        "p": 13
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          5
+        ],
+        "ord_p_2": 8,
+        "p": 17
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          7,
+          73
+        ],
+        "ord_p_2": 18,
+        "p": 19
+      },
+      {
+        "candidate_q_prime_divisors": [
+          89
+        ],
+        "ord_p_2": 11,
+        "p": 23
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          5,
+          43,
+          113,
+          127
+        ],
+        "ord_p_2": 28,
+        "p": 29
+      },
+      {
+        "candidate_q_prime_divisors": [],
+        "ord_p_2": 5,
+        "p": 31
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          5,
+          7,
+          13,
+          19,
+          73,
+          109
+        ],
+        "ord_p_2": 36,
+        "p": 37
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          5,
+          11,
+          31
+        ],
+        "ord_p_2": 20,
+        "p": 41
+      },
+      {
+        "candidate_q_prime_divisors": [
+          3,
+          127
+        ],
+        "ord_p_2": 14,
+        "p": 43
+      },
+      {
+        "candidate_q_prime_divisors": [
+          178481
+        ],
+        "ord_p_2": 23,
+        "p": 47
+      }
+    ]
+  },
+  "counterexample": {
+    "consequence": "D intersection H={1} does not imply D subset G and does not imply the fixed field of D contains the H-cyclotomic factor",
+    "groups": "G=C2, H=C2",
+    "intersection_with_H": "trivial",
+    "projection_to_H": "nontrivial",
+    "subgroup": "D=<(1,1)> in G x H"
+  },
+  "frobenius_correction": {
+    "claimed_absolute_split_condition": "ell splits completely in Q(zeta_q) iff n=1",
+    "corrected_implication": "relative splitting over Q(zeta_p) implies ord_q(ell) divides ord_p(ell), not ord_q(ell)=1",
+    "relative_split_condition": "D intersection H={1} iff n divides m",
+    "setup": "for an unramified rational prime ell, let m=ord_p(ell), n=ord_q(ell), and D=<Frob_ell> in C_m x C_n"
+  },
+  "impact": "the preprint's final parity contradiction is not established; it cannot currently be imported as a proof of all repeated-prime sum signatures",
+  "nonclaim": "this audit does not disprove the theorem stated in the preprint; it identifies a specific invalid inference and records the weaker conclusion that would follow from the stated relative splitting premise",
+  "schema_version": 1,
+  "source": {
+    "arxiv": "2509.18275v1",
+    "audited_step": "Lemma 6, passage from D_r intersection H'={1} to rational prime r splitting completely in K'/Q",
+    "paper": "Preda Mihailescu, The strong Fermat-Catalan Equation"
+  },
+  "status": "group-theoretic-audit-of-unreviewed-strong-Fermat-Catalan-preprint",
+  "certificate_sha256": "b73da4f7bd0d1210e97195ce234a191db6bfed3c4770fb47fe7c8839dddf79b8"
+}

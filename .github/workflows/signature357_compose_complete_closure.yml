@@ -1,0 +1,93 @@
+name: Signature 357 compose complete closure
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "Research/Signature357/even_branch_complete_closure.json"
+      - "Research/Signature357/fixed7_packets_24_28_zero_tests.json"
+      - "Research/Signature357/fixed7_level33_combined_residual.json"
+      - "Research/Signature357/odd_mod5_combined_residual_frontier.json"
+      - "Research/Signature357/odd_branch_cm_filter.json"
+      - "Research/Signature357/fixed7_level32_superspecial_closure.json"
+      - "Research/Signature357/low_level_complete_closure.json"
+      - "scripts/check_signature_357_even_branch_closure.py"
+      - "scripts/check_signature_357_fixed7_24_28_zero_tests.py"
+      - "scripts/check_signature_357_fixed7_level33_combined.py"
+      - "scripts/check_signature_357_odd_mod5_combined.py"
+      - "scripts/check_signature_357_odd_cm_filter.py"
+      - "scripts/check_signature_357_fixed7_level32_superspecial.py"
+      - "scripts/check_signature_357_low_level_closure.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Replay available source evidence
+        run: |
+          python3 scripts/check_signature_357_even_branch_closure.py
+          test ! -f Research/Signature357/fixed7_packets_24_28_zero_tests.json ||
+            python3 scripts/check_signature_357_fixed7_24_28_zero_tests.py
+          test ! -f Research/Signature357/fixed7_level33_combined_residual.json ||
+            python3 scripts/check_signature_357_fixed7_level33_combined.py
+          test ! -f Research/Signature357/odd_mod5_combined_residual_frontier.json ||
+            python3 scripts/check_signature_357_odd_mod5_combined.py
+          python3 scripts/check_signature_357_odd_cm_filter.py
+          python3 scripts/check_signature_357_fixed7_level32_superspecial.py
+          python3 scripts/check_signature_357_low_level_closure.py
+      - name: Compose only from explicit empty frontiers
+        run: |
+          python3 - <<'PY'
+          import copy,hashlib,json,pathlib
+          root=pathlib.Path('Research/Signature357')
+          def load_checked(path):
+              value=json.loads(path.read_text())
+              claimed=value.get('certificate_sha256')
+              unsigned=copy.deepcopy(value);unsigned.pop('certificate_sha256',None)
+              actual=hashlib.sha256(json.dumps(unsigned,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+              if claimed!=actual: raise SystemExit(f'invalid digest: {path}')
+              return value
+          even_path=root/'even_branch_complete_closure.json'
+          if not even_path.exists(): raise SystemExit('even-branch closure is absent')
+          even=load_checked(even_path)
+          even_closed='no primitive positive solution' in even.get('conclusion','')
+          fixed_route=False;fixed_sources={}
+          e32_path=root/'fixed7_packets_24_28_zero_tests.json'; level33_path=root/'fixed7_level33_combined_residual.json'
+          cm_path=root/'odd_branch_cm_filter.json'; level32_path=root/'fixed7_level32_superspecial_closure.json'
+          if e32_path.exists() and level33_path.exists():
+              e32=load_checked(e32_path);level33=load_checked(level33_path);cm=load_checked(cm_path);level32=load_checked(level32_path)
+              level22=next(row for row in cm.get('levels',[]) if row.get('level_exponents')==[2,2])
+              fixed_route=(level22.get('odd_branch_survivors_after_cm_filter')==[] and level32.get('conclusion')=='the Dahmen--Siksek odd branch has no solution lowering to fixed-7 level (3,2)' and e32.get('surviving_packets')==[] and level33.get('final_dimension')==0)
+              fixed_sources={'level22_path':str(cm_path),'level22_sha256':cm.get('certificate_sha256'),'level32_path':str(level32_path),'level32_sha256':level32.get('certificate_sha256'),'e3_2_path':str(e32_path),'e3_2_sha256':e32.get('certificate_sha256'),'level33_path':str(level33_path),'level33_sha256':level33.get('certificate_sha256')}
+          mod5_route=False;mod5_sources={}
+          low_path=root/'low_level_complete_closure.json';low=load_checked(low_path)
+          mod5_path=root/'odd_mod5_combined_residual_frontier.json'
+          if mod5_path.exists():
+              mod5=load_checked(mod5_path);mod5_route=(mod5.get('conclusion')=='the odd mod-5 residual frontier is empty' and 'complete LMFDB low-level frontier is empty' in low.get('conclusion',''))
+              mod5_sources={'low_level_path':str(low_path),'low_level_sha256':low.get('certificate_sha256'),'path':str(mod5_path),'sha256':mod5.get('certificate_sha256')}
+          if not (even_closed and (fixed_route or mod5_route)):
+              print(json.dumps({'even_closed':even_closed,'fixed7_odd_route_closed':fixed_route,'mod5_odd_route_closed':mod5_route},sort_keys=True))
+              raise SystemExit(0)
+          body={
+            'schema_version':1,
+            'status':'literature-assisted complete signature-(3,5,7) closure',
+            'equation':'A^3+B^5=C^7',
+            'even_branch':{'path':str(even_path),'sha256':even.get('certificate_sha256'),'closed':True},
+            'odd_branch_routes':{'fixed7_closed':fixed_route,'fixed7_sources':fixed_sources,'mod5_closed':mod5_route,'mod5_sources':mod5_sources},
+            'conclusion':'there is no primitive positive solution of A^3+B^5=C^7',
+            'nonclaim':'this is a certificate composition over imported modularity, level-lowering, local-type, HGM trace and semilinear-descent theorems; it is not imported by BealUnified.Trusted until those dependencies are separately certified',
+          }
+          encoded=json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode();result=dict(body);result['certificate_sha256']=hashlib.sha256(encoded).hexdigest()
+          pathlib.Path('/tmp/signature_357_complete_closure.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature-357-composed-closure
+          path: /tmp/signature_357_complete_closure.json
+          if-no-files-found: ignore

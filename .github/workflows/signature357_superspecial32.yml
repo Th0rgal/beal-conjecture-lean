@@ -1,0 +1,33 @@
+name: Signature 357 fixed-7 superspecial level 32
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_superspecial_32.py"
+      - ".github/workflows/signature357_superspecial32.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_superspecial_32.py"
+      - ".github/workflows/signature357_superspecial32.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  superspecial-32:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Filter fixed-7 level-(3,2) survivors by the trace-zero condition
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_superspecial_32.py
+          > fixed7-superspecial-32.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-superspecial-32
+          path: fixed7-superspecial-32.json
+          if-no-files-found: error

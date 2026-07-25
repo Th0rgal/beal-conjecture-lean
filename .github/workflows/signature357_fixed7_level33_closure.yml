@@ -1,0 +1,51 @@
+name: Signature 357 fixed7 level33 closure
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "Research/Signature357/fixed7_level33_combined_residual.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/signature-345-357-certificates
+          fetch-depth: 0
+      - run: python3 scripts/check_signature_357_fixed7_level33_combined.py
+      - name: Compose level-(3,3) conclusion
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          source_path=pathlib.Path('Research/Signature357/fixed7_level33_combined_residual.json')
+          source=json.loads(source_path.read_text())
+          closed=source['final_dimension']==0
+          body={
+            'schema_version':1,
+            'status':'literature-assisted fixed-7 level-(3,3) closure' if closed else 'fixed-7 level-(3,3) residual frontier',
+            'equation':'A^3+B^5=C^7',
+            'source_path':str(source_path),
+            'source_sha256':source['certificate_sha256'],
+            'final_residual_dimension':source['final_dimension'],
+            'conclusion':'fixed-7 level (3,3) is eliminated' if closed else 'fixed-7 level (3,3) retains a nonzero necessary residual subspace',
+            'nonclaim':'modularity, level lowering, superspeciality, local HGM traces and semilinear descent remain imported research inputs',
+          }
+          encoded=json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode();result=dict(body);result['certificate_sha256']=hashlib.sha256(encoded).hexdigest()
+          pathlib.Path('Research/Signature357/fixed7_level33_combined_frontier.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          PY
+      - name: Commit composed result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/fixed7_level33_combined_frontier.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record fixed-7 level-(3,3) combined frontier"
+          git pull --rebase origin agent/signature-345-357-certificates
+          git push origin HEAD:agent/signature-345-357-certificates

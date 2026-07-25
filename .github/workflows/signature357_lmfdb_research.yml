@@ -1,0 +1,77 @@
+name: Signature 357 LMFDB research fetch
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/fetch_signature_357_lmfdb_high_levels.py"
+      - "scripts/fetch_signature_357_rational_base_change.py"
+      - ".github/workflows/signature357_lmfdb_research.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fetch-covered-levels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install public-mirror client
+        run: python3 -m pip install --disable-pip-version-check "psycopg[binary]==3.2.9"
+
+      - name: Query complete low-level mod-5 HMF and norm-8 Hecke frontier
+        run: >-
+          python3 scripts/fetch_signature_357_lmfdb_sql.py
+          > Research/Signature357/lmfdb_low_levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-low-levels
+          path: Research/Signature357/lmfdb_low_levels.json
+          if-no-files-found: error
+
+      - name: Query every indexed packet at the seven open high levels
+        run: >-
+          python3 scripts/fetch_signature_357_lmfdb_high_levels.py
+          > signature357-lmfdb-high-levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-lmfdb-high-levels
+          path: signature357-lmfdb-high-levels.json
+          if-no-files-found: error
+
+      - name: Enumerate rational elliptic source newforms for possible base change
+        run: >-
+          python3 scripts/fetch_signature_357_rational_base_change.py
+          > signature357-rational-base-change.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-rational-base-change
+          path: signature357-rational-base-change.json
+          if-no-files-found: error
+
+      - name: Fetch pinned fixed-7 candidate polynomials
+        run: >-
+          python3 scripts/fetch_signature_357_fixed7_inputs.py
+          > fixed7-Data.txt
+      - name: Query all four fixed-7 Hilbert spaces
+        run: >-
+          python3 scripts/fetch_signature_357_fixed7_lmfdb_sql.py
+          > fixed7-hmf.json
+      - name: Self-test fixed-7 replay checker
+        run: python3 scripts/check_signature_357_fixed7_lmfdb.py --self-test
+      - name: Replay fixed-7 elimination at all four levels
+        run: >-
+          python3 scripts/check_signature_357_fixed7_lmfdb.py
+          --data fixed7-Data.txt
+          --hmf fixed7-hmf.json
+          > Research/Signature357/fixed7_all_levels.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-all-levels
+          path: |
+            fixed7-Data.txt
+            fixed7-hmf.json
+            Research/Signature357/fixed7_all_levels.json
+          if-no-files-found: error

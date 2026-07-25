@@ -1,0 +1,59 @@
+{
+  "certificate_sha256": "c32eb5bb8c060dc6c3625011aa073a0b7f081ad57d2aa51a58daa1abed4df141",
+  "correct_two_frey_coordinates": {
+    "gp_arguments": [
+      "z5=u^(-1)",
+      "z7=v^(-1)"
+    ],
+    "gp_relation": "(z5-1)*(z7-1)=1",
+    "mathematical_parameters": [
+      "u=C^7/A^3",
+      "v=-B^5/A^3",
+      "u+v=1"
+    ]
+  },
+  "deduction": {
+    "gp_argument": "z=t0^(-1)",
+    "reason": "the published RM trace polynomial occurs at the reciprocal argument and not at the literal mathematical parameter",
+    "source_anchor_verified": true
+  },
+  "impact": {
+    "marginal_candidate_sets": "unchanged, because inversion permutes F_l minus {0,1}",
+    "parameter_labelled_joint_graph": "must be regenerated using reciprocal GP arguments before it can support an elimination",
+    "producer_to_replace": "scripts/produce_signature_357_joint_hgm.py"
+  },
+  "legacy_producer_observation": {
+    "gp_argument_10_polynomial": "x^2-2*x-44",
+    "gp_argument_3_polynomial": "x^2-8*x+11",
+    "inverse_parameter_mod_prime": 10,
+    "json_certificate_sha256": "7e67256ace6aca8a0135892f224273e1f84de6feaf7a341ae76e0d0c0f9c93de",
+    "json_sha256": "ab17ae0b5e8251122dd6e50e40171743bef29e298288190917a66b5653a4404d",
+    "prime": 29,
+    "source_gp_blob_sha1": "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2",
+    "workflow_artifact_name": "signature357-joint-hgm-traces",
+    "workflow_artifact_zip_sha256": "2f71f188f6d6cb7a93ad82fe4b4d3d15cd552716f68c53293fe3a67d6ef111d2"
+  },
+  "nonclaim": "the source table and legacy PARI/GP output are imported data; this certificate fixes the implementation coordinate and does not by itself eliminate an odd-branch Hilbert packet or prove (3,5,7)",
+  "schema_version": 1,
+  "source_anchor": {
+    "genus2_frobenius_polynomial": "T^4-2*T^3+14*T^2-58*T+841",
+    "genus2_frobenius_polynomial_coefficients_ascending": [
+      841,
+      -58,
+      14,
+      -2,
+      1
+    ],
+    "mathematical_parameter": 3,
+    "paper": "Pacetti--Villagra Torcomian, arXiv:2512.17845v1, Lemma 7.3 and Table 7.1",
+    "prime_ideal": "(11+sqrt(5))/2",
+    "prime_norm": 29,
+    "rm_trace_polynomial": "x^2-2*x-44",
+    "rm_trace_polynomial_coefficients_ascending": [
+      -44,
+      -2,
+      1
+    ]
+  },
+  "status": "source-anchored-reciprocal-PARI-GP-finite-HGM-parameter-convention"
+}

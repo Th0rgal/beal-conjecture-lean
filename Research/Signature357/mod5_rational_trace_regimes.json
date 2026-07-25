@@ -1,0 +1,23 @@
+{
+  "certificate_sha256": "2cc5ced90006e274fabef257decde93fb80cf4356594e0d5ce7be6b8693939c8",
+  "consequences": {
+    "13": "for a rational packet: trace 0 forces 13|C; trace +/-1 forces 13|B; trace +/-2 is generic; 13|A is impossible",
+    "29": "for a rational packet: trace +/-2 forces 29|C; trace 0 forces 29|A*B; traces +/-1 are impossible",
+    "41": "for a rational packet: trace +/-1 is generic; trace 0 forces 41|A*C; trace +/-2 forces 41|B",
+    "43": "for a rational packet: trace 3 forces 43|C; trace +/-1 forces 43|B; traces 0 or 2 are impossible; 43|A is impossible"
+  },
+  "equation": "A^3+B^5=C^7",
+  "motive": "H((1/7,-1/7),(1/3,-1/3)|u)",
+  "nonclaim": "this certificate applies only when the packet Hecke trace reduces to F5; coefficient-field packets require polynomial-gcd tests over the relevant residue field",
+  "parameter": "u=C^7/A^3",
+  "primes": {
+    "13": {"extension_residue_degree": 2, "regimes": {"generic": {"base_trace_roots_mod5": [2, 3], "candidate_count": 11, "full_trace_roots_mod5": [3]}, "infinity": {"base_trace_roots_mod5": [], "candidate_count": 3, "full_trace_roots_mod5": []}, "multiplicative": {"base_trace_roots_mod5": [1, 4]}, "zero": {"base_trace_roots_mod5": [0], "candidate_count": 7, "full_trace_roots_mod5": [4]}}},
+    "29": {"extension_residue_degree": 2, "regimes": {"generic": {"base_trace_roots_mod5": [], "candidate_count": 27, "full_trace_roots_mod5": []}, "infinity": {"base_trace_roots_mod5": [0], "candidate_count": 3, "full_trace_roots_mod5": [2]}, "multiplicative": {"base_trace_roots_mod5": [0]}, "zero": {"base_trace_roots_mod5": [2, 3], "candidate_count": 7, "full_trace_roots_mod5": [1]}}},
+    "41": {"extension_residue_degree": 2, "regimes": {"generic": {"base_trace_roots_mod5": [1, 4], "candidate_count": 39, "full_trace_roots_mod5": [4]}, "infinity": {"base_trace_roots_mod5": [0], "candidate_count": 3, "full_trace_roots_mod5": [3]}, "multiplicative": {"base_trace_roots_mod5": [2, 3]}, "zero": {"base_trace_roots_mod5": [0], "candidate_count": 7, "full_trace_roots_mod5": [3]}}},
+    "43": {"extension_residue_degree": 1, "regimes": {"generic": {"base_trace_roots_mod5": [], "candidate_count": 41, "full_trace_roots_mod5": []}, "infinity": {"base_trace_roots_mod5": [], "candidate_count": 3, "full_trace_roots_mod5": []}, "multiplicative": {"base_trace_roots_mod5": [1, 4]}, "zero": {"base_trace_roots_mod5": [3], "candidate_count": 7, "full_trace_roots_mod5": [3]}}}
+  },
+  "regime_meaning": {"generic": "ell does not divide A*B*C", "infinity": "ell divides A", "multiplicative": "ell divides B", "zero": "ell divides C"},
+  "schema_version": 1,
+  "source": {"primes": [13, 29, 41, 43], "producer": "scripts/produce_signature_357_mod5_complete_local.py", "producer_output_sha256": "c23020b933a36bbc9c0f10a81269b45428b055274d90223965ad1d605c3baf97", "residual_characteristic": 5},
+  "status": "finite-rational-Hecke-trace-regime-certificate"
+}

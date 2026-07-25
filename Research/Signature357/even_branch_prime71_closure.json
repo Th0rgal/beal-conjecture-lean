@@ -1,0 +1,101 @@
+{
+  "certificate_sha256": "2ce989bbc726ef2aa9a115b72d8a62f031cec66db2f123e26adaed7adfada20a",
+  "conclusion": {
+    "logic": [
+      "71 divides C, so u=C^7/A^3 is the zero specialization modulo 71",
+      "the only mod-5 Hilbert packet at level 5103 is the cyclic base change of 63.a6",
+      "its full-cyclotomic trace is 3 modulo 5",
+      "the zero-specialization HGM trace set does not contain 3 modulo 5"
+    ],
+    "result": "the Dahmen--Siksek even branch is empty"
+  },
+  "equation": "A^3+B^5=C^7",
+  "nonclaim": "the Dahmen--Siksek dichotomy, fixed-7 ray/Hasse implications, cyclic base change, conductor identification, modularity and level lowering are imported results; the finite-field, point-count and Jacobi-sum arithmetic is replayed independently; this is not a proof of the odd branch or of the full Beal conjecture",
+  "packet_trace_at_71": {
+    "base_trace": 0,
+    "curve_point_count": 72,
+    "full_trace": -142,
+    "full_trace_formula": "a^2-2*71",
+    "full_trace_mod5": 3,
+    "residue_degree_F21": 2,
+    "residue_degree_K7": 1
+  },
+  "schema_version": 1,
+  "scope": {
+    "branch": "Dahmen--Siksek even branch",
+    "conclusion": "no primitive positive solution exists in the even branch",
+    "hypotheses": [
+      "30 divides C",
+      "7 does not divide A*B",
+      "gcd(A,B,C)=1"
+    ]
+  },
+  "source_chain": {
+    "base_change_identification": {
+      "ainvariants": [1, -1, 0, 9, 0],
+      "conductor_over_K7": "p3^2*p7",
+      "conductor_over_Q": 63,
+      "cremona_curve": "63a1",
+      "equation": "y^2+x*y=x^3-x^2+9*x",
+      "lmfdb_curve": "63.a6",
+      "reason": "cyclic base change gives a rational Hilbert packet at level 5103; the Magma space has a unique dimension-one packet, namely packet 1"
+    },
+    "branch_frontier": {
+      "consequence": "after low-level closure, the even branch can only lower to mod-5 level norm 5103",
+      "path": "Research/Signature357/branch_specific_level_frontier.json",
+      "sha256": "963e1e0d1b7a399d3cd823aff75c5d0f8a6c0154bec0b5ac8934040902c14aa4"
+    },
+    "fixed7_global_sieve": {
+      "consequence": "71 divides C",
+      "path": "Research/Signature357/fixed7_global_reducibility_sieve.json",
+      "sha256": "d09fafd74cb4513067372721b15327e23d386e26a87933fee744240458cdd46d"
+    },
+    "fixed7_prime7_hasse": {
+      "consequence": "7 divides C",
+      "path": "Research/Signature357/fixed7_prime7_hasse_obstruction.json",
+      "sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1"
+    },
+    "hgm_trace_formula": {
+      "commit": "e88f914c577ab6cf9a45e5cdd82c1993477fb423",
+      "formula": "-q^(-1)*(chi(t)^(-1/7)*J(chi^(4/21),chi^(-10/21))+chi(t)^(1/7)*J(chi^(-6/21),chi^(10/21)))",
+      "git_blob_sha1": "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2",
+      "path": "Codes/GPcode.gp",
+      "repository": "lucasvillagra/GFE-5p3",
+      "specialization": "u=0 for H((1/7,-1/7),(1/3,-1/3)|u)"
+    },
+    "level5103_magma": {
+      "artifact_name": "signature357-mod5-magma-5103",
+      "artifact_sha256": "e7d237f5ffb6233ac4614ba173276a2906574f22f2514d78ded68f7ab0055c79",
+      "facts": {
+        "level_exponents": [2, 1],
+        "marginal_local_survivors": [1],
+        "norm8_survivors": [1],
+        "packet_count": 10,
+        "packet_dimensions": [1, 2, 3, 3, 6, 6, 6, 6, 6, 12],
+        "space_dimension": 73
+      },
+      "head_sha": "5dacd478ee2b70e24a6a504e86b32338d03a23d9",
+      "json_certificate_sha256": "7f3c2ec509db01a9aeecbc6767fe39c3abb6e2cf880327bb071717ce11168be9",
+      "workflow_run_id": 30108921223
+    }
+  },
+  "status": "literature-and-computation-assisted-even-branch-prime71-closure",
+  "zero_hgm_computation": {
+    "coefficient_field_mod5": "F_(5^6)=F_5[z]/(z^6+z^5+z^4+1)",
+    "coefficient_generator": [0, 0, 0, 0, 1, 1],
+    "coefficient_generator_order": 15624,
+    "distinct_trace_value_count": 7,
+    "field_generator": [1, 1],
+    "field_generator_order": 5040,
+    "finite_field": "F_(71^2)=F_71[w]/(w^2-7)",
+    "galois_embedding_count": 12,
+    "jacobi_1_counts": [240, 248, 236, 244, 237, 263, 252, 216, 248, 260, 252, 237, 214, 228, 216, 240, 236, 252, 229, 263, 228],
+    "jacobi_1_exponents": [4, -10],
+    "jacobi_2_counts": [240, 228, 263, 229, 252, 236, 240, 216, 228, 214, 237, 252, 260, 248, 216, 252, 263, 237, 244, 236, 248],
+    "jacobi_2_exponents": [-6, 10],
+    "parameter_character_class_count": 7,
+    "scalar_trace_residues_mod5": [4],
+    "target_absent": true,
+    "target_trace_mod5": 3
+  }
+}

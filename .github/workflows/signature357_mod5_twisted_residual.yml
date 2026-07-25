@@ -1,0 +1,126 @@
+name: Signature 357 odd mod5 cyclotomic-untwist residual levels
+
+concurrency:
+  group: signature357-odd-mod5-untwist-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "Research/Signature357/odd_mod5_cyclotomic_untwist.json"
+      - "Research/Signature357/galois_trace_symmetry.json"
+      - "scripts/check_signature_357_odd_mod5_cyclotomic_untwist.py"
+      - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
+      - "scripts/run_signature_357_magma_mod5_residual_fast.py"
+      - "scripts/run_signature_357_magma_mod5_inert_residual.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_mod5_inert_local.py"
+      - ".github/workflows/signature357_mod5_twisted_residual.yml"
+  pull_request:
+    paths:
+      - "Research/Signature357/odd_mod5_cyclotomic_untwist.json"
+      - "Research/Signature357/galois_trace_symmetry.json"
+      - "scripts/check_signature_357_odd_mod5_cyclotomic_untwist.py"
+      - "scripts/run_signature_357_magma_mod5_residual_spaces.py"
+      - "scripts/run_signature_357_magma_mod5_residual_fast.py"
+      - "scripts/run_signature_357_magma_mod5_inert_residual.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_mod5_inert_local.py"
+      - ".github/workflows/signature357_mod5_twisted_residual.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  residual:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {e3: 2, e7: 1, norm: 5103, prime: 13}
+          - {e3: 2, e7: 1, norm: 5103, prime: 29}
+          - {e3: 2, e7: 1, norm: 5103, prime: 41}
+          - {e3: 2, e7: 1, norm: 5103, prime: 43}
+          - {e3: 3, e7: 0, norm: 19683, prime: 13}
+          - {e3: 3, e7: 0, norm: 19683, prime: 29}
+          - {e3: 3, e7: 0, norm: 19683, prime: 41}
+          - {e3: 3, e7: 0, norm: 19683, prime: 43}
+          - {e3: 3, e7: 1, norm: 137781, prime: 13}
+          - {e3: 3, e7: 1, norm: 137781, prime: 29}
+          - {e3: 3, e7: 1, norm: 137781, prime: 41}
+          - {e3: 3, e7: 1, norm: 137781, prime: 43}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Replay untwist certificate
+        run: python3 scripts/check_signature_357_odd_mod5_cyclotomic_untwist.py
+      - name: Produce full-cyclotomic local trace polynomials
+        run: >-
+          python3 scripts/produce_signature_357_mod5_complete_local.py
+          > mod5-complete-local.json
+      - name: Filter one twisted level at one auxiliary prime
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_residual_fast.py
+          --local-data mod5-complete-local.json
+          --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
+          --prime "${{ matrix.prime }}"
+          > "mod5-untwist-${{ matrix.norm }}-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-untwist-${{ matrix.norm }}-${{ matrix.prime }}
+          path: |
+            mod5-complete-local.json
+            mod5-untwist-${{ matrix.norm }}-${{ matrix.prime }}.json
+          if-no-files-found: error
+
+  inert-residual:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {e3: 2, e7: 1, norm: 5103, prime: 11}
+          - {e3: 2, e7: 1, norm: 5103, prime: 23}
+          - {e3: 3, e7: 0, norm: 19683, prime: 11}
+          - {e3: 3, e7: 0, norm: 19683, prime: 23}
+          - {e3: 3, e7: 1, norm: 137781, prime: 11}
+          - {e3: 3, e7: 1, norm: 137781, prime: 23}
+    runs-on: ubuntu-latest
+    # The inert producer has a bounded 35-minute subprocess timeout; retain
+    # time for setup and the residual filter instead of cancelling it early.
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Replay untwist certificate
+        run: python3 scripts/check_signature_357_odd_mod5_cyclotomic_untwist.py
+      - name: Replay Galois trace symmetry certificate
+        run: python3 scripts/check_signature_357_galois_trace_symmetry.py
+      - name: Produce inert-prime local trace polynomials
+        run: >-
+          python3 scripts/produce_signature_357_mod5_inert_local.py
+          > mod5-inert-local.json
+      - name: Apply scalar trace and residual Hecke filters
+        run: >-
+          python3 scripts/run_signature_357_magma_mod5_inert_residual.py
+          --local-data mod5-inert-local.json
+          --pair "${{ matrix.e3 }},${{ matrix.e7 }}"
+          --prime "${{ matrix.prime }}"
+          > "mod5-inert-${{ matrix.norm }}-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-mod5-inert-${{ matrix.norm }}-${{ matrix.prime }}
+          path: |
+            mod5-inert-local.json
+            mod5-inert-${{ matrix.norm }}-${{ matrix.prime }}.json
+          if-no-files-found: error

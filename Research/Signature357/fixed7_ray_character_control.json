@@ -1,0 +1,105 @@
+{
+  "certificate_sha256": "a1c779c4ce53e445aab3b041745d7df87e72cf0059c28e760776f2a987e5e28a",
+  "equation": "A^3+B^5=C^7",
+  "nonclaim": "the ray-class classification is imported; this certificate replays the finite F49 eliminations and the character-independent prime-41 target",
+  "order4_exclusion_at17": {
+    "conclusion": "every order-4 ray character is excluded in all four local regimes",
+    "field_model": "F49=F7[i]/(i^2+1)",
+    "full_cyclotomic_residue_degree_ratio": 2,
+    "generic_candidate_polynomials": [
+      "x+31",
+      "x+10",
+      "x+17",
+      "x+7",
+      "x+15",
+      "x+2",
+      "x-20",
+      "x+6",
+      "x+11",
+      "x-23",
+      "x-18",
+      "x+20",
+      "x-28",
+      "x+20",
+      "x-20"
+    ],
+    "infinity_candidate_polynomials": [
+      "x+382"
+    ],
+    "norm_mod7": 2,
+    "possible_order4_values": [
+      "i",
+      "-i"
+    ],
+    "products": {
+      "-i": {
+        "generic": [
+          4,
+          2
+        ],
+        "infinity": [
+          6,
+          0
+        ],
+        "multiplicative": [
+          4,
+          0
+        ],
+        "zero": [
+          6,
+          0
+        ]
+      },
+      "i": {
+        "generic": [
+          4,
+          5
+        ],
+        "infinity": [
+          6,
+          0
+        ],
+        "multiplicative": [
+          4,
+          0
+        ],
+        "zero": [
+          6,
+          0
+        ]
+      }
+    },
+    "rational_prime": 17,
+    "ray_coordinate": [
+      3,
+      0
+    ],
+    "residue_degree_base": 2,
+    "zero_candidate_polynomials": [
+      "x+578"
+    ]
+  },
+  "quadratic_trace_at41": {
+    "base_trace_mod7_for_both_values": 0,
+    "conclusion": "the fixed-7 reducible target used at 41 is independent of the remaining quadratic ray character",
+    "degree_doubling_rule": "w=z^2-2*N",
+    "full_trace_mod7_for_both_values": 2,
+    "norm_mod7": 6,
+    "prime_norm": 41,
+    "rational_prime": 41,
+    "remaining_character_values": [
+      1,
+      -1
+    ]
+  },
+  "reducible_shape": {
+    "base_field": "Q(sqrt(5))",
+    "ray_class_group": "C4 x C2",
+    "ray_modulus": "3*(sqrt(5))*infinity_1*infinity_2",
+    "residual_characteristic": 7,
+    "semisimplification": "psi*chi_7 direct_sum psi^(-1)",
+    "source_status": "imported ray-class character classification"
+  },
+  "schema_version": 1,
+  "status": "finite-ray-character-control-for-fixed7-reducibility"
+}

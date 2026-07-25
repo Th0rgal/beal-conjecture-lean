@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "research-certificate-with-imported-CM-support-and-fixed7-results",
+  "scope": {
+    "equation": "A^3+B^5=C^7",
+    "branch": "Dahmen--Siksek odd branch",
+    "conditions": [
+      "A>0",
+      "B>0",
+      "C>0",
+      "C odd",
+      "3 does not divide A*B*C",
+      "5 does not divide A*C",
+      "7 divides A"
+    ],
+    "paper_orientation": "a=B,b=-C,c=A,p=7,q=5,r=3"
+  },
+  "source_chain": {
+    "cm_support": "Pacetti--Villagra Torcomian Proposition 5.8: CM implies every prime divisor of b lies in {q,r}",
+    "fixed7_level22": "public TheoremA(2,2,Data) transcript and Theorem A proof",
+    "fixed7_level32": "public flagged TheoremA(3,2,Data) transcript and Theorem A proof",
+    "ghost_exclusion": "Pacetti--Villagra Torcomian Theorem 7.18 under 3 not dividing c"
+  },
+  "cm_support_arithmetic": {
+    "paper_b": "-C",
+    "allowed_prime_support": [3, 5],
+    "odd_branch_coprime_to": 15,
+    "only_positive_C": 1,
+    "minimum_positive_left_side": 2,
+    "right_side_if_C_is_1": 1,
+    "conclusion": "the odd branch cannot give a CM specialization"
+  },
+  "levels": [
+    {
+      "level_exponents": [2, 2],
+      "newform_count": 14,
+      "fixed7_complete": true,
+      "fixed7_survivors": [3, 9, 12],
+      "persistent_cm_forms": [3, 9, 12],
+      "odd_branch_survivors_after_cm_filter": [],
+      "conclusion": "the odd branch has no solution lowering to level (2,2)"
+    },
+    {
+      "level_exponents": [3, 2],
+      "newform_count": 111,
+      "fixed7_complete": true,
+      "fixed7_survivors": [21, 22, 26, 33, 61, 65, 78, 92, 98],
+      "persistent_cm_forms": [64, 65, 69, 73, 77, 78, 79],
+      "cm_intersection": [65, 78],
+      "odd_branch_survivors_after_cm_filter": [21, 22, 26, 33, 61, 92, 98]
+    },
+    {
+      "level_exponents": [2, 3],
+      "newform_count": 35,
+      "fixed7_complete": false,
+      "persistent_cm_forms": [1, 7, 11, 12, 13, 16, 21],
+      "persistent_forms_excluded_in_odd_branch": true,
+      "required_rerun": "TheoremA(2,3,Data : flag := true)"
+    },
+    {
+      "level_exponents": [3, 3],
+      "newform_count": 112,
+      "fixed7_complete": false,
+      "persistent_ghost_forms": [22, 39],
+      "ghost_hypothesis_in_beal_orientation": "3 does not divide A",
+      "persistent_forms_excluded_in_odd_branch": true,
+      "required_rerun": "TheoremA(3,3,Data : flag := true)"
+    }
+  ],
+  "conclusions": [
+    "all persistent CM packets are impossible in the Dahmen--Siksek odd branch",
+    "the complete fixed-7 level (2,2) is closed in the odd branch",
+    "the complete fixed-7 level (3,2) has exactly seven non-CM survivors after the CM filter",
+    "at the two incomplete levels only additional p=7-specific packets can remain after the persistent CM/ghost filters"
+  ],
+  "certificate_sha256": "a6b5ec10af2857f92e183e7c10b3d9e572c90da31522817618df3b5cf411b8f1"
+}

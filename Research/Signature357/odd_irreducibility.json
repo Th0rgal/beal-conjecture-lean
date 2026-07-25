@@ -1,0 +1,50 @@
+{
+  "conclusion": {
+    "arithmetic": "7 does not divide 900",
+    "representation": "the residual mod-7 plus-Frey representation is absolutely irreducible",
+    "strengthening": "the corrected finite computation gives C(2)=5 rather than the published value 13"
+  },
+  "imported_lemmas": [
+    "the BCDF/Pacetti--Villagra reducibility theorem applies to the potentially good prime above 2 and forces the residual prime to divide the corrected resultant obstruction",
+    "the genus-2 Jacobian realizes the two-dimensional plus representation over Q(sqrt(5))",
+    "irreducibility and absolute irreducibility agree for this odd residual representation over the totally real base field"
+  ],
+  "nonclaim": "The finite trace correction is replayed independently; the reducibility theorem, motive/Jacobian identification and absolute-irreducibility implication remain imported literature inputs.",
+  "schema_version": 4,
+  "scope": {
+    "claim": "the plus residual mod-7 Frey representation is absolutely irreducible",
+    "equation": "A^3+B^5=C^7",
+    "field": "K=Q(sqrt(5))",
+    "hypotheses": [
+      "pairwise coprime positive A,B,C",
+      "C odd"
+    ],
+    "orientation": "B^5+(-C)^7+A^3=0",
+    "residual_prime": 7
+  },
+  "status": "research-certificate-with-imported-reducibility-theorem-and-corrected-prime2-traces",
+  "trace_correction": {
+    "corrected_absolute_norm_obstruction": 900,
+    "corrected_base_traces": [
+      0,
+      -1
+    ],
+    "path": "Research/Signature357/fixed7_prime2_trace_correction.json",
+    "prime_support": [
+      2,
+      3,
+      5
+    ],
+    "sha256": "875640813abfd1ff8fcb4d1a153f8f25727a65033699de71a445bc93615d578f"
+  },
+  "withdrawn": {
+    "old_bound_C2": 13,
+    "old_obstruction": 6084,
+    "published_trace_pair": [
+      -1,
+      -8
+    ],
+    "reason": "the published pair mixes the base trace -1 from one parity case with the degree-two trace -8 from the other; the exact base traces are 0 and -1"
+  },
+  "certificate_sha256": "c3ad9df684192ecec6bc789744b0462e969b516cafdf4505ee96d72aa48fcafd"
+}

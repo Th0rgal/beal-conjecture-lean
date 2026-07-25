@@ -1,0 +1,47 @@
+name: Signature 357 fixed7 packets 24 28 traces
+
+concurrency:
+  group: signature357-fixed7-packet43-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_24_28_traces.py"
+      - "scripts/run_signature_357_magma_fixed7_trace_one.py"
+      - ".github/workflows/signature357_fixed7_packets_24_28.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_357_magma_fixed7_24_28_traces.py"
+      - "scripts/run_signature_357_magma_fixed7_trace_one.py"
+      - ".github/workflows/signature357_fixed7_packets_24_28.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        packet: [24, 28]
+        prime: [43]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read one decisive fixed-7 Hecke trace
+        run: >-
+          python3 scripts/run_signature_357_magma_fixed7_trace_one.py
+          --packet "${{ matrix.packet }}"
+          --prime "${{ matrix.prime }}"
+          > "fixed7-packet-${{ matrix.packet }}-prime-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-packet-${{ matrix.packet }}-prime-${{ matrix.prime }}
+          path: "fixed7-packet-${{ matrix.packet }}-prime-${{ matrix.prime }}.json"
+          if-no-files-found: error

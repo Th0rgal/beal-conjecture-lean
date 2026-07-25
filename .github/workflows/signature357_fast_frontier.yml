@@ -1,0 +1,73 @@
+name: Signature 357 fast frontier checks
+
+concurrency:
+  group: signature357-fast-frontier-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+  pull_request:
+    paths:
+      - "Research/Signature357/**"
+      - "scripts/check_signature_357_*.py"
+      - ".github/workflows/signature357_fast_frontier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 scripts/check_signature_357_mod5_noncm.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_noncm.py
+      - run: python3 scripts/check_signature_357_mod5_even_7unit.py --self-test
+      - run: python3 scripts/check_signature_357_mod5_even_7unit.py
+      - run: python3 scripts/check_signature_357_lmfdb_low_levels.py --self-test
+      - run: python3 scripts/check_signature_357_lmfdb_low_levels.py
+      - run: python3 scripts/check_signature_357_fixed7_ray_characters.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7_ray_characters.py
+      - run: python3 scripts/check_signature_357_fixed7_global_ray.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7_global_ray.py
+      - run: python3 scripts/check_signature_357_fixed7_prime7_hasse.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7_prime7_hasse.py
+      - run: python3 scripts/check_signature_357_fixed7_level32_superspecial.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7_level32_superspecial.py
+      - run: python3 scripts/check_signature_357_low_level_closure.py --self-test
+      - run: python3 scripts/check_signature_357_low_level_closure.py
+      - run: python3 scripts/check_signature_357_branch_levels.py --self-test
+      - run: python3 scripts/check_signature_357_branch_levels.py
+      - run: python3 scripts/check_signature_357_gp_parameter_convention.py --self-test
+      - run: python3 scripts/check_signature_357_gp_parameter_convention.py
+      - run: python3 scripts/check_signature_357_odd_p7_twist.py --self-test
+      - run: python3 scripts/check_signature_357_odd_p7_twist.py
+      - run: python3 scripts/check_signature_357_odd_mod5_cyclotomic_untwist.py --self-test
+      - run: python3 scripts/check_signature_357_odd_mod5_cyclotomic_untwist.py
+      - run: python3 scripts/check_signature_357_odd_mod5_exact_monodromy.py --self-test
+      - run: python3 scripts/check_signature_357_odd_mod5_exact_monodromy.py
+      - run: python3 scripts/check_signature_357_odd_7adic_kummer.py --self-test
+      - run: python3 scripts/check_signature_357_odd_7adic_kummer.py
+      - run: python3 scripts/check_signature_357_galois_trace_symmetry.py --self-test
+      - run: python3 scripts/check_signature_357_galois_trace_symmetry.py
+      - run: python3 scripts/check_signature_357_odd_e3_2_local_collapse.py --self-test
+      - run: python3 scripts/check_signature_357_odd_e3_2_local_collapse.py
+      - run: python3 scripts/check_signature_357_odd_e3_2_prime29_closure.py --self-test
+      - run: python3 scripts/check_signature_357_odd_e3_2_prime29_closure.py
+      - run: python3 scripts/check_signature_357_fixed7_prime2_trace_union.py --self-test
+      - run: python3 scripts/check_signature_357_fixed7_prime2_trace_union.py
+      - run: python3 scripts/check_signature_357_two_frey_prime2_parity.py --self-test
+      - run: python3 scripts/check_signature_357_two_frey_prime2_parity.py
+      - run: python3 scripts/check_signature_357_remaining_frontier.py --self-test
+      - run: python3 scripts/check_signature_357_remaining_frontier.py
+      - run: python3 scripts/check_signature_357_even_rational_two_frey.py --self-test
+      - run: python3 scripts/check_signature_357_even_rational_two_frey.py
+      - run: python3 scripts/check_signature_357_even_rational_global.py --self-test
+      - run: python3 scripts/check_signature_357_even_rational_global.py
+      - run: python3 scripts/check_signature_357_even_branch_closure.py --self-test
+      - run: python3 scripts/check_signature_357_even_branch_closure.py
+      - run: python3 scripts/check_signature_357_odd_low_level_bridge.py --self-test
+      - run: python3 scripts/check_signature_357_odd_low_level_bridge.py

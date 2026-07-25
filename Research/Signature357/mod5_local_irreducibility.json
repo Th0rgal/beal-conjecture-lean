@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "research-certificate-with-imported-conductor-lemma",
+  "scope": {
+    "equation": "A^3+B^5=C^7",
+    "orientation": "(-C)^7+B^5+A^3=0",
+    "field": "K7=Q(zeta_7)^+",
+    "residual_prime": 5,
+    "unit_hypotheses": [
+      "3 does not divide A*B*C",
+      "7 does not divide A*B*C"
+    ],
+    "parameter": "t=A^3*C^(-7)"
+  },
+  "source_audit": {
+    "conductor_paper": "arXiv:2503.21568",
+    "proposition": "6.10",
+    "printed_typo": "the irreducible case prints wild conductor 0 for r not dividing Delta and 1 for v_r(Delta)=0",
+    "corrected_input": "the preceding curve conductor formula and proof give residual Swan conductor 1 when the local polynomial is irreducible and v_r(Delta)=0"
+  },
+  "local_polynomials": {
+    "prime7": {
+      "modulus": 49,
+      "polynomial": "u^7-7*u^5+14*u^3-7*u+4*t-2",
+      "admissible_t_count": 35,
+      "reducible_t": [
+        3,
+        13,
+        25,
+        37,
+        47
+      ]
+    },
+    "prime3": {
+      "modulus": 9,
+      "polynomial": "u^3-3*u+2-4*t^(-1)",
+      "admissible_t": [
+        2,
+        5,
+        8
+      ],
+      "reducible_t": [
+        2
+      ]
+    }
+  },
+  "combined": {
+    "modulus": 441,
+    "admissible_count": 105,
+    "simultaneous_exceptional": [
+      47,
+      74,
+      101,
+      209,
+      380
+    ],
+    "irreducible_count": 100,
+    "fraction": "20/21"
+  },
+  "swan_parity": {
+    "residue_characteristic": 5,
+    "wild_primes": [
+      3,
+      7
+    ],
+    "determinant_unramified_on_wild_inertia": true,
+    "absolutely_reducible_swan_is_even": true,
+    "source_irreducible_polynomial_swan": 1,
+    "conclusion": "if either local polynomial is irreducible, the residual mod-5 representation is absolutely irreducible"
+  },
+  "certificate_sha256": "0bff45240e701a71fc2e41de0739666ff78281c1a9543972ce7f74567c1a04d2"
+}

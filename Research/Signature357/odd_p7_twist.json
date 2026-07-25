@@ -1,0 +1,124 @@
+{
+  "certificate_sha256": "1ac352af8ce0d9d324112c6741bebef06124734d4708e9737bace6804c5931fc",
+  "compatible_system": {
+    "field": "K7=Q(zeta_7)^+",
+    "mathematical_parameter": "u=C^7/A^3",
+    "odd_branch_conditions": [
+      "3 does not divide A*B*C",
+      "7 divides A",
+      "7 does not divide B*C"
+    ],
+    "orientation": "(-C)^7+B^5+A^3=0",
+    "residual_characteristic": 5,
+    "swapped_parameter": "s=u^(-1)=A^3/C^7"
+  },
+  "darmon_curve_anchor": {
+    "common_reduction_mod3": "x^3+2*x^2+2*x+2",
+    "curve": "y^2=(x+2)*(x^7-7*x^5+14*x^3-7*x+2-4*s)",
+    "finite_fields": [
+      "F_13",
+      "F_13^2 via x^2+3*x+1",
+      "F_13^3 via x^3+4*x^2+1"
+    ],
+    "negative_twist_polynomial_mod3_descending": [
+      1,
+      1,
+      2,
+      1
+    ],
+    "point_counts": [
+      7,
+      227,
+      2401
+    ],
+    "specialization_s": 3,
+    "trace_polynomial": "x^3-7*x^2+14*x-7",
+    "trace_polynomial_coefficients_descending": [
+      1,
+      -7,
+      14,
+      -7
+    ]
+  },
+  "equation": "A^3+B^5=C^7",
+  "frontier_consequence": {
+    "new_exact_e7": 2,
+    "odd_e3_values": [
+      2,
+      3
+    ],
+    "old_possible_e7": [
+      0,
+      1,
+      2
+    ],
+    "reduction": "five odd levels collapse to two",
+    "remaining_odd_mod5_levels": [
+      35721,
+      964467
+    ],
+    "removed_odd_mod5_levels": [
+      729,
+      5103,
+      19683,
+      137781
+    ]
+  },
+  "local_conclusion": {
+    "congruence_twist_at_7": "unramified (indeed locally trivial)",
+    "odd_branch_residual_conductor_exponent_at_7": 2,
+    "reason": "Remark 3.12 fixes the first-row exponent at 2 under an unramified congruence twist; the ramified quadratic character survives reduction modulo 5"
+  },
+  "nonclaim": "the finite point counts and character arithmetic are replayed here; the hypergeometric congruence, the parameter-independent twist theorem, local conductor comparison and Hilbert level lowering remain imported inputs, and this certificate alone does not prove the odd branch or Beal",
+  "producer_anchor": {
+    "hgm_trace_polynomial": "x^3+2*x^2-x-1",
+    "hgm_trace_polynomial_coefficients_descending": [
+      1,
+      2,
+      -1,
+      -1
+    ],
+    "json_certificate_sha256": "7e67256ace6aca8a0135892f224273e1f84de6feaf7a341ae76e0d0c0f9c93de",
+    "json_sha256": "ab17ae0b5e8251122dd6e50e40171743bef29e298288190917a66b5653a4404d",
+    "legacy_artifact": "signature357-joint-hgm-traces",
+    "prime": 13,
+    "source_gp_blob_sha1": "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2",
+    "swapped_parameter": 3,
+    "workflow_artifact_zip_sha256": "2f71f188f6d6cb7a93ad82fe4b4d3d15cd552716f68c53293fe3a67d6ef111d2"
+  },
+  "quadratic_twist_group": {
+    "behavior_at_7": {
+      "chi_-3": "locally trivial because -3=4 is a square mod 7",
+      "chi_-7": "ramified",
+      "chi_21": "ramified",
+      "trivial": "trivial"
+    },
+    "extension": "Q(zeta_21)/K7 is biquadratic",
+    "quadratic_radicals": {
+      "chi_-3": -3,
+      "chi_-7": -7,
+      "chi_21": 21,
+      "trivial": 1
+    },
+    "reason_prime_13": "13 is -1 modulo 7 and splits completely in K7; the trace-polynomial comparison has positive sign",
+    "surviving_characters": [
+      "chi_-3",
+      "trivial"
+    ],
+    "values_at_prime_13": {
+      "chi_-3": 1,
+      "chi_-7": -1,
+      "chi_21": -1,
+      "trivial": 1
+    }
+  },
+  "schema_version": 1,
+  "source_dependencies": {
+    "darmon_curve": "arXiv:2512.17845v1, equations (17),(18) and Proposition 3.1",
+    "exact_conductor": "arXiv:2512.17845v1, Remark 3.12, applied after exchanging a<->c and q<->r",
+    "mod3_congruence": "arXiv:2512.17845v1, Proposition 3.2 and Remark 3.3",
+    "nonclaim": "the cited motive congruence and conductor theorem are imported literature results",
+    "parameter_inversion": "arXiv:2512.17845v1, equation (23) and Proposition 3.14"
+  },
+  "status": "source-anchored-unramified-mod3-congruence-twist-at-7"
+}

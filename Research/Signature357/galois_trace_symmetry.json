@@ -1,0 +1,88 @@
+{
+  "certificate_sha256": "81bb184460ad4af3ab19fbdd1f19c7cc8458c3f5fe8094546628cfffbafce116",
+  "computational_consequences": {
+    "inert_prime_filter": "for a Hecke trace polynomial P, residual compatibility at an inert rational prime requires gcd(P mod p, X^p-X) to have positive degree",
+    "split_prime_filter_fixed7": "at two conjugate primes impose T_sigma-T^7",
+    "split_prime_filter_mod5": "at three conjugate primes impose T_sigma-T^5 and T_sigma2-T^25 on the same residual eigensystem",
+    "target_application": "apply the inert-prime tests at 13 and 43 to fixed-7 packets 24 and 28, and add inert mod-5 primes to the residual Hecke-module sieve"
+  },
+  "equation": "A^3+B^5=C^7",
+  "nonclaim": "the semilinear descent from the Q-defined realization and the modular identification are imported motive-theoretic inputs; the finite-field, splitting and polynomial consequences are independently replayable and do not by themselves prove (3,5,7)",
+  "schema_version": 1,
+  "source_dependencies": {
+    "galois_action": "Golfieri--Pacetti arXiv:2412.08804v2, equation (16): coefficient conjugation sends H((a,b),(c,d)|t) to H((ja,jb),(jc,jd)|t) for rational t",
+    "modularity": "the two residual systems are identified with Hilbert-newform Galois representations after the existing irreducibility and level-lowering inputs",
+    "rational_realization": "the relevant rank-two constituents occur in the new part of a hyperelliptic curve defined over Q, with real multiplication by the indicated coefficient field"
+  },
+  "status": "literature-assisted-semilinear-Galois-trace-symmetry",
+  "systems": {
+    "fixed7": {
+      "base_and_coefficient_field": "K5=Q(sqrt(5))",
+      "defining_polynomial": "x^2-x-1",
+      "example_inert_primes": [
+        2,
+        3,
+        7,
+        13,
+        17,
+        23,
+        43
+      ],
+      "example_split_primes": [
+        11,
+        19,
+        29,
+        31,
+        41
+      ],
+      "galois_generator_on_residue_field": "x -> x^7",
+      "inert_classes_mod5": [
+        2,
+        3
+      ],
+      "inert_prime_scalar_condition": "if the prime of K5 is fixed by Gal(K5/Q), then a_l^7=a_l, hence a_l lies in F7",
+      "residual_characteristic": 7,
+      "residue_degree": 2,
+      "residue_field_size": 49,
+      "split_classes_mod5": [
+        1,
+        4
+      ],
+      "trace_relation": "a_{sigma(l)}=a_l^7"
+    },
+    "mod5": {
+      "base_and_coefficient_field": "K7=Q(zeta_7)^+",
+      "defining_polynomial": "x^3+x^2-2*x-1",
+      "example_inert_primes": [
+        2,
+        3,
+        11,
+        17,
+        23,
+        31
+      ],
+      "example_split_primes": [
+        13,
+        29,
+        41,
+        43
+      ],
+      "galois_generator_on_residue_field": "x -> x^5",
+      "inert_classes_mod7": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "inert_prime_scalar_condition": "if the prime of K7 is fixed by Gal(K7/Q), then a_l^5=a_l, hence a_l lies in F5",
+      "residual_characteristic": 5,
+      "residue_degree": 3,
+      "residue_field_size": 125,
+      "split_classes_mod7": [
+        1,
+        6
+      ],
+      "trace_relation": "a_{sigma(l)}=a_l^5 and a_{sigma^2(l)}=a_l^25"
+    }
+  }
+}

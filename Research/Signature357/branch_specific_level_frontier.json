@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "status": "literature-assisted-Hasse-refined-branch-specific-conductor-frontier",
+  "scope": {
+    "equation": "A^3+B^5=C^7",
+    "orientation": "a=-C,b=B,c=A,q=7,p=5,r=3",
+    "field": "K7=Q(zeta_7)^+",
+    "residual_prime": 5,
+    "prime_norms": {"p3": 27, "p7": 7},
+    "coarse_exponent_range": {"e3": [0, 1, 2, 3], "e7": [0, 1, 2, 3]}
+  },
+  "source_dependencies": {
+    "dichotomy": "Dahmen--Siksek: even branch 30|C and 7 does not divide A*B; odd branch 3 does not divide A*B*C and 7|A",
+    "prime3_table": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Corollary 3.6 and Table 3.2",
+    "prime7_table": "Pacetti--Villagra Torcomian arXiv:2512.17845v1, Proposition 3.14 and Table 3.5",
+    "fixed7_prime7_hasse_path": "Research/Signature357/fixed7_prime7_hasse_obstruction.json",
+    "fixed7_prime7_hasse_sha256": "7eb72df221042cc7bcf85d0ea2a3e48975580ccebd66082b8b12aa45a557b1c1",
+    "level_lowering": "the independent absolutely irreducible residual mod-5 representation lowers to a parallel-weight-two Hilbert newform at the residual conductor"
+  },
+  "branches": {
+    "even": {
+      "conditions": ["30 divides C", "7 does not divide A*B", "the fixed-7 residual representation is reducible"],
+      "orientation_consequences": ["3 divides a", "7 divides a"],
+      "allowed_e3": [1, 2],
+      "allowed_e7": [1],
+      "note": "the fixed-7 residual-prime Hasse obstruction forces 7|C; the prime-7 conductor table then gives e7=1"
+    },
+    "odd": {
+      "conditions": ["3 does not divide A*B*C", "7 divides A"],
+      "orientation_consequences": ["3 does not divide a*b*c", "7 divides c", "7 does not divide b"],
+      "allowed_e3": [2, 3],
+      "allowed_e7": [0, 1, 2]
+    }
+  },
+  "coarse_level_count": 16,
+  "branch_specific_exponent_pairs": [[1, 1], [2, 0], [2, 1], [2, 2], [3, 0], [3, 1], [3, 2]],
+  "branch_specific_level_norms": [189, 729, 5103, 19683, 35721, 137781, 964467],
+  "removed_exponent_pairs": [[0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 2], [1, 3], [2, 3], [3, 3]],
+  "branch_specific_level_count": 7,
+  "maximum_level_norm": 964467,
+  "maximum_norm_reduction_factor": 7,
+  "complete_low_level_closure": {
+    "path": "Research/Signature357/low_level_complete_closure.json",
+    "sha256": "8386331173c63f51a2fb9357216e0fb5098ff5c3104d7df706bd05c677ea7575",
+    "closed_admissible_norms_at_most_2059": [189, 729]
+  },
+  "remaining_high_level_norms": [5103, 19683, 35721, 137781, 964467],
+  "remaining_high_level_count": 5,
+  "even_branch_remaining_norms": [5103],
+  "odd_branch_remaining_norms": [5103, 19683, 35721, 137781, 964467],
+  "conclusion": "after the prime-7 Hasse obstruction and complete low-level closure, only five mod-5 Hilbert-newform levels remain; the even branch is concentrated at level norm 5103",
+  "nonclaim": "the five remaining Hilbert-newform spaces have not all been eliminated and this certificate does not prove the full (3,5,7) equation",
+  "certificate_sha256": "963e1e0d1b7a399d3cd823aff75c5d0f8a6c0154bec0b5ac8934040902c14aa4"
+}

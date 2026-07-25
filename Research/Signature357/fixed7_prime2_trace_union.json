@@ -1,0 +1,129 @@
+{
+  "cases": [
+    {
+      "affine_counts": {
+        "F16": 31,
+        "F4": 3
+      },
+      "name": "A_odd_B_even",
+      "power_sums": {
+        "S1": 0,
+        "S2": -16
+      },
+      "projective_counts": {
+        "F16": 33,
+        "F4": 5
+      },
+      "reduction": "y^2+x^3*y=x",
+      "rm_factor": "X^2+4",
+      "rm_factor_descending": [
+        1,
+        0,
+        4
+      ],
+      "rm_trace": 0,
+      "weil_polynomial": "X^4+8*X^2+16",
+      "weil_polynomial_descending": [
+        1,
+        0,
+        8,
+        0,
+        16
+      ]
+    },
+    {
+      "affine_counts": {
+        "F16": 29,
+        "F4": 5
+      },
+      "name": "A_even_B_odd",
+      "power_sums": {
+        "S1": -2,
+        "S2": -14
+      },
+      "projective_counts": {
+        "F16": 31,
+        "F4": 7
+      },
+      "reduction": "y^2+(x^3+1)*y=1",
+      "rm_factor": "X^2+X+4",
+      "rm_factor_descending": [
+        1,
+        1,
+        4
+      ],
+      "rm_trace": -1,
+      "weil_polynomial": "X^4+2*X^3+9*X^2+8*X+16",
+      "weil_polynomial_descending": [
+        1,
+        2,
+        9,
+        8,
+        16
+      ]
+    }
+  ],
+  "certificate_sha256": "fa04a60320986ce5076a71a63f1b59bd69d7fd106f8ef08fb13822ae705d1dec",
+  "conclusion": {
+    "annihilating_polynomial_mod7": "T*(T+1)",
+    "hecke_kernel": "ker(T_p2*(T_p2+1))",
+    "integer_trace_set": [
+      0,
+      -1
+    ],
+    "trace_set_mod7": [
+      0,
+      6
+    ]
+  },
+  "equation": "A^3+B^5=C^7",
+  "finite_fields": {
+    "F16": {
+      "degree": 4,
+      "modulus": "x^4+x+1",
+      "modulus_binary": 19
+    },
+    "F4": {
+      "degree": 2,
+      "modulus": "x^2+x+1",
+      "modulus_binary": 7
+    }
+  },
+  "integral_model": "y^2 + y*(x^3+B) = 2*B*x^3 + 3*A*x + B^2",
+  "nonclaim": "identifying the integral curve with the fixed-7 Frey RM constituent and applying modularity and level lowering remain imported literature inputs; the finite-field arithmetic is replayed exactly",
+  "parity": {
+    "C_mod2": 1,
+    "equation_mod2": "A+B=C",
+    "primitive_cases": [
+      {
+        "A_mod2": 1,
+        "B_mod2": 0,
+        "case": "A_odd_B_even"
+      },
+      {
+        "A_mod2": 0,
+        "B_mod2": 1,
+        "case": "A_even_B_odd"
+      }
+    ]
+  },
+  "points_at_infinity": {
+    "count": 2,
+    "local_coordinate": "u=1/x, v=y/x^3",
+    "special_fiber_equation_at_u0": "v^2+v=0",
+    "values": [
+      0,
+      1
+    ]
+  },
+  "schema_version": 1,
+  "scope": {
+    "base_field": "Q(sqrt(5))",
+    "branch": "C odd",
+    "claim": "the fixed-7 RM constituent trace at the unique prime above 2 belongs to {0,-1}",
+    "prime_ideal_norm": 4,
+    "rational_prime": 2,
+    "residual_characteristic": 7
+  },
+  "status": "exact-standard-library-point-count-certificate"
+}

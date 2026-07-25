@@ -1,0 +1,47 @@
+{
+  "certificate_sha256": "4c70f7e27d20f23d404b276782abec3602c22ddfcddedce9251e8f2e5b719416",
+  "conclusion": "any odd-branch solution represented by the unique LMFDB-complete mod-5 packet must lower on the fixed-7 side to conductor exponents (2,3)",
+  "congruence_bridge": {
+    "equivalent_first_frey_condition": "B^5=4*A^3 mod 9",
+    "forced_fixed7_epsilon3": 2,
+    "forced_ratio": "B^5/A^3=4 mod 9",
+    "identity": "u=1+B^5/A^3",
+    "solutions_with_u_mod9_5": 6,
+    "u_definition": "C^7/A^3",
+    "unit_solution_count_mod9": 18
+  },
+  "fixed7_reduction": {
+    "level_22_survivors_after_odd_cm_filter": [],
+    "level_22_survivors_before_cm_filter": [3, 9, 12],
+    "only_remaining_level": [2, 3],
+    "possible_levels_before_cm_filter": [[2, 2], [2, 3]]
+  },
+  "local_type_match": {
+    "forced_u_mod9": 5,
+    "hgm_types_by_u_mod9": {"2": 12, "5": 4, "8": 12},
+    "packet_semistability_defect": 4
+  },
+  "mod5_packet": {
+    "base_change": "441.d2",
+    "cm_discriminant": -3,
+    "kodaira_symbol": "III",
+    "label": "3.3.49.1-729.1-b",
+    "level_exponents": [2, 0],
+    "local_prime": 3,
+    "semistability_defect": 4
+  },
+  "schema_version": 1,
+  "scope": {
+    "branch": "Dahmen--Siksek odd branch",
+    "equation": "A^3+B^5=C^7",
+    "mod5_level_range": "LMFDB-complete levels of norm at most 2059"
+  },
+  "source_chain": {
+    "first_frey_conductor": "Pacetti--Villagra Torcomian Theorem 7.8: in the 3-adic unit branch B^5=4*A^3 mod 9 gives epsilon_3=2",
+    "fixed7_cm_filter": "Research/Signature357/odd_branch_cm_filter.json",
+    "mod5_local_types": "Research/Signature357/mod5_irreducibility_at3.json",
+    "mod5_low_level_filter": "Research/Signature357/lmfdb_low_level_filter.json",
+    "packet_local_data": "LMFDB 3.3.49.1-729.1-b is the base change of 441.d2; at 3 the rational curve has Kodaira III and semistability defect 4"
+  },
+  "status": "research-certificate-with-imported-local-type-and-modular-results"
+}

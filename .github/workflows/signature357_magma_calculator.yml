@@ -1,0 +1,25 @@
+name: Signature 357 fixed-7 Magma calculator replay
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fixed7-level-23:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run optimized public-Magma fixed-7 replay
+        run: >-
+          python3 scripts/run_signature_357_magma_calculator.py
+          > Research/Signature357/fixed7_level23_online.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature357-fixed7-level23-online
+          path: Research/Signature357/fixed7_level23_online.json
+          if-no-files-found: error

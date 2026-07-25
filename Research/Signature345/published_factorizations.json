@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source": {
+    "arxiv": "1103.1979v1",
+    "sections": ["6.2", "6.3", "6.4"],
+    "claim": "exact equality between printed later-section factorizations and independently reconstructed Edwards forms"
+  },
+  "matches": [
+    {
+      "published_label": 2,
+      "reconstructed_form_id": 28,
+      "expected_form_sha256": "6913d9c56e1702ab64979456608862b5262fd87980580fc755ba1117aa605564"
+    },
+    {
+      "published_label": 3,
+      "reconstructed_form_id": 2,
+      "expected_form_sha256": "f06e228651a027562b876fd1974fa1fb432ac11cbd3f252f83e9c3faa1971cf7"
+    },
+    {
+      "published_label": 5,
+      "reconstructed_form_id": 3,
+      "expected_form_sha256": "68cf2f81bb9d96688f610043aa38e64e195c4b63e34109b04338043938dc47d4"
+    }
+  ],
+  "literal_same_id_matches": false,
+  "mapping_sha256": "adf38f8a8011cbc15cd7eba511e5299cb527c585c9451ab88c397281d2464e83"
+}

@@ -1,0 +1,60 @@
+{
+  "certificate_sha256": "d5e4315c09a4d41de6ccafbf2d72531b590a1ae07e5212916bab377d22c74d9b",
+  "equation": "A^3+B^5=C^7",
+  "finite_replay": {
+    "derived_gcd": 42,
+    "euler_phi_343": 294,
+    "roots_X6_minus_1_mod49": [1, 18, 19, 30, 31, 48],
+    "saturation_failure_count": 0,
+    "saturation_parameter_count": 1764,
+    "saturation_sample_modulus": 16807,
+    "seventh_power_image_size_mod49": 6,
+    "solution_pair_count_mod343": 294,
+    "unit_count_mod343": 294
+  },
+  "impact": "the odd branch forces B into the local seventh-power Kummer image, supplies a normalized cubic difference condition, and is locally saturated at 7",
+  "local_saturation": {
+    "parameters": ["a>=1", "z in Z_7^*", "d in Z_7^*"],
+    "construction": [
+      "Y=z^5",
+      "C=Y+7^(3*a-1)*d^3",
+      "B=z^7",
+      "E=Phi_7(C,Y)/7 lies in 1+7*Z_7",
+      "e is the unique principal-unit cube root of E",
+      "A=7^a*d*e"
+    ],
+    "conclusion": "every parameter triple produces A^3+B^5=C^7 with v_7(A)=a, and every odd-branch local solution arises this way",
+    "strategic_consequence": "no standalone finite 7-adic congruence sieve can eliminate the odd branch"
+  },
+  "nonclaim": "the p-adic structural lemmas are proved in the accompanying note; the checker replays finite consequences and mutation tests, and this result does not prove the odd branch",
+  "proof_dependencies": [
+    "the seventh-power map 1+7^n*Z_7 -> 1+7^(n+1)*Z_7 is bijective for n>=1",
+    "LTE: v_7(h^7-1)=v_7(h-1)+1 on principal units",
+    "common-power lemma in an abelian group for coprime exponents",
+    "the cube map is an automorphism of 1+7*Z_7"
+  ],
+  "schema_version": 1,
+  "scope": {
+    "hypotheses": ["7 divides A", "7 does not divide B*C"],
+    "valuation": "a=v_7(A)>=1"
+  },
+  "status": "elementary-odd-branch-7-adic-kummer-structure-and-local-saturation",
+  "theorem": {
+    "cube_condition": "(C-z^5)/7^(3*a-1) is a cube in Z_7^*",
+    "exact_valuations": {
+      "v7(C-z^5)": "3*a-1",
+      "v7(h-1)": "3*a-1"
+    },
+    "existence": [
+      "there are unique z in Z_7^* and h in 1+7*Z_7",
+      "B=z^7",
+      "C=z^5*h",
+      "h^7=1+A^3/B^5"
+    ],
+    "finite_consequences": {
+      "B^42_mod343": 1,
+      "B^6_mod49": 1,
+      "B_residues_mod49": [1, 18, 19, 30, 31, 48]
+    }
+  }
+}

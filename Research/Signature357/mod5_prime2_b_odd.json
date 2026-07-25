@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "research-certificate-with-imported-local-lemmas",
+  "scope": {
+    "equation": "A^3+B^5=C^7",
+    "hypotheses": [
+      "pairwise coprime positive A,B,C",
+      "B odd"
+    ],
+    "orientation": "(-C)^7+B^5+A^3=0",
+    "field": "K7=Q(zeta_7)^+",
+    "residual_prime": 5,
+    "claim": "the plus mod-5 HGM representation is absolutely irreducible"
+  },
+  "imported_lemmas": [
+    "the plus HGM is finite flat at the prime above 5 and has cyclotomic determinant after the weight-2 Tate normalization",
+    "a rank-one finite-flat character over the unramified cubic completion has signature in {0,1}^3",
+    "away from 5 the residual inertia exponents divide lcm(12,28)=84",
+    "formula (30) over Q(zeta_21) applies at the prime above 2 for a parameter tending to 0 and the modular weight-2 trace is the residue-field norm times its normalized trace"
+  ],
+  "finite_fields": {
+    "F64": {
+      "characteristic": 2,
+      "degree": 6,
+      "modulus_binary": 67,
+      "primitive_element": 2,
+      "primitive_order": 63,
+      "cyclotomic_order": 21,
+      "phi21_ascending": [1, -1, 0, 1, -1, 0, 1, 0, -1, 1, 0, -1, 1]
+    },
+    "F125": {
+      "characteristic": 5,
+      "degree": 3,
+      "minimal_polynomial_ascending": [4, 3, 1, 1],
+      "theta_order": 31
+    }
+  },
+  "trace_branches": {
+    "C_even": {
+      "parameter": "u=C^7/A^3",
+      "valuation_at_2": "7*v_2(C)",
+      "unit_reduction": 1,
+      "parameters": [["1/3", "-1/3"], ["1/7", "-1/7"]],
+      "jacobi_character_exponents": [[4, -10], [-6, 10]],
+      "jacobi_reduced_phi21": [
+        [-2, -5, 0, 0, -5, 0, 0, 0, -5, 5, 0, -5],
+        [-7, 5, 0, 0, 5, 0, 0, 0, 5, -5, 0, 5]
+      ],
+      "jacobi_sum_reduced_phi21": [-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "jacobi_motive_factor": 64,
+      "normalized_trace": "9/64",
+      "weight2_tate_multiplier": 64,
+      "weight2_trace": 9,
+      "weight2_trace_mod5": 4
+    },
+    "A_even": {
+      "parameter": "u^(-1)=A^3/C^7",
+      "valuation_at_2": "3*v_2(A)",
+      "unit_reduction": 1,
+      "parameters": [["1/7", "-1/7"], ["1/3", "-1/3"]],
+      "jacobi_character_exponents": [[-4, -10], [-14, 10]],
+      "jacobi_reduced_phi21": [
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ],
+      "jacobi_sum_reduced_phi21": [16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "jacobi_motive_factor": 64,
+      "normalized_trace": "-1/4",
+      "weight2_tate_multiplier": 64,
+      "weight2_trace": -16,
+      "weight2_trace_mod5": 4
+    }
+  },
+  "character_certificate": {
+    "inertia_killing_exponent": 84,
+    "unit_signature_weights": [1, 5, 25],
+    "allowed_signatures": [[0, 0, 0], [1, 1, 1]],
+    "minkowski_numerator": 42,
+    "minkowski_denominator": 27,
+    "class_number_conclusion": 1,
+    "K7_prime_2_norm": 8,
+    "F_over_K_residue_degree": 2,
+    "residual_trace_mod5": 4,
+    "residual_determinant_mod5": 4,
+    "forced_full_field_character_value": 2,
+    "required_character_power": 42,
+    "actual_power_mod5": 4
+  },
+  "parity_certificate": {
+    "primitive_mod2_classes": [[0, 1, 1], [1, 0, 1], [1, 1, 0]],
+    "B_odd_classes": [[0, 1, 1], [1, 1, 0]],
+    "interpretation": [
+      "A even, B and C odd",
+      "C even, A and B odd"
+    ]
+  },
+  "literature_corollary": {
+    "Dahmen_Siksek_even_branch": "C even and A,B odd, hence covered by the C_even trace branch",
+    "Dahmen_Siksek_odd_branch": "3 does not divide A*B*C, hence covered independently by the prime-3 supercuspidal mod-5 irreducibility theorem",
+    "conclusion": "every hypothetical primitive (3,5,7) solution carries an absolutely irreducible residual mod-5 HGM representation"
+  },
+  "source_audit": {
+    "hypergeometric_paper": "arXiv:2412.08804v2",
+    "parameter": "Theorem 6.2 and equation (24)",
+    "inversion": "equation (15)",
+    "finite_monodromy_trace": "equation (30), over F=Q(zeta_21)",
+    "weight2_normalization": "Remark 6 and the public GPcode candidate routine",
+    "finite_flat_character_input": "standard rank-one finite-flat signature classification at the inert prime above 5"
+  },
+  "certificate_sha256": "bee6d05455bb7b8c04b165d6c80cb5275c6bf6e95da7abfbf7307c4a073ad022"
+}

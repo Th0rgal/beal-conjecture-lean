@@ -1,0 +1,72 @@
+name: Signature 357 publish odd mod5 combined residual results
+
+on:
+  push:
+    branches:
+      - agent/signature-345-357-certificates
+    paths:
+      - ".github/workflows/signature357_mod5_combined_publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/signature-345-357-certificates
+          fetch-depth: 0
+      - name: Install PARI/GP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pari-gp
+      - name: Produce local trace data once
+        run: |
+          python3 scripts/produce_signature_357_mod5_complete_local.py > /tmp/split.json
+          python3 scripts/produce_signature_357_mod5_inert_local.py > /tmp/inert.json
+      - name: Run the three combined residual levels
+        run: |
+          python3 scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py --split-data /tmp/split.json --inert-data /tmp/inert.json --pair 2,1 > /tmp/5103.json
+          python3 scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py --split-data /tmp/split.json --inert-data /tmp/inert.json --pair 3,0 > /tmp/19683.json
+          python3 scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py --split-data /tmp/split.json --inert-data /tmp/inert.json --pair 3,1 > /tmp/137781.json
+      - name: Build aggregate fail-closed manifest
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          rows=[]
+          for norm in (5103,19683,137781):
+              value=json.loads(pathlib.Path(f'/tmp/{norm}.json').read_text())
+              if value.get('request_status')!='completed' or 'final_dimension' not in value:
+                  raise SystemExit(f'combined result at {norm} is incomplete')
+              rows.append(value)
+          body={
+              'schema_version':1,
+              'status':'public-Magma-produced combined odd mod-5 residual frontier',
+              'equation':'A^3+B^5=C^7',
+              'levels':rows,
+              'closed_levels':[row['level_norm'] for row in rows if row['final_dimension']==0],
+              'surviving_levels':[row['level_norm'] for row in rows if row['final_dimension']!=0],
+              'conclusion':(
+                  'the odd mod-5 residual frontier is empty'
+                  if all(row['final_dimension']==0 for row in rows)
+                  else 'some combined residual Hecke subspaces remain nonzero'
+              ),
+              'nonclaim':'modularity, level lowering, local HGM traces, cyclotomic untwist and semilinear descent remain imported research inputs',
+          }
+          encoded=json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+          result=dict(body);result['certificate_sha256']=hashlib.sha256(encoded).hexdigest()
+          pathlib.Path('Research/Signature357/odd_mod5_combined_residual_frontier.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          PY
+      - name: Commit produced frontier
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Research/Signature357/odd_mod5_combined_residual_frontier.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record combined odd mod-5 residual frontier"
+          git pull --rebase origin agent/signature-345-357-certificates
+          git push origin HEAD:agent/signature-345-357-certificates
