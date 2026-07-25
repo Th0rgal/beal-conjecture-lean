@@ -1,0 +1,33 @@
+name: Global Beal fixed-5 minus-motive modularity probe
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_global_beal_hminus5_x0_5.py"
+      - ".github/workflows/global_beal_hminus5_x0_5.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: global-beal-hminus5-x0-5-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  x0-5-intersection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compute the genus-one X0(5) intersection
+        run: >-
+          python3 scripts/run_global_beal_hminus5_x0_5.py
+          > global-beal-hminus5-x0-5.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: global-beal-hminus5-x0-5
+          path: global-beal-hminus5-x0-5.json
+          if-no-files-found: error
