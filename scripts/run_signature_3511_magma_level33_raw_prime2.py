@@ -2,8 +2,8 @@
 """Compute the level-(3,3) norm-4 parity cover on the raw Brandt module.
 
 The ordinary 1024x1024 rational Hecke matrix exceeds the public calculator's
-memory cap.  Magma stores the newspace as a 1024-dimensional subspace of a
-definite 2025-dimensional ambient Brandt module.  We therefore compute the raw
+memory cap. Magma stores the newspace as a 1024-dimensional subspace of a
+definite 2025-dimensional ambient Brandt module. We therefore compute the raw
 ambient Hecke matrix, reduce it modulo 11 first, and only then restrict it to the
 residual newspace.
 """
@@ -29,7 +29,9 @@ _<x>:=PolynomialRing(Rationals());
 K<z>:=NumberField(x^2-5); OK:=Integers(K); I5:=Factorisation(5*OK)[1][1]; I2:=Factorisation(2*OK)[1][1];
 F11:=GF(11);
 printf "PHASE=space-start\n";
-M0:=HilbertCuspForms(K,3^3*I5^3); M:=NewSubspace(M0); A:=M`Ambient;
+M0:=HilbertCuspForms(K,3^3*I5^3); M:=NewSubspace(M0);
+DefiniteFlag:=IsDefinite(M); assert DefiniteFlag; assert assigned M`Ambient;
+A:=M`Ambient;
 printf "NEW_DIM=%o\n",Dimension(M); printf "AMBIENT_DIM=%o\n",Dimension(A);
 printf "PHASE=raw-T2-start\n";
 RawQ:=HeckeMatrixRaw(A,I2); printf "RAW_ROWS=%o\n",Nrows(RawQ);
@@ -49,7 +51,7 @@ printf "DIRECT_SUM_CHECK=%o\n",Dimension(W0)+Dimension(Wm1)+Dimension(Wp5)+Dimen
 printf "FINAL_DIM=%o\n",Dimension(W);
 '''
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "signature-(3,5,11) fixed-11 level-(3,3) raw-Brandt norm-4 parity cover",
         "equation": "A^3+B^5=C^11",
         "calculator": base.CALCULATOR_URL,
@@ -58,7 +60,7 @@ printf "FINAL_DIM=%o\n",Dimension(W);
         "level_norm": 91125,
         "prime2_norm": 4,
         "prime2_trace_cover_mod11": [0, 10, 5, 6],
-        "strategy": "reduce the 2025-dimensional raw ambient Brandt matrix mod 11 before restricting to the 1024-dimensional newspace",
+        "strategy": "initialize the lazy definite ambient module, reduce its 2025-dimensional raw Brandt matrix mod 11, then restrict to the 1024-dimensional residual newspace",
         "soundness": (
             "zero labelled dimension eliminates that parity regime conditional on the imported "
             "prime-2 trace, modularity and level-lowering inputs"
