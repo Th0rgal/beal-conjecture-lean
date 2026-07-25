@@ -3,6 +3,7 @@ import BealUnified.FLTReduction
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.BigOperators.ModEq
 
 set_option linter.style.header false
 
@@ -263,58 +264,56 @@ theorem beal_three_three_three
 /--
 Prime-exponent gcd split (elementary Hall/Catalan bridge).
 
-For natural numbers `U, V, ℓ` with `V ≤ U`, `ℓ` prime, and `U, V` coprime,
-any common divisor of `(U - V)` and the geometric sum
-`∑ i ∈ range ℓ, U^i * V^(ℓ-1-i)` divides `ℓ`.
+For natural numbers `U, V, ℓ` with `V ≤ U` and `U, V` coprime, any common
+divisor of `(U - V)` and the geometric sum
+`∑ i ∈ Finset.range ℓ, U^i * V^(ℓ-1-i)` divides `ℓ`.
+
+Coprimality is essential: for `U = 4`, `V = 2`, `ℓ = 3` the sum is `28` and
+`Nat.gcd 2 28 = 2`, which does not divide `3`.
 
 This is the precise elementary divisibility used in reductions involving
 differences of powers with prime exponent.  It does not by itself yield a
 Beal or Catalan proof; additional hypotheses (e.g. quotient exponents > 1)
 are required for those global applications and are not encoded here.
 
-Proof relies only on the standard geometric-sum identity and coprimeness
-to cancel the `V^(ℓ-1)` factor.
+The `ℓ.Prime` hypothesis is retained to match the intended call sites, but the
+argument below never uses it: the divisibility holds for every exponent `ℓ`.
 -/
 theorem gcd_U_sub_V_geom_sum_dvd_prime
     (U V ℓ : ℕ)
     (hVleU : V ≤ U)
     (hℓ : ℓ.Prime)
     (hUV : Nat.Coprime U V) :
-    Nat.gcd (U - V) (∑ i ∈ range ℓ, U^i * V^(ℓ - 1 - i)) ∣ ℓ := by
-  have hVltU : V < U ∨ U = V := by omega
-  rcases hVltU with hlt | heq
-  · -- V < U
-    let S := ∑ i ∈ range ℓ, U^i * V^(ℓ-1-i)
-    let D := Nat.gcd (U - V) S
-    have hmul : (U - V) * S = U^ℓ - V^ℓ := by
-      rw [mul_comm]
-      exact geom_sum₂_mul_of_le hlt ℓ
-    have hDdiff : D ∣ U^ℓ - V^ℓ :=
-      Nat.dvd_trans (Nat.gcd_dvd_left _ _) (by rw [← hmul]; exact Nat.dvd_mul_right _ _)
-    have hcong : U ≡ V [MOD D] := Nat.modEq_of_dvd (Nat.gcd_dvd_left _ _)
-    have hScong : S ≡ ℓ * V^(ℓ-1) [MOD D] := by
-      apply Nat.modEq_sum
-      intro i _
-      apply Nat.mul_modEq_mul_right
-      exact Nat.modEq.pow i hcong
-    simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul] at hScong
-    have hS0 : S ≡ 0 [MOD D] := Nat.modEq_of_dvd (Nat.gcd_dvd_right _ _)
-    have : ℓ * V^(ℓ-1) ≡ 0 [MOD D] := hS0.trans (by rw [hScong]; rfl)
-    rw [Nat.modEq_iff_dvd] at this
-    have hDℓV : D ∣ ℓ * V^(ℓ-1) := this
+    Nat.gcd (U - V) (∑ i ∈ Finset.range ℓ, U ^ i * V ^ (ℓ - 1 - i)) ∣ ℓ := by
+  have key : ∀ D : ℕ, D ∣ U - V →
+      D ∣ (∑ i ∈ Finset.range ℓ, U ^ i * V ^ (ℓ - 1 - i)) → D ∣ ℓ := by
+    intro D hDsub hDS
+    -- Any prime dividing both `D` and `V` would divide `gcd U V = 1`.
     have hDcV : Nat.Coprime D V := by
-      apply Nat.coprime_of_dvd
-      intro p hp hD pV
-      have pUV : p ∣ U - V := Nat.dvd_trans hD (Nat.gcd_dvd_left _ _)
-      have pU : p ∣ U := Nat.dvd_add pUV pV
-      have : p ∣ Nat.gcd U V := Nat.dvd_gcd pU pV
-      rw [hUV] at this
-      exact hp.not_dvd_one this
-    exact Nat.Coprime.dvd_of_dvd_mul_right hDcV hDℓV
-  · -- U = V
-    have hU1 : U = 1 := Nat.eq_one_of_coprime (by rw [heq] at hUV; exact hUV)
-    simp [heq, hU1]
-    -- gcd(0, ℓ) = ℓ and ℓ ∣ ℓ
-    exact Nat.dvd_refl _
+      refine Nat.coprime_of_dvd fun p hp hpD hpV => ?_
+      have hpU : p ∣ U := by
+        have h := Nat.dvd_add (hpD.trans hDsub) hpV
+        rwa [Nat.sub_add_cancel hVleU] at h
+      have hp1 : p ∣ Nat.gcd U V := Nat.dvd_gcd hpU hpV
+      rw [Nat.coprime_iff_gcd_eq_one.mp hUV] at hp1
+      exact hp.not_dvd_one hp1
+    have hUmodV : U ≡ V [MOD D] := ((Nat.modEq_iff_dvd' hVleU).mpr hDsub).symm
+    -- Modulo `D` every summand collapses to `V ^ (ℓ - 1)`.
+    have hterm : ∀ i ∈ Finset.range ℓ, U ^ i * V ^ (ℓ - 1 - i) ≡ V ^ (ℓ - 1) [MOD D] := by
+      intro i hi
+      have hi' : i + (ℓ - 1 - i) = ℓ - 1 := by
+        have h := Finset.mem_range.mp hi
+        omega
+      calc U ^ i * V ^ (ℓ - 1 - i)
+          ≡ V ^ i * V ^ (ℓ - 1 - i) [MOD D] := (hUmodV.pow i).mul_right _
+        _ = V ^ (ℓ - 1) := by rw [← pow_add, hi']
+    have hSmod : (∑ i ∈ Finset.range ℓ, U ^ i * V ^ (ℓ - 1 - i)) ≡ ℓ * V ^ (ℓ - 1) [MOD D] :=
+      calc (∑ i ∈ Finset.range ℓ, U ^ i * V ^ (ℓ - 1 - i))
+          ≡ ∑ _i ∈ Finset.range ℓ, V ^ (ℓ - 1) [MOD D] := Nat.ModEq.sum hterm
+        _ = ℓ * V ^ (ℓ - 1) := by simp
+    have hDmul : D ∣ ℓ * V ^ (ℓ - 1) :=
+      Nat.modEq_zero_iff_dvd.mp (hSmod.symm.trans (Nat.modEq_zero_iff_dvd.mpr hDS))
+    exact (Nat.Coprime.pow_right _ hDcV).dvd_of_dvd_mul_right hDmul
+  exact key _ (Nat.gcd_dvd_left _ _) (Nat.gcd_dvd_right _ _)
 
 end BealUnified
