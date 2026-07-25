@@ -2,17 +2,15 @@
 """Split fixed-7 level (3,3) by the exact prime-2 parity traces.
 
 Exact point counts give trace 0 when A is odd and B is even, and trace -1
-when A is even and B is odd. The same low-memory Hecke matrix therefore
-measures both parity branches separately and their complete trace union.
+when A is even and B is odd. The same Hecke matrix therefore measures both
+parity branches separately and their complete trace union.
 
-The Magma request is deliberately ordered to minimize peak memory: the ambient
-space and modular-form cache are released after construction of the independent
-newspace; prime-specific quaternion precomputation is deleted immediately after
-T_2 is produced and before conversion modulo 7; and the trace union is formed as
-the sum of the two distinct eigenspaces rather than by materializing T(T+1).
-At norm 4 there are only five neighbors, so direct enumeration is used instead
-of the automorphism-orbit machinery, with greedy lattice reduction replacing
-theta-series hashes.
+Magma's Hilbert modular-form Hecke interface accepts no optional low-memory
+parameters. Peak memory is reduced instead by releasing the ambient space,
+clearing stored modular forms and all old quaternion Hecke precomputation before
+constructing the ordinary T_2 operator. Prime-specific precomputation is deleted
+before the rational matrix is converted modulo 7. The trace union is formed as
+the sum of two distinct eigenspaces rather than by materializing T(T+1).
 """
 from __future__ import annotations
 
@@ -105,8 +103,8 @@ delete M0;
 ClearStoredModularForms(K);
 DeleteHeckePrecomputation(O);
 printf "PHASE=ambient-and-cache-cleared\n";
-printf "PHASE=T2-direct-neighbors-start\n";
-TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=false,ThetaPrec:=-1);
+printf "PHASE=T2-rational-start\n";
+TQ:=HeckeOperator(M,I2);
 printf "PHASE=T2-rational-ready\n";
 DeleteHeckePrecomputation(O,I2);
 ClearStoredModularForms(K);
@@ -136,7 +134,7 @@ def parse(output: str, marker: str) -> int:
 def main() -> int:
     source = magma_code()
     body: dict[str, Any] = {
-        "schema_version": 6,
+        "schema_version": 7,
         "status": "fixed-7 level-(3,3) exact prime-2 parity decomposition",
         "calculator": CALCULATOR_URL,
         "level_exponents": [3, 3],
@@ -150,14 +148,13 @@ def main() -> int:
         "annihilating_polynomial": "T*(T+1)",
         "union_implementation": "ker(T) direct-sum ker(T+1), avoiding T*(T+1)",
         "hecke_strategy": {
-            "low_memory": True,
-            "use_automorphism_orbits": False,
-            "lattice_reduction": "Kohel greedy reduction (ThetaPrec=-1)",
-            "reason": "norm 4 has only five neighbors",
+            "interface": "ordinary ModFrmHil HeckeOperator; optional parameters unsupported",
+            "pre_operator_cleanup": True,
         },
         "memory_policy": (
-            "delete ambient space and HMF cache after newspace construction; delete "
-            "prime-specific Hecke precomputation before reducing the rational matrix mod 7"
+            "delete ambient space, stored modular forms and old quaternion precomputation "
+            "before constructing T2; delete prime-specific precomputation before reducing "
+            "the rational matrix modulo 7"
         ),
         "input_bytes": len(source.encode()),
         "soundness": (
