@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "0612b49a472b51b85416ea63e2f75ba2c6e8dd2528b250510372fb6f9502d84d",
+  "certificate_sha256": "b12a4088ecf4fcac4481901fda47e8e4dd75fde188f78bcd65c73879bcf3cca8",
   "conclusion": "the odd branch can be studied through an absolutely irreducible cyclotomic quadratic twist whose lowered mod-5 level is one of 5103, 19683 or 137781",
   "cyclotomic_character": {
     "character": "eta_7",
@@ -80,13 +80,18 @@
     "finite_flatness_at_5": true,
     "full_cyclotomic_local_trace_polynomials": "unchanged because eta_7 is trivial on G_F21",
     "non_CM_property": "invariant under finite-order character twist",
-    "norm8_zero_trace_filter": "unchanged",
+    "prime2_trace_filter": {
+      "B_odd": "a_P2=0 mod 5",
+      "B_even": "a_P2 is 1 or 4 mod 5",
+      "cyclotomic_untwist_value_at_2": 1,
+      "reason": "ord_7(2)=3, so the unique prime above 2 in K7 splits in Q(zeta_7)/K7"
+    },
     "prime3_conductor_exponents": [
       2,
       3
     ]
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "scope": {
     "branch": "Dahmen--Siksek odd branch",
     "conditions": [
