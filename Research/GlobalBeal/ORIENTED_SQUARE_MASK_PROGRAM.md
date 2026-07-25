@@ -8,9 +8,9 @@ The mask itself is not enough; its position relative to the equality matters.
 X^{2p}+Y^{2q}=Z^r.
 \]
 
-For 29 explicit right primes this sector is effectively finite. The next task
-is computational: determine \(V_r\), enumerate the low prime pairs, and run
-finite Hilbert-newform elimination.
+For 29 explicit right primes the large–large quadrant is empty. The next task
+is computational: determine \(V_r\), enumerate the finitely many small-prime
+indices, and prove each remaining one-variable strip as the other prime varies.
 
 ## Type II: one square mask on a summand and one on the right
 
@@ -43,8 +43,8 @@ A^4+B^5=C^7.
 
 ## Priority
 
-1. Compute \(V_{19}\) and \(V_{23}\), closing the first new Type-I finite
-   boundaries.
+1. Compute \(V_{19}\) and \(V_{23}\), then isolate the finite collections of
+   Type-I one-small-prime strips.
 2. Build Frey representations for the two pure cyclotomic equations in the
    odd-\(Y\) Type-II branch and couple their traces.
 3. Recompute the \((2,5,7)\) HGM conductor after imposing the one-square mask.
