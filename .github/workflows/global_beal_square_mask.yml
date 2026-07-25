@@ -1,0 +1,41 @@
+name: Global Beal oriented square-mask replay
+
+on:
+  push:
+    branches:
+      - research/oriented-square-mask-cofinality
+    paths:
+      - "Research/GlobalBeal/DOUBLE_SQUARE_MASK_COFINALITY.md"
+      - "Research/GlobalBeal/double_square_mask_cofinality.json"
+      - "Research/GlobalBeal/CROSS_SIDE_SQUARE_MASK_DESCENT.md"
+      - "Research/GlobalBeal/cross_side_square_mask_descent.json"
+      - "Research/GlobalBeal/ORIENTED_SQUARE_MASK_PROGRAM.md"
+      - "scripts/check_global_beal_oriented_square_mask.py"
+      - "scripts/check_global_beal_cross_side_localization.py"
+      - ".github/workflows/global_beal_square_mask.yml"
+  pull_request:
+    paths:
+      - "Research/GlobalBeal/DOUBLE_SQUARE_MASK_COFINALITY.md"
+      - "Research/GlobalBeal/double_square_mask_cofinality.json"
+      - "Research/GlobalBeal/CROSS_SIDE_SQUARE_MASK_DESCENT.md"
+      - "Research/GlobalBeal/cross_side_square_mask_descent.json"
+      - "Research/GlobalBeal/ORIENTED_SQUARE_MASK_PROGRAM.md"
+      - "scripts/check_global_beal_oriented_square_mask.py"
+      - "scripts/check_global_beal_cross_side_localization.py"
+      - ".github/workflows/global_beal_square_mask.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Reject mutated square-mask fixtures
+        run: python3 scripts/check_global_beal_oriented_square_mask.py --self-test
+      - name: Replay square-mask cofinality and descent
+        run: python3 scripts/check_global_beal_oriented_square_mask.py
+      - name: Replay complementary q-localization
+        run: python3 scripts/check_global_beal_cross_side_localization.py
