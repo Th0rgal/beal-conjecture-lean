@@ -1,16 +1,16 @@
 {
-  "certificate_sha256": "e464e9903d1c47dc37d676d8a6795de467f06adf9f71e48eb6371527a145fee2",
+  "certificate_sha256": "6cb8fa0dc2b1358d68125e9209fc562dbf9da152d14f868a765cb8eaac22e1cb",
   "composite_exponent_lift": {
     "density_consequence": "The V_r-smooth integers have natural density zero. For the finite 29-prime set, all smooth exceptional strips still have density zero.",
     "equation": "A^(2a)+B^(2b)=C^N",
-    "smoothness_consequence": "For fixed r, the surviving half-exponent pairs lie in the union of the two coordinate strips where one coordinate is V_r-smooth.",
+    "smoothness_consequence": "For fixed r, the surviving half-exponent pairs lie in the union of the two coordinate strips where one coordinate is V_r-smooth. These strips are infinite but have natural density zero.",
     "statement": "If a has a prime divisor p>V_r, b has a prime divisor q>V_r, and r divides N, exponent absorption produces the forbidden prime-core equation. Hence at least one of a,b is V_r-smooth."
   },
   "effective_program": {
-    "family_shift": "double-square summand masks are cofinally finite; the genuinely new modular systems are one-square and cross-side masks",
-    "first_task": "compute explicit V_r and enumerate the finite low-prime boundary for r=19 and r=23"
+    "family_shift": "double-square summand masks reduce to finitely many one-small-prime strips plus density-zero smooth strips; the new modular targets are those asymmetric strips, one-square masks, and cross-side masks",
+    "first_task": "compute explicit V_r for r=19 and r=23, list the finitely many small prime indices p<=V_r, and attack each one-variable strip (2p,2q,r) as q varies"
   },
-  "nonclaim": "The family theorem is imported from a recent arXiv preprint rather than a peer-reviewed publication. No numerical V_r is claimed here. The elementary absorption, smoothness, and finite-boundary deductions are unconditional consequences of the imported theorem.",
+  "nonclaim": "The family theorem is imported from a recent arXiv preprint rather than a peer-reviewed publication. No numerical V_r is claimed here. The theorem does not leave finitely many prime pairs: it leaves a finite union of infinite one-small-prime strips. The absorption and density-zero smoothness deductions are unconditional consequences of the imported theorem.",
   "orientation_boundary": {
     "covered_mask": "the two positive summand bases are square-masked; the right-hand base may be plain or square",
     "not_covered": "a square mask on one summand and on the right-hand side gives a difference of even powers, not Sahoo's plus equation"
@@ -18,7 +18,7 @@
   "prime_mask_theorem": {
     "equation": "X^(2p)+Y^(2q)=Z^r",
     "scope": "p,q,r odd primes, X,Y,Z pairwise coprime nonzero integers, r in the listed set",
-    "statement": "For each listed r, every solution has p<=V_r or q<=V_r. Thus the double-square summand mask has only finitely many prime-signature pairs outside the effective bound."
+    "statement": "For each listed r, every solution has p<=V_r or q<=V_r. Thus the large-large quadrant is empty and the surviving prime pairs lie in a finite union of horizontal and vertical strips indexed by the finitely many primes at most V_r."
   },
   "schema_version": 1,
   "source": {
@@ -28,5 +28,5 @@
     "right_primes": [5,7,11,13,19,23,37,47,53,59,61,67,71,79,83,101,103,107,131,139,149,163,167,173,179,181,191,197,199],
     "title": "Effective Generalized Fermat equation of signature (2p,2q,r) with odd narrow class number"
   },
-  "status": "preprint-assisted-effective-double-square-mask-cofinality"
+  "status": "preprint-assisted-effective-double-square-mask-cofinal-quadrant"
 }
