@@ -10,7 +10,9 @@ B-odd, B-even, and complete parity-union dimensions.
 The request releases the ambient space and cached HMF data before computing the
 operator, releases the prime-specific quaternion precomputation before reducing
 the matrix modulo 5, and forms the parity union by summing three distinct
-Hecke eigenspaces instead of multiplying dense matrices.
+Hecke eigenspaces instead of multiplying dense matrices. At norm 8 there are
+only nine neighbors, so direct enumeration is used instead of automorphism
+orbits, with greedy lattice reduction replacing theta-series hashes.
 """
 from __future__ import annotations
 
@@ -55,8 +57,8 @@ delete M0;
 ClearStoredModularForms(K);
 DeleteHeckePrecomputation(O);
 printf "PHASE=ambient-and-cache-cleared\n";
-printf "PHASE=T2-rational-start\n";
-TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=true,ThetaPrec:=0);
+printf "PHASE=T2-direct-neighbors-start\n";
+TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=false,ThetaPrec:=-1);
 printf "PHASE=T2-rational-ready\n";
 DeleteHeckePrecomputation(O,I2);
 ClearStoredModularForms(K);
@@ -95,7 +97,7 @@ def main() -> int:
     e3, e7 = args.pair
     code = magma_code(e3, e7)
     record: dict[str, Any] = {
-        "schema_version": 3,
+        "schema_version": 4,
         "status": "odd e3=3 mod-5 low-memory norm-8 parity decomposition",
         "calculator": base.CALCULATOR_URL,
         "field": "K7=Q(zeta_7)^+",
@@ -110,6 +112,12 @@ def main() -> int:
             },
         },
         "union_implementation": "ker(T) direct-sum ker(T-1) direct-sum ker(T+1)",
+        "hecke_strategy": {
+            "low_memory": True,
+            "use_automorphism_orbits": False,
+            "lattice_reduction": "Kohel greedy reduction (ThetaPrec=-1)",
+            "reason": "norm 8 has only nine neighbors",
+        },
         "memory_policy": (
             "delete ambient space and HMF cache after newspace construction; delete "
             "prime-specific Hecke precomputation before reducing the rational matrix mod 5; "
