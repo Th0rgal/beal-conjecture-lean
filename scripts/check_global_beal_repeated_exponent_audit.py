@@ -5,7 +5,7 @@ The checker validates only unconditional finite logic:
 * the missing product-divisibility implication;
 * the coefficient-pair support dichotomy in the coprime case;
 * the decomposition-group calculation;
-* the Teichmuller-torsion countermodel to the semilocal exponent inversion.
+* a compatible Q_7 Hensel countermodel to the semilocal exponent inversion.
 
 It deliberately verifies that the previously retained Mersenne/order sieve has
 been withdrawn.
@@ -82,22 +82,61 @@ def verify_pair_support_lemma(limit: int = 50) -> None:
                     )
 
 
-def verify_torsion_countermodel(limit: int = 50) -> None:
-    gamma = 1
-    rho = -1 % 3
-    F = (gamma + rho) % 3
-    if F != 0 or rho == 0:
-        raise CheckError("bad torsion fixture")
-    for n in range(1, limit + 1):
-        exponent = (1 - pow(7, n)) % 3
-        if exponent != 0:
-            raise CheckError(f"1-7^{n} is not zero modulo 3")
-        if gamma * exponent % 3 != F:
-            raise CheckError(f"torsion equality failed at n={n}")
+def teichmueller_cubic_root(precision: int) -> int:
+    """Lift 2 mod 7 to the unique cubic root of unity mod 7^precision."""
+    if precision < 1:
+        raise ValueError("precision must be positive")
+    omega = 2
+    modulus = 7
+    for _ in range(1, precision):
+        next_modulus = modulus * 7
+        lifts = [
+            (omega + digit * modulus) % next_modulus
+            for digit in range(7)
+            if pow(omega + digit * modulus, 3, next_modulus) == 1
+        ]
+        if len(lifts) != 1:
+            raise CheckError(f"Hensel lift was not unique: {lifts}")
+        omega = lifts[0]
+        modulus = next_modulus
+    return omega
+
+
+def signed_pow(unit: int, exponent: int, modulus: int) -> int:
+    if exponent >= 0:
+        return pow(unit, exponent, modulus)
+    return pow(pow(unit, -1, modulus), -exponent, modulus)
+
+
+def verify_exact_q7_countermodel(precisions: list[int]) -> None:
+    if precisions != list(range(1, 11)):
+        raise CheckError("unexpected Q_7 precision list")
+    for n in precisions:
+        modulus = 7**n
+        omega = teichmueller_cubic_root(n)
+        if omega % 7 != 2:
+            raise CheckError(f"wrong Teichmuller residue at n={n}")
+        if omega == 1 or pow(omega, 3, modulus) != 1:
+            raise CheckError(f"nontrivial cubic root failed at n={n}")
+        if pow(omega, 7, modulus) != omega:
+            raise CheckError(f"Teichmuller fixed-point identity failed at n={n}")
+
+        rho = omega
+        gamma = (pow(omega, -1, modulus) * 8) % modulus
+        F = (rho * gamma) % modulus
+        if F != 8 % modulus:
+            raise CheckError(f"rho*gamma identity failed at n={n}")
+
+        # This is exactly the displayed semilocal congruence with r=7,f=1:
+        # F ≡ gamma^(1-7^n) (mod 7^n), while rho remains nontrivial.
+        if signed_pow(gamma, 1 - 7**n, modulus) != F:
+            raise CheckError(f"semilocal congruence failed at n={n}")
+        if rho % 7 == 1:
+            raise CheckError(f"rho became trivial at n={n}")
 
 
 def verify(value: dict[str, Any]) -> None:
-    if value.get("schema_version") != 2:
+    if value.get("schema_version") != 3:
         raise CheckError("unexpected schema version")
     if value.get("status") != "unconditional-cyclotomic-proof-gap-audit":
         raise CheckError("unexpected audit status")
@@ -131,10 +170,13 @@ def verify(value: dict[str, Any]) -> None:
     if 2 % 3 == 1:
         raise CheckError("counterexample prime unexpectedly splits completely")
 
-    verify_torsion_countermodel()
     torsion = value["semilocal_torsion_gap"]
     if "Teichmuller" not in torsion.get("torsion_obstruction", ""):
         raise CheckError("torsion obstruction was not recorded")
+    exact = torsion.get("exact_q7_hensel_countermodel", {})
+    if exact.get("rho_nontrivial") != "rho is congruent to 2 modulo 7":
+        raise CheckError("exact Q_7 model was mutated")
+    verify_exact_q7_countermodel(exact.get("verified_precisions", []))
 
     withdrawn = set(value.get("withdrawn_consequences", []))
     required_withdrawals = {
@@ -182,6 +224,13 @@ def self_test(value: dict[str, Any]) -> None:
 
     bad = copy.deepcopy(value)
     bad["semilocal_torsion_gap"]["torsion_obstruction"] = "no obstruction"
+    bad["certificate_sha256"] = digest(bad)
+    mutations.append(bad)
+
+    bad = copy.deepcopy(value)
+    bad["semilocal_torsion_gap"]["exact_q7_hensel_countermodel"][
+        "rho_nontrivial"
+    ] = "rho is congruent to 1 modulo 7"
     bad["certificate_sha256"] = digest(bad)
     mutations.append(bad)
 
