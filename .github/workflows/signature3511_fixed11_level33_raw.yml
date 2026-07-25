@@ -1,0 +1,34 @@
+name: Signature 3511 fixed-11 level33 raw Brandt probe
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_signature_3511_magma_level33_raw_prime2.py"
+      - ".github/workflows/signature3511_fixed11_level33_raw.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_3511_magma_level33_raw_prime2.py"
+      - ".github/workflows/signature3511_fixed11_level33_raw.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  raw-prime2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compute norm-4 parity cover on the residual raw Brandt module
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_level33_raw_prime2.py
+          > ../signature3511-level33-raw-prime2.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature3511-fixed11-level33-raw-prime2
+          path: signature3511-level33-raw-prime2.json
+          if-no-files-found: error
