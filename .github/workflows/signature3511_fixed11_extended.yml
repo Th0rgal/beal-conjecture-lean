@@ -1,0 +1,41 @@
+name: Signature 3511 fixed-11 extended chain
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_extended_chain.py"
+      - ".github/workflows/signature3511_fixed11_extended.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_extended_chain.py"
+      - ".github/workflows/signature3511_fixed11_extended.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extended-chain:
+    strategy:
+      fail-fast: false
+      matrix:
+        level:
+          - "2,2"
+          - "2,3"
+          - "3,2"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Intersect the extended fixed-11 trace chain
+        run: >-
+          python3 scripts/run_signature_3511_magma_fixed11_extended_chain.py
+          --level "${{ matrix.level }}"
+          > "signature3511-extended-${{ matrix.level }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-extended-${{ matrix.level }}"
+          path: "signature3511-extended-${{ matrix.level }}.json"
+          if-no-files-found: error
