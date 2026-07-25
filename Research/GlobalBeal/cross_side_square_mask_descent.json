@@ -4,7 +4,7 @@
     "V": "Z^r+X^p",
     "identities": ["U>0","U*V=Y^q","V-U=2*X^p","V+U=2*Z^r","gcd(U,V) is 1 or 2"]
   },
-  "certificate_sha256": "0a2a247b03a1f60ac226e558b2ea35730d9ed988c239b69df405f61b23a6823b",
+  "certificate_sha256": "e650962f5b9ae88b3484646fb151abe0b5e9409f3d8365ab636f8109e9716cc1",
   "equation": "X^(2p)+Y^q=Z^(2r)",
   "even_Y_branch": {
     "consequence": "The cross-side mask reduces to a two-term q-th-power system with an explicit dyadic coefficient rather than to Sahoo's plus family.",
@@ -12,13 +12,19 @@
     "parity": "Y even iff X and Z are both odd"
   },
   "new_research_split": {
-    "cross_side_double_square_mask": "synchronized minus/plus cyclotomic descent and multi-Frey method",
-    "double_summand_square_mask": "effective Hilbert-modular/S-unit finite boundary via Sahoo",
+    "cross_side_double_square_mask": "synchronized minus/plus cyclotomic descent with complementary q-local types, followed by a multi-Frey method",
+    "double_summand_square_mask": "cofinal-quadrant closure and finitely many one-small-prime strips via Hilbert modular forms and S-units",
     "one_square_mask": "new asymmetric Frey/HGM system, beginning with (4,5,7)"
   },
   "nonclaim": "This descent is unconditional but does not yet eliminate the cross-side mask. Its value is that it replaces the original equation by two synchronized perfect-power factorizations, with at most one q-exceptional branch.",
   "odd_Y_branch": {
     "coupled_equations": ["v^q-u^q=2*X^p","v^q+u^q=2*Z^r"],
+    "exceptional_localization": {
+      "coprime_consequence": "Because gcd(X,Z)=1, the q-exceptional local type occurs in at most one of the two synchronized Frey systems",
+      "minus": "q divides v-u if and only if q divides X",
+      "plus": "q divides v+u if and only if q divides Z",
+      "proof": "Fermat congruences give v^q-u^q congruent to v-u mod q and v^q+u^q congruent to v+u mod q; compare with 2*X^p and 2*Z^r"
+    },
     "minus_cyclotomic_split": {
       "exceptional_case": "if q divides v-u, then v-u=2*q^(p*h-1)*a^p and Phi_q(v,u)=q*b^p for some h>=1",
       "factors": ["v-u","Phi_q(v,u)"],
