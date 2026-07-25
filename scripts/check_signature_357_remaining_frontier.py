@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay the exact twisted odd frontier after closing the e3=2 block."""
+"""Replay the exact twisted odd frontier and its prime-2 parity split."""
 from __future__ import annotations
 
 import argparse
@@ -30,8 +30,7 @@ def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 def load(path: pathlib.Path) -> dict[str, Any]:
     try:
         value = json.loads(
-            path.read_text(encoding="utf-8"),
-            object_pairs_hook=reject_duplicate_keys,
+            path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys
         )
     except (OSError, json.JSONDecodeError) as exc:
         raise CertificateError(str(exc)) from exc
@@ -43,10 +42,11 @@ def load(path: pathlib.Path) -> dict[str, Any]:
 def digest(data: dict[str, Any]) -> str:
     payload = copy.deepcopy(data)
     payload.pop("certificate_sha256", None)
-    encoded = json.dumps(
-        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
+    return hashlib.sha256(
+        json.dumps(
+            payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode("utf-8")
+    ).hexdigest()
 
 
 def bound_source(path: str, expected: str, label: str) -> dict[str, Any]:
@@ -72,7 +72,7 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
     }
     if set(data) != expected_keys:
         raise CertificateError("manifest keys differ from schema")
-    if data.get("schema_version") != 3 or digest(data) != data.get("certificate_sha256"):
+    if data.get("schema_version") != 4 or digest(data) != data.get("certificate_sha256"):
         raise CertificateError("schema or frontier digest mismatch")
     if data.get("equation") != "A^3+B^5=C^7":
         raise CertificateError("equation mismatch")
@@ -104,6 +104,18 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
     )
     if untwist["local_untwist"]["twisted_residual_conductor_exponents"] != [0, 1]:
         raise CertificateError("twisted prime-7 conductor bound mismatch")
+    prime2_filter = untwist["preserved_properties"].get("prime2_trace_filter")
+    if prime2_filter != {
+        "B_odd": "a_P2=0 mod 5",
+        "B_even": "a_P2 is 1 or 4 mod 5",
+        "cyclotomic_untwist_value_at_2": 1,
+        "reason": (
+            "ord_7(2)=3, so the unique prime above 2 in K7 splits in "
+            "Q(zeta_7)/K7"
+        ),
+    }:
+        raise CertificateError("cyclotomic untwist retains an incorrect prime-2 filter")
+
     monodromy = bound_source(
         odd["exact_monodromy_path"],
         odd["exact_monodromy_sha256"],
@@ -116,6 +128,42 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
         raise CertificateError("exact monodromy split mismatch")
     if monodromy["automorphic_frontier"]["remaining_level_norms"] != [5103, 19683, 137781]:
         raise CertificateError("exact-monodromy candidate frontier changed")
+
+    parity_meta = odd["prime2_parity_split"]
+    parity = bound_source(parity_meta["path"], parity_meta["sha256"], "prime-2 parity split")
+    pairs = parity["parity_branches"]
+    odd_pair = pairs[0]
+    even_pair = pairs[1]
+    if (
+        odd_pair["name"] != "B_odd"
+        or odd_pair["mod5_trace_mod5"] != 0
+        or odd_pair["fixed7_trace_mod7"] != 6
+        or odd_pair["residual_trace_pairs_mod5_mod7"] != [[0, 6]]
+    ):
+        raise CertificateError("B-odd prime-2 pair changed")
+    if (
+        even_pair["name"] != "B_even"
+        or even_pair["mod5_trace_mod5"] != [1, 4]
+        or even_pair["fixed7_trace_mod7"] != 0
+        or even_pair["residual_trace_pairs_mod5_mod7"] != [[1, 0], [4, 0]]
+    ):
+        raise CertificateError("B-even prime-2 pairs changed")
+    if parity_meta != {
+        "path": "Research/Signature357/two_frey_prime2_parity_split.json",
+        "sha256": parity["certificate_sha256"],
+        "B_odd": {
+            "mod5_trace_mod5": 0,
+            "fixed7_trace_mod7": 6,
+            "target": "eliminate the trace-zero subspaces at levels 19683 and 137781",
+        },
+        "B_even": {
+            "mod5_trace_mod5": [1, 4],
+            "fixed7_trace_mod7": 0,
+            "target": "eliminate the trace-zero subspace at fixed-7 level (3,3)",
+        },
+        "residual_trace_pairs_mod5_mod7": [[0, 6], [1, 0], [4, 0]],
+    }:
+        raise CertificateError("frontier parity strategy changed")
 
     split = odd["valuation_split"]
     zero = split["v7A_congruent_3_mod5"]
@@ -188,6 +236,11 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
         raise CertificateError("closed level 5103 remains scheduled")
     if "+/-8 mod 5" not in data["next_computation"]["level_19683"]:
         raise CertificateError("removed-prime trace condition missing")
+    if data["next_computation"].get("prime2_parity_strategy") != (
+        "B odd is closed by zero mod-5 trace kernels at both remaining levels; "
+        "B even is closed by a zero fixed-7 trace kernel at level (3,3)"
+    ):
+        raise CertificateError("prime-2 parity strategy changed")
     if "does not prove" not in data["nonclaim"]:
         raise CertificateError("explicit nonclaim missing")
     return data["certificate_sha256"], remaining_norms
@@ -209,12 +262,15 @@ def self_test() -> None:
     mutated["branch_status"]["odd"]["closed_e3"] = []
     expect_rejection(mutated, "a reopened e3=2 block")
     mutated = copy.deepcopy(source)
+    mutated["branch_status"]["odd"]["prime2_parity_split"]["B_even"]["mod5_trace_mod5"] = [0]
+    expect_rejection(mutated, "a parity-blind norm-8 trace")
+    mutated = copy.deepcopy(source)
     mutated["branch_status"]["odd"]["fixed7_pairing"]["e3_2"]["remaining_packets"] = [24]
     expect_rejection(mutated, "a fabricated e3=2 packet survivor")
     mutated = copy.deepcopy(source)
     mutated["compression"]["final_remaining_level_norms"].append(5103)
     expect_rejection(mutated, "the closed level 5103")
-    duplicate = '{"schema_version":3,"schema_version":3}'
+    duplicate = '{"schema_version":4,"schema_version":4}'
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fixture:
         fixture.write(duplicate)
         path = pathlib.Path(fixture.name)
@@ -227,7 +283,7 @@ def self_test() -> None:
             raise RuntimeError("checker accepted duplicate JSON keys")
     finally:
         path.unlink(missing_ok=True)
-    print("signature-357 post-e3=2 frontier negative fixtures passed")
+    print("signature-357 parity-split final frontier negative fixtures passed")
 
 
 def main() -> int:
@@ -238,11 +294,11 @@ def main() -> int:
         self_test()
         return 0
     certificate, norms = validate(load(MANIFEST))
-    print("signature-357 post-e3=2 paired frontier valid")
+    print("signature-357 parity-split final frontier valid")
     print("  even branch: closed")
     print("  odd e3=2 block: closed")
-    print("  remaining odd mod-5 levels:", ", ".join(map(str, norms)))
-    print("  remaining fixed-7 level: (3,3)")
+    print("  B odd target: mod-5 trace-zero kernels at", ", ".join(map(str, norms)))
+    print("  B even target: fixed-7 trace-zero kernel at level (3,3)")
     print(f"  certificate sha256: {certificate}")
     return 0
 
