@@ -80,5 +80,18 @@
       "verdict": "the displayed exponent-inversion step does not control Teichmuller torsion"
     }
   ],
-  "status": "unconditional-proof-gap-audit-withdraws-repeated-exponent-sieve"
+  "status": "unconditional-cyclotomic-proof-gap-audit",
+  "what_survives_unconditionally": [
+    "the direct-product decomposition-group calculation",
+    "the explicit counterexample to the total-splitting inference",
+    "the elementary product-divisibility counterexample",
+    "the coefficient-pair support lemma",
+    "the Teichmuller-torsion countermodel"
+  ],
+  "withdrawn_consequences": [
+    "the claimed universal proof of x^p+y^p=z^q for distinct odd primes",
+    "the conditional order relation ord_q(r) divides ord_p(r) for every r dividing x*y*(x+y)",
+    "the derived Mersenne-divisor sieve q divides 2^g-1",
+    "the claimed closure of the repeated-prime Beal core"
+  ]
 }
