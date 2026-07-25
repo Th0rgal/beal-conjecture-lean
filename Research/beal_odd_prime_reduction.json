@@ -1,0 +1,154 @@
+{
+  "boundary_status": {
+    "literature_solved_formalization_pending": [
+      {
+        "signature": [
+          3,
+          3,
+          4
+        ],
+        "source": "N. Bruin, On powers as sums of two cubes, ANTS-IV, LNCS 1838 (2000), 169-184"
+      },
+      {
+        "signature": [
+          3,
+          4,
+          4
+        ],
+        "source": "Henri Cohen, Number Theory Vol. II, Proposition 14.6.6 (Springer GTM 240, 2007)"
+      },
+      {
+        "signature": [
+          3,
+          4,
+          5
+        ],
+        "source": "Siksek--Stoll, Partial descent on hyperelliptic curves and the generalized Fermat equation x^3+y^4+z^5=0, BLMS 44 (2012), DOI 10.1112/blms/bdr086"
+      }
+    ],
+    "trusted_divisor_reductions": [
+      {
+        "basis": "FLT exponent 3",
+        "shadow": [
+          3,
+          3,
+          3
+        ],
+        "signatures": [
+          [
+            3,
+            3,
+            6
+          ],
+          [
+            3,
+            3,
+            9
+          ]
+        ]
+      },
+      {
+        "basis": "FLT exponent 4",
+        "shadow": [
+          4,
+          4,
+          4
+        ],
+        "signatures": [
+          [
+            4,
+            4,
+            4
+          ]
+        ]
+      }
+    ]
+  },
+  "candidate_signature357_impact": "assuming the candidate (3,5,7) theorem is correct, the first pairwise-distinct odd-prime node is removed, but no infinite prime-signature cone is closed because primes have no nontrivial exponent divisors",
+  "certificate_sha256": "e65b6940d8dcb45397b0c5144eee8b20279dcf68f69193ab70605e500018e0a3",
+  "classification": {
+    "ordered_beal_range_special_signatures": [
+      [
+        3,
+        3,
+        4
+      ],
+      [
+        3,
+        3,
+        6
+      ],
+      [
+        3,
+        3,
+        9
+      ],
+      [
+        3,
+        4,
+        4
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        4,
+        4,
+        4
+      ]
+    ],
+    "proof_cases": [
+      {
+        "case": "p>=5",
+        "conclusion": "impossible",
+        "reason": "a composite coordinate has a proper divisor at least 3, leaving a shadow with reciprocal sum at most 1/3+1/5+1/5<1"
+      },
+      {
+        "case": "p=4",
+        "conclusion": "q=r=4",
+        "reason": "the divisor shadow (2,q,r) must be non-hyperbolic, so 1/2+1/q+1/r>=1; q,r>=4 forces equality and q=r=4"
+      },
+      {
+        "case": "p=3,q>=5",
+        "conclusion": "impossible unless all coordinates are prime",
+        "reason": "any composite q or r has a proper divisor at least 3, giving reciprocal sum at most 1/3+1/3+1/5<1"
+      },
+      {
+        "case": "p=3,q=4",
+        "conclusion": "r in {4,5}",
+        "reason": "the shadow (3,2,r) forces r<=6; r=6 has the hyperbolic shadow (3,4,3)"
+      },
+      {
+        "case": "p=q=3",
+        "conclusion": "r in {4,6,9}",
+        "reason": "the largest proper divisor of composite r is at most 3; this leaves only 4,6,9"
+      }
+    ]
+  },
+  "definitions": {
+    "divisor_shadow": "replace any exponent by a positive divisor and absorb the quotient into the corresponding base",
+    "hyperbolic": "p*q+p*r+q*r < p*q*r",
+    "special": "hyperbolic, not all-prime, and every proper coordinatewise divisor shadow is non-hyperbolic"
+  },
+  "nonclaim": "this reduction removes the infinite composite-exponent core but does not prove the repeated-prime or pairwise-distinct odd-prime cores, so it is not a proof of Beal",
+  "reduction_conclusion": {
+    "candidate_signature357_impact": "assuming the candidate (3,5,7) theorem is correct, the first pairwise-distinct odd-prime node is removed, but no infinite prime-signature cone is closed because primes have no nontrivial exponent divisors",
+    "literature_assisted": "after importing the three finite literature-solved boundary theorems, every primitive Beal counterexample has an all-odd-prime signature",
+    "odd_prime_core": {
+      "diagonal": "p=q=r, closed by Fermat's Last Theorem",
+      "distinct": "three pairwise-distinct odd primes; still an infinite frontier",
+      "repeated": "up to permutation, (p,p,q) with distinct odd primes p,q; still an infinite frontier"
+    },
+    "unconditional": "every primitive Beal counterexample has a divisor shadow with an all-odd-prime signature or one of the six classified Beal-range special signatures"
+  },
+  "schema_version": 1,
+  "scope": {
+    "beal_exponent_floor": 3,
+    "equation": "A^x+B^y=C^z",
+    "positive_bases": true,
+    "primitive": "pairwise coprime after the standard primitive reduction"
+  },
+  "status": "unconditional-signature-classification-with-literature-assisted-boundary"
+}
