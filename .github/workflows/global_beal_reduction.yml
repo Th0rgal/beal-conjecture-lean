@@ -1,0 +1,38 @@
+name: Global Beal exponent reduction
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+  pull_request:
+    paths:
+      - "BealUnified/ExponentReduction.lean"
+      - "Research/GlobalBeal/**"
+      - "scripts/check_global_beal_*.py"
+      - ".github/workflows/global_beal_reduction.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Replay prime-exponent reduction
+        run: |
+          python3 scripts/check_global_beal_prime_exponent_reduction.py --self-test
+          python3 scripts/check_global_beal_prime_exponent_reduction.py
+      - name: Replay repeated-exponent audit
+        run: |
+          python3 scripts/check_global_beal_repeated_exponent_audit.py --self-test
+          python3 scripts/check_global_beal_repeated_exponent_audit.py
+
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+      - name: Compile exponent reduction module explicitly
+        run: lake env lean BealUnified/ExponentReduction.lean
