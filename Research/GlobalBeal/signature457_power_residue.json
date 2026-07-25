@@ -1,0 +1,74 @@
+{
+  "certificate_sha256": "b3c8333e103a1d6e6471c2dc15af25ec02e063e1f98d31eb4bbc9b4b114b3bc2",
+  "full_modulus_power_congruences": [
+    {
+      "conclusion": "u^4 is congruent to C modulo B^5",
+      "modulus": "B^5",
+      "unit": "u=C^2*A^(-1)",
+      "verification": "u^4=C^8*A^(-4) and A^4 is congruent to C^7 modulo B^5"
+    },
+    {
+      "conclusion": "v^4 is congruent to -B modulo C^7",
+      "modulus": "C^7",
+      "unit": "v=-A*B^(-1)",
+      "verification": "v^4=A^4*B^(-4) and A^4 is congruent to -B^5 modulo C^7"
+    },
+    {
+      "conclusions": [
+        "t^7 is congruent to B modulo A^4",
+        "t^5 is congruent to C modulo A^4"
+      ],
+      "modulus": "A^4",
+      "unit": "t=B^3*C^(-4)",
+      "verification": "B^5 is congruent to C^7 modulo A^4; B^20=C^28 and B^15=C^21 in the unit group"
+    }
+  ],
+  "impact": {
+    "parent_signature": "(2,5,7)",
+    "remaining_gap": "the congruences are necessary but no contradiction or complete descent from them is presently proved",
+    "square_constraint": "the exponent-2 variable is A^2",
+    "use": "any modular, descent, or search argument for the next canonical Beal boundary may impose these full-modulus power-residue and parity conditions before constructing Frey objects"
+  },
+  "nonclaim": "This is an unconditional necessary-condition theorem for signature (4,5,7). It does not eliminate the signature and does not prove Beal.",
+  "parity_theorem": {
+    "branches": [
+      {
+        "conditions": [
+          "B and C are odd",
+          "C is congruent to B^3+A^4 modulo 32",
+          "A^4 modulo 32 is 16 when v2(A)=1 and 0 when v2(A)>=2"
+        ],
+        "even_base": "A"
+      },
+      {
+        "conditions": [
+          "A and C are odd",
+          "C is congruent to A^4 modulo 32",
+          "C is congruent to 1 modulo 16"
+        ],
+        "even_base": "B"
+      },
+      {
+        "conditions": [
+          "A and B are odd",
+          "B is congruent to -A^4 modulo 32",
+          "B is congruent to -1 modulo 16"
+        ],
+        "even_base": "C"
+      }
+    ],
+    "exactly_one_even": true,
+    "modulus": 32
+  },
+  "prime_divisor_corollaries": [
+    "C is a fourth-power residue modulo every prime power dividing B^5",
+    "-B is a fourth-power residue modulo every prime power dividing C^7",
+    "at every prime power dividing A^4, B and C arise from one common parameter as seventh and fifth powers"
+  ],
+  "schema_version": 1,
+  "scope": {
+    "bases": "pairwise-coprime positive integers A,B,C",
+    "equation": "A^4+B^5=C^7"
+  },
+  "status": "unconditional-signature-457-power-residue-structure"
+}
