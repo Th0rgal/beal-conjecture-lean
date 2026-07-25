@@ -260,4 +260,61 @@ theorem beal_three_three_three
     (Nat.pos_iff_ne_zero.mp hC)
     hEq
 
+/--
+Prime-exponent gcd split (elementary Hall/Catalan bridge).
+
+For natural numbers `U, V, ℓ` with `V ≤ U`, `ℓ` prime, and `U, V` coprime,
+any common divisor of `(U - V)` and the geometric sum
+`∑ i ∈ range ℓ, U^i * V^(ℓ-1-i)` divides `ℓ`.
+
+This is the precise elementary divisibility used in reductions involving
+differences of powers with prime exponent.  It does not by itself yield a
+Beal or Catalan proof; additional hypotheses (e.g. quotient exponents > 1)
+are required for those global applications and are not encoded here.
+
+Proof relies only on the standard geometric-sum identity and coprimeness
+to cancel the `V^(ℓ-1)` factor.
+-/
+theorem gcd_U_sub_V_geom_sum_dvd_prime
+    (U V ℓ : ℕ)
+    (hVleU : V ≤ U)
+    (hℓ : ℓ.Prime)
+    (hUV : Nat.Coprime U V) :
+    Nat.gcd (U - V) (∑ i ∈ range ℓ, U^i * V^(ℓ - 1 - i)) ∣ ℓ := by
+  have hVltU : V < U ∨ U = V := by omega
+  rcases hVltU with hlt | heq
+  · -- V < U
+    let S := ∑ i ∈ range ℓ, U^i * V^(ℓ-1-i)
+    let D := Nat.gcd (U - V) S
+    have hmul : (U - V) * S = U^ℓ - V^ℓ := by
+      rw [mul_comm]
+      exact geom_sum₂_mul_of_le hlt ℓ
+    have hDdiff : D ∣ U^ℓ - V^ℓ :=
+      Nat.dvd_trans (Nat.gcd_dvd_left _ _) (by rw [← hmul]; exact Nat.dvd_mul_right _ _)
+    have hcong : U ≡ V [MOD D] := Nat.modEq_of_dvd (Nat.gcd_dvd_left _ _)
+    have hScong : S ≡ ℓ * V^(ℓ-1) [MOD D] := by
+      apply Nat.modEq_sum
+      intro i _
+      apply Nat.mul_modEq_mul_right
+      exact Nat.modEq.pow i hcong
+    simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul] at hScong
+    have hS0 : S ≡ 0 [MOD D] := Nat.modEq_of_dvd (Nat.gcd_dvd_right _ _)
+    have : ℓ * V^(ℓ-1) ≡ 0 [MOD D] := hS0.trans (by rw [hScong]; rfl)
+    rw [Nat.modEq_iff_dvd] at this
+    have hDℓV : D ∣ ℓ * V^(ℓ-1) := this
+    have hDcV : Nat.Coprime D V := by
+      apply Nat.coprime_of_dvd
+      intro p hp hD pV
+      have pUV : p ∣ U - V := Nat.dvd_trans hD (Nat.gcd_dvd_left _ _)
+      have pU : p ∣ U := Nat.dvd_add pUV pV
+      have : p ∣ Nat.gcd U V := Nat.dvd_gcd pU pV
+      rw [hUV] at this
+      exact hp.not_dvd_one this
+    exact Nat.Coprime.dvd_of_dvd_mul_right hDcV hDℓV
+  · -- U = V
+    have hU1 : U = 1 := Nat.eq_one_of_coprime (by rw [heq] at hUV; exact hUV)
+    simp [heq, hU1]
+    -- gcd(0, ℓ) = ℓ and ℓ ∣ ℓ
+    exact Nat.dvd_refl _
+
 end BealUnified
