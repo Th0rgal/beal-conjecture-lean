@@ -93,7 +93,9 @@ jobs:
           - {e3: 3, e7: 1, norm: 137781, prime: 11}
           - {e3: 3, e7: 1, norm: 137781, prime: 23}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The inert producer has a bounded 35-minute subprocess timeout; retain
+    # time for setup and the residual filter instead of cancelling it early.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
       - name: Install PARI/GP

@@ -9,12 +9,18 @@ on:
     branches:
       - agent/signature-345-357-certificates
     paths:
+      - "scripts/run_signature_357_magma_mod5_combined_semilinear.py"
       - "scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_mod5_inert_local.py"
       - "Research/Signature357/ODD_REMOVED_PRIME7_TRACE_BREAKTHROUGH.md"
       - ".github/workflows/signature357_mod5_combined_semilinear_v2.yml"
   pull_request:
     paths:
+      - "scripts/run_signature_357_magma_mod5_combined_semilinear.py"
       - "scripts/run_signature_357_magma_mod5_combined_semilinear_v2.py"
+      - "scripts/produce_signature_357_mod5_complete_local.py"
+      - "scripts/produce_signature_357_mod5_inert_local.py"
       - "Research/Signature357/ODD_REMOVED_PRIME7_TRACE_BREAKTHROUGH.md"
       - ".github/workflows/signature357_mod5_combined_semilinear_v2.yml"
   workflow_dispatch:
