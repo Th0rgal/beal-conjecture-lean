@@ -10,6 +10,9 @@ space and modular-form cache are released after construction of the independent
 newspace; prime-specific quaternion precomputation is deleted immediately after
 T_2 is produced and before conversion modulo 7; and the trace union is formed as
 the sum of the two distinct eigenspaces rather than by materializing T(T+1).
+At norm 4 there are only five neighbors, so direct enumeration is used instead
+of the automorphism-orbit machinery, with greedy lattice reduction replacing
+theta-series hashes.
 """
 from __future__ import annotations
 
@@ -102,8 +105,8 @@ delete M0;
 ClearStoredModularForms(K);
 DeleteHeckePrecomputation(O);
 printf "PHASE=ambient-and-cache-cleared\n";
-printf "PHASE=T2-start\n";
-TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=true,ThetaPrec:=0);
+printf "PHASE=T2-direct-neighbors-start\n";
+TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=false,ThetaPrec:=-1);
 printf "PHASE=T2-rational-ready\n";
 DeleteHeckePrecomputation(O,I2);
 ClearStoredModularForms(K);
@@ -133,7 +136,7 @@ def parse(output: str, marker: str) -> int:
 def main() -> int:
     source = magma_code()
     body: dict[str, Any] = {
-        "schema_version": 5,
+        "schema_version": 6,
         "status": "fixed-7 level-(3,3) exact prime-2 parity decomposition",
         "calculator": CALCULATOR_URL,
         "level_exponents": [3, 3],
@@ -146,6 +149,12 @@ def main() -> int:
         "allowed_traces_mod7": [0, 6],
         "annihilating_polynomial": "T*(T+1)",
         "union_implementation": "ker(T) direct-sum ker(T+1), avoiding T*(T+1)",
+        "hecke_strategy": {
+            "low_memory": True,
+            "use_automorphism_orbits": False,
+            "lattice_reduction": "Kohel greedy reduction (ThetaPrec=-1)",
+            "reason": "norm 4 has only five neighbors",
+        },
         "memory_policy": (
             "delete ambient space and HMF cache after newspace construction; delete "
             "prime-specific Hecke precomputation before reducing the rational matrix mod 7"
