@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
-"""Measure the mandatory norm-8 residual kernel at an odd e3=3 level.
+"""Split an odd e3=3 mod-5 level by the exact norm-8 parity traces.
 
-Every hypothetical odd-branch solution has residual mod-5 Hecke trace zero at
-the unique prime of norm 8.  Earlier producers attempted the complete
-multi-prime sieve immediately and retained no result when construction of the
-first rational Hecke matrix exhausted the calculator memory limit.
-
-This focused probe clears the definite-Hecke precomputation accumulated while
-constructing the newspace, computes only T_P2, reduces it modulo 5 immediately,
-deletes the rational matrix and prime cache, and records ``dim ker(T_P2)``.  A
-zero kernel eliminates the level.  A positive kernel is only a necessary
-survivor and becomes the input dimension for later removed-prime and auxiliary
-filters.
+For B odd, the degree-two full-cyclotomic trace forces the base Hecke trace to
+be zero modulo 5. For B even, u-1=B^5/A^3 is 2-adically positive and the
+multiplicative local rule gives trace +/-9, namely 1 or 4 modulo 5. The three
+eigenvalues are distinct, so the same low-memory Hecke matrix gives separate
+B-odd, B-even, and complete parity-union dimensions.
 """
 from __future__ import annotations
 
@@ -53,15 +47,21 @@ O:=QuaternionOrder(M);
 DeleteHeckePrecomputation(O);
 printf "PHASE=old-hecke-cache-cleared\n";
 printf "PHASE=T2-rational-start\n";
-TQ:=HeckeOperator(M,I2);
+TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,ThetaPrec:=0);
 printf "PHASE=T2-rational-ready\n";
 T:=Matrix(F5,TQ);
 delete TQ;
 DeleteHeckePrecomputation(O,I2);
 printf "PHASE=T2-mod5-ready\n";
-d:=Nullity(T);
-printf "NORM8_DIM=%o\n",d;
-printf "FINAL_DIM=%o\n",d;
+I:=IdentityMatrix(F5,n);
+Sodd:=Kernel(T);
+Seven:=Kernel((T-I)*(T+I));
+Sunion:=Kernel(T*(T-I)*(T+I));
+printf "B_ODD_TRACE0_DIM=%o\n",Dimension(Sodd);
+printf "B_EVEN_MULTIPLICATIVE_DIM=%o\n",Dimension(Seven);
+printf "TRACE_UNION_DIM=%o\n",Dimension(Sunion);
+printf "DIRECT_SUM_CHECK=%o\n",Dimension(Sodd)+Dimension(Seven)-Dimension(Sunion);
+printf "FINAL_DIM=%o\n",Dimension(Sunion);
 '''
 
 
@@ -79,32 +79,52 @@ def main() -> int:
     e3, e7 = args.pair
     code = magma_code(e3, e7)
     record: dict[str, Any] = {
-        "schema_version": 1,
-        "status": "odd e3=3 mod-5 low-memory norm-8 residual-kernel probe",
+        "schema_version": 2,
+        "status": "odd e3=3 mod-5 low-memory norm-8 parity decomposition",
         "calculator": base.CALCULATOR_URL,
         "field": "K7=Q(zeta_7)^+",
         "level_exponents": [e3, e7],
         "level_norm": 27**e3 * 7**e7,
         "input_bytes": len(code.encode("utf-8")),
-        "necessary_condition": "a_P2=0 mod 5 at the unique prime of norm 8",
+        "parity_trace_map": {
+            "B_odd": {"integer_trace": 0, "residual_trace_mod5": 0},
+            "B_even": {
+                "integer_traces": [-9, 9],
+                "residual_traces_mod5": [1, 4],
+            },
+        },
         "memory_policy": (
             "delete definite-Hecke precomputation before and after T_P2; "
-            "delete the rational matrix immediately after reduction modulo 5"
+            "delete the low-memory rational matrix immediately after reduction modulo 5"
         ),
         "soundness": (
-            "norm8_dimension zero eliminates the entire residual level; "
-            "positive dimension is only a necessary survivor"
+            "zero B-odd trace-zero dimension closes the B-odd part of this level; "
+            "zero B-even multiplicative dimension closes the B-even part; zero union "
+            "closes the complete residual level; positive dimensions are only necessary"
+        ),
+        "nonclaim": (
+            "the B-odd full-to-base trace calculation, the B-even multiplicative local "
+            "trace rule, modularity and level lowering remain imported research inputs"
         ),
     }
     output = ""
     try:
         output = base.submit(code)
+        odd_dimension = parse_int(output, "B_ODD_TRACE0_DIM")
+        even_dimension = parse_int(output, "B_EVEN_MULTIPLICATIVE_DIM")
+        union_dimension = parse_int(output, "TRACE_UNION_DIM")
+        direct_sum_error = parse_int(output, "DIRECT_SUM_CHECK")
+        if direct_sum_error != 0 or odd_dimension + even_dimension != union_dimension:
+            raise base.ResearchError("distinct norm-8 eigenspaces did not form a direct sum")
         record.update(
             {
                 "request_status": "completed",
                 "ambient_dimension": parse_int(output, "AMBIENT_DIM"),
                 "new_dimension": parse_int(output, "NEW_DIM"),
-                "norm8_dimension": parse_int(output, "NORM8_DIM"),
+                "b_odd_trace0_dimension": odd_dimension,
+                "b_even_multiplicative_dimension": even_dimension,
+                "trace_union_dimension": union_dimension,
+                "direct_sum_check": direct_sum_error,
                 "final_dimension": parse_int(output, "FINAL_DIM"),
                 "output_tail": output[-6000:],
             }
