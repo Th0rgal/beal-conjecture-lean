@@ -8,6 +8,16 @@ frontier, adds an independently replayed local certificate at the residual prime
 and records an independent mod-`5` Frey system whose residual representation is
 absolutely irreducible throughout the unit-at-`3` branch.
 
+## Controller-attested task provenance
+
+The PR-16 continuation is linked to the controller-attested external input
+`/var/lib/hermes-assistant/workspace/inputs/beal-20260724.txt`, SHA-256
+`c20bc824c5c25fd472e2f3df3d8055d6cb81852820895694272d80fecbb075b7`.
+That host path is not visible from this mission workspace: no contents have
+been copied, inferred, or independently verified here. The precise attestation
+and its non-claims are recorded in
+`Research/Signature357/PR16_CONTROLLER_PROVENANCE_2026-07-25.md`.
+
 A hypothetical Beal solution
 
 ```text
