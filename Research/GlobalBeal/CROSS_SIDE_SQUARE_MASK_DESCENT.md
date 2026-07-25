@@ -77,6 +77,19 @@ The relevant gcds are each \(1\) or \(q\). Therefore:
 Since \(q\) cannot divide both \(v-u\) and \(v+u\), at least one of these two
 cyclotomic decompositions is completely pure.
 
+The exceptional sign is also localized exactly:
+
+\[
+q\mid(v-u)\iff q\mid X,
+\qquad
+q\mid(v+u)\iff q\mid Z.
+\]
+
+Indeed, modulo \(q\), Fermat's congruence identifies
+\(v^q\mp u^q\) with \(v\mp u\). Since \(\gcd(X,Z)=1\), the two future
+Frey systems have complementary local types at \(q\): at most one carries
+the exceptional \(q\)-factor.
+
 This is an exact synchronized multi-Frey input.
 
 ## Even \(Y\): dyadic normal form
@@ -101,9 +114,9 @@ This branch becomes a coefficient-\(2\) coupled perfect-power problem.
 
 The square-mask program now separates into three modules:
 
-1. **double-square summand masks:** effective finite boundary via Hilbert
-   modular forms and \(S\)-units;
+1. **double-square summand masks:** cofinal-quadrant closure and finitely many
+   one-small-prime strips via Hilbert modular forms and \(S\)-units;
 2. **cross-side double masks:** synchronized plus/minus cyclotomic multi-Frey
-   descent;
+   descent with complementary local types at \(q\);
 3. **one-square masks:** asymmetric Frey/HGM systems, beginning with
    \((4,5,7)\).
