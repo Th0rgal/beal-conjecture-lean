@@ -1,0 +1,27 @@
+name: Global Beal exponent density
+
+on:
+  push:
+    branches:
+      - research/global-beal-density-closure
+    paths:
+      - "Research/GlobalBeal/GLOBAL_EXPONENT_DENSITY_CLOSURE.md"
+      - "scripts/check_global_beal_density.py"
+      - ".github/workflows/global_beal_density.yml"
+  pull_request:
+    paths:
+      - "Research/GlobalBeal/GLOBAL_EXPONENT_DENSITY_CLOSURE.md"
+      - "scripts/check_global_beal_density.py"
+      - ".github/workflows/global_beal_density.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Replay exact periodic and Möbius density calculation
+        run: python3 scripts/check_global_beal_density.py
