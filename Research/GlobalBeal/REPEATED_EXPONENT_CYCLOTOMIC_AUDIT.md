@@ -1,238 +1,290 @@
-# Audit of the claimed universal repeated-exponent proof
+# Repeated-exponent cyclotomic audit: two independent proof gaps
 
 ## Status
 
-The group-theoretic diagnosis in this note is unconditional.
-
-The resulting order sieve for
+This note gives an **unconditional audit of displayed proof steps** in two
+claimed cyclotomic proofs for the repeated-exponent family
 
 \[
-x^p+y^p=z^q
+x^p+y^p=z^q,
+\qquad p>3,
+\qquad p\ne q
 \]
 
-is conditional on the ideal-theoretic lemmas preceding Lemma 6 of Preda
-Mihailescu's preprint:
+with odd prime exponents.
 
-- *The strong Fermat-Catalan Equation*,
-  [arXiv:2509.18275](https://arxiv.org/abs/2509.18275).
+It does **not** prove that solutions exist, and it does **not** prove their
+nonexistence. Its conclusion is narrower and fail-closed:
 
-The preprint's final total-splitting inference is invalid. A weaker, useful
-splitting-order conclusion survives.
+\[
+\boxed{\text{the audited arguments do not establish the repeated-prime family.}}
+\]
 
-## 1. The exact gap
+The earlier repository version retained an order/Mersenne sieve conditional on
+preceding lemmas of the 2025 preprint. The present audit withdraws that sieve:
+one of those preceding lemmas already contains a fatal product-divisibility
+step, and the subsequent total-splitting step is also invalid.
+
+The sources audited are:
+
+- Preda Mihailescu, *The strong Fermat-Catalan Equation*,
+  [arXiv:2509.18275v1](https://arxiv.org/abs/2509.18275);
+- Boris Bartolome and Preda Mihailescu, *Semilocal approximation for the
+  Fermat-Catalan and further popular Diophantine norm equations*,
+  [arXiv:2108.08572v3](https://arxiv.org/abs/2108.08572v3).
+
+## 1. Lemma 5: the product-divisibility step is missing coprimality
+
+In Lemma 5 of arXiv:2509.18275v1 the proof obtains
+
+\[
+\beta(t_1)\mid\chi,
+\qquad
+\beta(t_2)\mid\chi,
+\]
+
+and then writes
+
+\[
+\chi=\beta(t_1)\beta(t_2)\chi'.
+\]
+
+That conclusion requires the two principal ideals
+\((\beta(t_1))\) and \((\beta(t_2))\) to be coprime. No such coprimality is
+proved at that point. In an arbitrary integral domain, even in \(\mathbf Z\),
+
+\[
+2\mid2,
+\qquad
+2\mid2,
+\qquad
+4\nmid2.
+\]
+
+Thus the product divisibility does not follow from the two displayed
+individual divisibilities.
+
+## 2. The coprime case collapses to the norm element
+
+The missing hypothesis cannot simply be inserted without changing the final
+argument.
+
+Write
+
+\[
+t=t_1+t_2,
+\]
+
+where the two positive Stickelberger elements have relative weight \(k\). For
+each conjugate pair \(\{c,p-c\}\), write their coefficients as
+
+\[
+(a_0,a_1),
+\qquad
+(b_0,b_1).
+\]
+
+The relative-weight condition gives
+
+\[
+a_0+a_1=k,
+\qquad
+b_0+b_1=k.
+\]
+
+The conjugates of the characteristic number \(\alpha\) generate pairwise
+coprime ideals. Therefore, if \((\beta(t_1))\) and \((\beta(t_2))\) are
+coprime, no conjugate of \(\alpha\) can occur with positive exponent in both
+\(\alpha^{t_1}\) and \(\alpha^{t_2}\). Coordinatewise,
+
+\[
+a_0b_0=0,
+\qquad
+a_1b_1=0.
+\]
+
+For \(k>0\), the four equations force
+
+\[
+a_0+b_0=k,
+\qquad
+a_1+b_1=k.
+\]
+
+Applying this independently to every conjugate pair yields
+
+\[
+\boxed{t_1+t_2=kN,}
+\]
+
+where \(N\) is the cyclotomic norm element.
+
+Consequently,
+
+\[
+\alpha^{2pt}
+ =\alpha^{2pkN}
+ =N_{\mathbf Q(\zeta_p)/\mathbf Q}(\alpha)^{2pk}
+ \in\mathbf Z.
+\]
+
+But the last line of Lemma 5 requires
+
+\[
+\alpha^{2pt}\notin\mathbf Z
+\]
+
+to obtain its contradiction.
+
+Hence the proof is trapped in a complete dichotomy:
+
+1. if \(\beta(t_1)\) and \(\beta(t_2)\) are not known to be coprime, the
+   product-divisibility step is invalid;
+2. if they are coprime, then \(t=kN\), and the claimed final nonintegrality is
+   false.
+
+This gap precedes the decomposition-group argument and invalidates the old
+conditional order sieve retained by the repository.
+
+## 3. Lemma 6: trivial intersection does not imply total splitting
 
 Let
 
 \[
-K=\mathbf Q(\zeta_p),\qquad
-K'=\mathbf Q(\zeta_q),\qquad
+K=\mathbf Q(\zeta_p),
+\qquad
+K'=\mathbf Q(\zeta_q),
+\qquad
 L=KK',
 \]
 
-for distinct odd primes \(p,q\). Write
+so
 
 \[
-\operatorname{Gal}(L/\mathbf Q)=G'\times H',
+\operatorname{Gal}(L/\mathbf Q)=G'\times H'.
 \]
 
-where \(G'\) acts on \(\zeta_p\) and \(H'\) acts on \(\zeta_q\).
-
-For a rational prime \(r\nmid pq\), let \(D_r\) be a decomposition group in
-\(L/\mathbf Q\). The proof of Lemma 6 obtains
+For a rational prime \(r\nmid pq\), put
 
 \[
-D_r\cap H'=\{1\}
-\]
-
-and then asserts that the fixed field \(L^{D_r}\) contains \(K'\).
-
-The asserted implication is false. By Galois correspondence,
-
-\[
-L^{D_r}\supseteq K'
-\quad\Longleftrightarrow\quad
-D_r\subseteq \operatorname{Gal}(L/K')=G'.
-\]
-
-Trivial intersection with \(H'\) does not imply containment in \(G'\). A
-diagonal subgroup of a direct product is the standard counterexample.
-
-## 2. Frobenius calculation
-
-Put
-
-\[
-m=\operatorname{ord}_p(r),\qquad
+m=\operatorname{ord}_p(r),
+\qquad
 n=\operatorname{ord}_q(r).
 \]
 
-The decomposition group is cyclic, generated by
+The decomposition group is cyclic, generated by the pair of Frobenius
+elements. A direct calculation gives
 
 \[
-(\operatorname{Frob}_p(r),\operatorname{Frob}_q(r)),
-\]
-
-whose two components have orders \(m\) and \(n\).
-
-A direct calculation gives
-
-\[
-\boxed{
-D_r\cap H'=\{1\}
-\quad\Longleftrightarrow\quad
-n\mid m.
-}
+\boxed{D_r\cap H'=\{1\}\iff n\mid m.}
 \]
 
 By contrast,
 
 \[
-\boxed{
-D_r\subseteq G'
-\quad\Longleftrightarrow\quad
-n=1
-\quad\Longleftrightarrow\quad
-r\equiv1\pmod q.
-}
+L^{D_r}\supseteq K'
+\iff D_r\subseteq G'
+\iff n=1
+\iff r\equiv1\pmod q.
 \]
 
-The missing implication is therefore exactly
+The implication used in Lemma 6,
 
 \[
-n\mid m\quad\not\Longrightarrow\quad n=1.
+D_r\cap H'=\{1\}
+\Longrightarrow
+L^{D_r}\supseteq K',
 \]
 
-For a concrete example, take
+is therefore false. A concrete example is
 
 \[
-p=5,\qquad q=3,\qquad r=2.
+p=5,
+\qquad q=3,
+\qquad r=2,
 \]
 
-Then
+for which
 
 \[
-\operatorname{ord}_5(2)=4,\qquad
+\operatorname{ord}_5(2)=4,
+\qquad
 \operatorname{ord}_3(2)=2.
 \]
 
-Thus \(D_2\cap H'=\{1\}\), but \(D_2\not\subseteq G'\), and \(2\) does not
-split completely in \(\mathbf Q(\zeta_3)\).
+Thus the intersection is trivial, but \(2\) does not split completely in
+\(\mathbf Q(\zeta_3)\).
 
-This invalidates the parity contradiction in Proposition 1 and Corollary 1 of
-the preprint.
+## 4. The older semilocal proof does not control Teichmüller torsion
 
-## 3. The corrected arithmetic consequence
-
-Assume the earlier ideal-theoretic argument correctly proves that every prime
-of \(K\) above each rational prime
+Theorem 2 of arXiv:2108.08572v3 sets
 
 \[
-r\mid xy(x+y)
+u_n=1-r^{nf}\in\mathbf Z_r^\times
 \]
 
-splits completely in \(L/K\). The correct rational consequence is then
+and uses an inverse \(v_n\in\mathbf Z_r\) to invert exponentiation in a local
+unit group. Being an \(r\)-adic unit is enough for exponentiation by \(u_n\)
+to be invertible on the pro-\(r\) group of principal units. It is not enough
+on the full unit group, because
 
 \[
-\boxed{
-\operatorname{ord}_q(r)\mid\operatorname{ord}_p(r).
-}
+r^f-1\mid r^{nf}-1.
 \]
 
-Because \(p,q\) are odd and \(x,y\) are coprime, one of \(x,y,x+y\) is even.
-Removing a power of the odd prime \(q\) does not change parity, so the condition
-applies to \(r=2\):
+Hence \(u_n\) annihilates the Teichmüller torsion of order dividing
+\(r^f-1\).
+
+The obstruction already appears in the finite cyclic group \(\mu_3\). Take
 
 \[
-\boxed{
-\operatorname{ord}_q(2)\mid\operatorname{ord}_p(2).
-}
+r=7,
+\qquad f=1,
 \]
 
-Let
+and let \(\gamma\) be a nontrivial cubic root of unity. Put
 
 \[
-g=\gcd(p-1,q-1).
+\rho=\gamma^{-1},
+\qquad
+F=\rho\gamma=1.
 \]
 
-Since
+For every \(n\ge1\),
 
 \[
-\operatorname{ord}_p(2)\mid p-1,\qquad
-\operatorname{ord}_q(2)\mid q-1,
+3\mid1-7^n,
+\qquad
+F=\gamma^{1-7^n}=1,
 \]
 
-the divisibility above implies
+while \(\rho\ne1\). Thus the displayed congruences can determine the
+principal-unit component but do not force the torsion component \(\rho\) to
+vanish.
 
-\[
-\operatorname{ord}_q(2)\mid g.
-\]
+## 5. Consequences withdrawn
 
-Therefore
+The following statements are **not active research results** after this audit:
 
-\[
-\boxed{
-q\mid 2^g-1.
-}
-\]
+- a universal cyclotomic proof of \(x^p+y^p=z^q\) for distinct odd primes;
+- the relation
+  \(\operatorname{ord}_q(r)\mid\operatorname{ord}_p(r)\) for every
+  \(r\mid xy(x+y)\);
+- the derived Mersenne condition
+  \(q\mid2^{\gcd(p-1,q-1)}-1\);
+- closure of the repeated-prime Beal core.
 
-This is an explicit Mersenne-divisor sieve for the repeated-exponent family.
+What survives is an independently replayable audit of the exact logical gaps.
+The repeated-prime family remains one of the infinite cores that a complete
+Beal proof must solve by a replacement argument.
 
-### Immediate infinite subfamily
-
-If
-
-\[
-\gcd(p-1,q-1)=2
-\]
-
-and \(q>3\), then the condition would force
-
-\[
-q\mid2^2-1=3,
-\]
-
-which is impossible. Hence, conditional on the preceding ideal-theoretic
-lemmas,
-
-\[
-\boxed{
-\gcd(p-1,q-1)=2,\ q>3
-\quad\Longrightarrow\quad
-x^p+y^p\ne z^q
-}
-\]
-
-for primitive nonzero solutions.
-
-More generally, every pair satisfying
-
-\[
-q\nmid2^{\gcd(p-1,q-1)}-1
-\]
-
-is eliminated.
-
-## 4. What this does and does not solve
-
-For fixed \(p\), the condition leaves only prime divisors \(q\) of
-
-\[
-2^{\operatorname{ord}_p(2)}-1,
-\]
-
-so it converts the \(q\)-direction into an explicit finite sieve.
-
-It does not close the repeated-exponent family globally:
-
-- infinitely many values of \(p\) remain;
-- some pairs, such as \((p,q)=(11,31)\), pass the order test;
-- all three-distinct-prime Beal signatures are untouched;
-- the preceding ideal-theoretic lemmas of the preprint require independent
-  audit.
-
-The replay checker is:
+## Replay
 
 ```bash
 python3 scripts/check_global_beal_repeated_exponent_audit.py --self-test
 python3 scripts/check_global_beal_repeated_exponent_audit.py
 ```
+
+The checker exhaustively verifies the coefficient-pair lemma, the cyclic
+decomposition-group formulas, the product-divisibility counterexample, the
+Teichmüller-torsion countermodel, certificate hashes, and negative fixtures.
