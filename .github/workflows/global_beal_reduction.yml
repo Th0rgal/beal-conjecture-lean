@@ -40,6 +40,10 @@ jobs:
         run: |
           python3 scripts/check_global_beal_odd_tower_transfer.py --self-test
           python3 scripts/check_global_beal_odd_tower_transfer.py
+      - name: Replay the exponent-10 tower transfer
+        run: |
+          python3 scripts/check_global_beal_odd_tower_transfer_10.py --self-test
+          python3 scripts/check_global_beal_odd_tower_transfer_10.py
       - name: Replay signature-(4,5,7) power-residue theorem
         run: |
           python3 scripts/check_global_beal_signature457_power_residue.py --self-test
