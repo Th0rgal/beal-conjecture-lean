@@ -2,9 +2,9 @@
 """Probe the level-19683 mod-5 branch in the indefinite ambient Hilbert space.
 
 The definite newspace construction reaches dimension 225 but exhausts the public
-Magma memory limit while building T_2.  Over the odd-degree field K7, the full
+Magma memory limit while building T_2. Over the odd-degree field K7, the full
 ambient space is computed independently by the indefinite algorithm and has
-only dimension 244.  This probe computes T_2 there, splits the exact parity
+only dimension 244. This probe computes T_2 there, splits the exact parity
 traces 0,+1,-1, and then imposes the removed-prime trace a_7=+/-8 mod 5.
 
 A zero survivor in the full ambient space eliminates the newspace a fortiori.
@@ -76,7 +76,7 @@ def submit(code: str) -> str:
             "Origin": f"{parsed.scheme}://{parsed.netloc}",
         },
     )
-    with opener.open(request, timeout=300) as response:
+    with opener.open(request, timeout=1200) as response:
         return html.unescape(re.sub(r"<[^>]+>", "", response.read().decode(errors="replace")))
 
 
@@ -127,7 +127,7 @@ def parse_int(output: str, marker: str) -> int:
 def main() -> int:
     source = magma_code()
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "level-19683 indefinite-ambient parity and removed-prime probe",
         "field": "K7=Q(zeta_7)^+",
         "level_exponents": [3, 0],
@@ -135,6 +135,7 @@ def main() -> int:
         "calculator": CALCULATOR_URL,
         "parity_traces_mod5": [0, 1, 4],
         "removed_prime7_targets_mod5": [2, 3],
+        "http_result_timeout_seconds": 1200,
         "input_bytes": len(source.encode()),
         "soundness": (
             "zero final ambient dimension eliminates the 225-dimensional newspace; "
