@@ -111,21 +111,23 @@ not a one-dimensional family and not a bounded search.
 
 ## 4. Replay
 
-Certificate:
+The retained replay script is:
+
+```bash
+python3 scripts/check_global_beal_density.py
+```
+
+It reconstructs the period-2520 residue set, verifies every displayed
+exceptional equation and valuation-one witness, redoes the complete finite
+Möbius calculation, derives the rational coefficient of \(1/\zeta(3)\), and
+bounds \(\zeta(3)\) by a finite sum with an integral tail estimate.
+
+An expanded fail-closed certificate and negative-fixture checker were also
+produced independently; their certificate SHA-256 is:
 
 ```text
 6dda4052453b2a8c594946b274617983cb60d3f78edb23be82f7f5b0f00ae5f5
 ```
-
-```bash
-python3 check_global_exponent_density_closure.py --self-test
-python3 check_global_exponent_density_closure.py
-```
-
-The checker reconstructs the periodic residue set, verifies every displayed
-exceptional equation and valuation-one witness, redoes the complete finite
-Möbius table, derives the rational coefficient of \(1/\zeta(3)\), and bounds
-\(\zeta(3)\) by a finite sum with an integral tail estimate.
 
 The theorem imports Fermat's Last Theorem and the complete published
 classifications for the six core exponent multisets. It does not claim that
