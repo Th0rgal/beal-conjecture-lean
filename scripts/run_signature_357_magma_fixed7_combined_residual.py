@@ -31,6 +31,19 @@ DATA_URL = (
 EXPECTED_DATA_BLOB = "9c96357834f2298b4d91ab97812c38e84b8ef7a2"
 CALCULATOR_URL = "https://magma.maths.usyd.edu.au/calc/"
 PRIMES = [13, 43, 11, 29, 41]
+# Data.txt predates the prime-43 computation.  This row is the exact output of
+# produce_signature_357_fixed7_complete_local.py from the separately pinned
+# GPcode.gp blob; keep that provenance distinct from DATA_URL.
+PRIME43_SOURCE_BLOB = "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2"
+PRIME43_ROW = (
+    "<43,["
+    "x+53,x-55,x,x+10,x-30,x+43,x+40,x-40,x+53,x-42,x-35,x+68,"
+    "x+58,x+49,x-16,x-50,x-37,x+48,x-52,x-40,x+24,x+10,x+34,x+78,"
+    "x-77,x-55,x+70,x-40,x-10,x+10,x+38,x-51,x+55,x+13,x+5,x-22,"
+    "x-30,x-82,x+24,x-26,x+49"
+    "],[x+3698,x+3698,x+3698,x+3698,x+3698]"
+    ",[x-3698,x+1849,x+1849]>"
+)
 MAX_INPUT = 49_000
 USER_AGENT = "Mozilla/5.0 beal-conjecture-lean-research/1.0"
 
@@ -81,6 +94,8 @@ def rows_by_prime(data: bytes) -> dict[int, str]:
         match = re.match(r"<(\d+),", row)
         if match:
             result[int(match.group(1))] = row
+    if 43 not in result:
+        result[43] = PRIME43_ROW
     missing = [prime for prime in PRIMES if prime not in result]
     if missing:
         raise ResearchError(f"candidate rows missing for {missing}")
@@ -220,6 +235,11 @@ def main() -> int:
         "status": "combined fixed-7 level-(3,3) residual Hecke and semilinear sieve",
         "calculator": CALCULATOR_URL,
         "candidate_blob_sha1": EXPECTED_DATA_BLOB,
+        "prime43_candidate_source": {
+            "producer": "scripts/produce_signature_357_fixed7_complete_local.py",
+            "path": "Codes/GPcode.gp",
+            "git_blob_sha1": PRIME43_SOURCE_BLOB,
+        },
         "level_exponents": [3, 3],
         "level_norm": 91125,
         "auxiliary_primes": PRIMES,
