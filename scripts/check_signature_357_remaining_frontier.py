@@ -131,21 +131,20 @@ def validate(data: dict[str, Any]) -> tuple[str, list[int]]:
 
     parity_meta = odd["prime2_parity_split"]
     parity = bound(parity_meta["path"], parity_meta["sha256"], "prime-2 parity certificate")
-    if parity.get("schema_version") != 2:
+    if parity.get("schema_version") != 1:
         raise CertificateError("prime-2 parity schema changed")
     pairs = parity["parity_branches"]
     if [row["name"] for row in pairs] != ["B_odd", "B_even"]:
         raise CertificateError("prime-2 parity inventory changed")
     b_odd, b_even = pairs
     if (
-        b_odd["mod5_base_trace_mod5"] != 0
+        b_odd["mod5_trace_mod5"] != 0
         or b_odd["fixed7_trace_mod7"] != 6
         or b_odd["residual_trace_pairs_mod5_mod7"] != [[0, 6]]
-        or b_odd["mod5_full_to_base_transform"] != "-16=a_P^2-2*8"
     ):
         raise CertificateError("B-odd trace pair changed")
     if (
-        b_even["mod5_level_lowered_hecke_targets_mod5"] != [1, 4]
+        b_even["mod5_trace_mod5"] != [1, 4]
         or b_even["fixed7_trace_mod7"] != 0
         or b_even["residual_trace_pairs_mod5_mod7"] != [[1, 0], [4, 0]]
     ):

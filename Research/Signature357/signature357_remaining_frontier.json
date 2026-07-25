@@ -84,7 +84,7 @@
             0
           ]
         ],
-        "sha256": "d80e498a2242b1466db2fa1ebb5706e4ab06e93994c631e9217f37530107acd0"
+        "sha256": "850104e9017c7c77192cd3683daa7dfd40022dad7bcd911c8ec50c1e5a00ea9e"
       },
       "remaining_e3": [
         3
@@ -165,7 +165,7 @@
       }
     }
   },
-  "certificate_sha256": "7f8f3079360d0b71fc4fc2cd25c78af1c5d80c1c4bc78c019b04906db99260d9",
+  "certificate_sha256": "550f1acfdb03abc9ff06a831db0248c41228576cdfd8b11c6f54f824364299f2",
   "compression": {
     "closed_level_norms": [
       729,
