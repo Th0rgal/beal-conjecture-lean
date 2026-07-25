@@ -1,0 +1,87 @@
+{
+  "base_field": {
+    "degree": 5,
+    "least_n_with_3n_equal_plus_or_minus_1_mod_11": 5,
+    "local_extension": "unramified quintic over Q_3",
+    "local_prime": 3,
+    "name": "Q(zeta_11)^+",
+    "order_of_3_mod_11": 5,
+    "real_residue_degree": 5
+  },
+  "certificate_sha256": "a2405310ba6de818077ce680e8101c0dca5b30ac2c416b5f4bed2935b53100c7",
+  "conclusion": "if 3 does not divide A*B*C, the independent residual mod-5 plus-HGM representation over Q(zeta_11)^+ is absolutely irreducible",
+  "equation": "A^3+B^5=C^11",
+  "local_types": [
+    {
+      "finite_inertia_order": 12,
+      "quadratic_extension": "ramified",
+      "type": "dihedral supercuspidal",
+      "u_mod_9": 2
+    },
+    {
+      "finite_inertia_order": 4,
+      "quadratic_extension": "unramified",
+      "type": "dihedral supercuspidal",
+      "u_mod_9": 5
+    },
+    {
+      "finite_inertia_order": 12,
+      "quadratic_extension": "ramified",
+      "type": "dihedral supercuspidal",
+      "u_mod_9": 8
+    }
+  ],
+  "nonclaim": "the local-type identification, compatible-system construction, modularity, and local-global compatibility are imported literature inputs; this certificate does not eliminate all (3,5,11) branches or prove Beal",
+  "odd_degree_base_change": {
+    "argument": "if delta=chi/chi^sigma becomes trivial over the compositum, delta factors through C5; commuting quadratic and quintic automorphisms give delta^sigma=delta, while definition gives delta^sigma=delta^-1; hence delta^2=1 and the C5 factor forces delta=1, contradicting the original supercuspidal induction",
+    "base_degree": 5,
+    "coprime_degrees": true,
+    "quadratic_degree": 2,
+    "quotient_order_in_reducibility_contradiction": 5
+  },
+  "orientation": {
+    "beal_equation": "A^3+B^5=C^11",
+    "hypothesis": "3 does not divide A*B*C",
+    "inverse_parameter": "u=C^11/A^3",
+    "paper_equation": "a^11+b^5+c^3=0",
+    "paper_variables": [
+      "a=-C",
+      "b=B",
+      "c=A",
+      "q=11",
+      "p=5",
+      "r=3"
+    ]
+  },
+  "reduction_mod_5": {
+    "finite_inertia_orders": [
+      4,
+      12
+    ],
+    "orders_prime_to_5": true,
+    "principle": "reduction modulo 5 preserves the distinct inducing characters because their ratio has order 4 or 12"
+  },
+  "residual_prime": 5,
+  "schema_version": 1,
+  "signature": [
+    3,
+    5,
+    11
+  ],
+  "source": {
+    "compatible_system_arxiv": "2412.08804v2",
+    "conductor_and_local_type_arxiv": "2512.17845v1",
+    "results": [
+      "Golfieri--Pacetti, Theorem 6.2: modularity of the plus HGM for the family (3,p,r) when r does not divide the x^3 coefficient",
+      "Pacetti--Villagra Torcomian, local type at the prime 3 after orienting (q,p,r)=(11,5,3)",
+      "local--global compatibility for the compatible system"
+    ]
+  },
+  "source_congruence_prime": 11,
+  "status": "research-certificate-with-imported-local-type-identification",
+  "unit_parameter_classes_mod_9": [
+    2,
+    5,
+    8
+  ]
+}
