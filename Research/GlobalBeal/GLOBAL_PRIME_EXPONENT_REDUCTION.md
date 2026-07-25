@@ -1,209 +1,218 @@
-# Global Beal exponent reduction and the actual infinite frontier
+# Global Beal exponent reduction: corrected canonical core
 
 ## Status
 
 This note does **not** prove the Beal conjecture. It proves an unconditional
-elementary reduction of arbitrary exponents, imports the complete
-prime-or-special classification from Ratcliffe--Grechuk, and identifies the
-exact global frontier that remains after the candidate signature `(3,5,7)`
-closure.
+elementary reduction of arbitrary exponents and uses the published
+Ratcliffe--Grechuk survey only to identify which low canonical signatures are
+already covered in the literature.
 
-The main conclusion is:
+A previous version made the stronger claim that every primitive Beal
+counterexample has three odd-prime exponents. That was incorrect: the
+canonical reduction also leaves signatures containing exponent `4`.
 
-> Every primitive positive Beal counterexample has an exponent triple consisting
-> of three odd primes.
+The corrected conclusion is
 
-This conclusion is literature-assisted at the final step: it uses the survey's
-completeness statement for coefficient-one signatures with at least one
-composite exponent.
+\[
+\boxed{
+\begin{array}{l}
+\text{every primitive Beal counterexample reduces either to}\\
+\text{an all-odd-prime signature, or to }(4,p,q)\text{ with odd primes }p,q.
+\end{array}}
+\]
 
-## 1. Elementary canonical reduction
+After removing the cases with repeated exponents that are already covered by
+FLT or surveyed families, the genuinely open canonical cores are:
+
+\[
+\boxed{
+(4,p,q),\qquad (p,p,q),\qquad (p,q,r),
+}
+\]
+
+where the displayed primes are distinct whenever appropriate.
+
+## 1. Unconditional elementary reduction
 
 Suppose
 
 \[
-A^x+B^y=C^z,\qquad A,B,C>0,\qquad \gcd(A,B,C)=1,
-\qquad x,y,z\ge 3.
+A^x+B^y=C^z,
+\qquad A,B,C>0,
+\qquad \gcd(A,B,C)=1,
+\qquad x,y,z\ge3.
 \]
 
 For every integer \(n\ge3\), choose a factorization
 
 \[
-n=k e
+n=ke
 \]
 
-where \(e=4\) or \(e\) is an odd prime.
+where \(e=4\) or \(e\) is an odd prime:
 
-This is always possible:
+1. if \(4\mid n\), take \(e=4\);
+2. otherwise, if \(n\) is odd, choose an odd prime divisor of \(n\);
+3. otherwise write \(n=2m\), where \(m\ge3\) is odd, and choose an odd prime
+   divisor of \(m\).
 
-1. If \(4\mid n\), take \(e=4\) and \(k=n/4\).
-2. If \(4\nmid n\) and \(n\) is odd, choose any prime divisor \(e\mid n\).
-   Such a divisor is odd.
-3. If \(4\nmid n\) and \(n\) is even, write \(n=2m\). Then \(m\ge3\) is odd.
-   Choose an odd prime \(e\mid m\), and put \(k=n/e\).
-
-Apply this independently to \(x,y,z\):
+Absorb the complementary factor into the base. For example,
 
 \[
-x=k_xp,\qquad y=k_yq,\qquad z=k_rr,
+A^x=(A^k)^e.
 \]
 
-with \(p,q,r\in\{4\}\cup\{\text{odd primes}\}\). Set
+Raising pairwise-coprime bases to positive powers preserves pairwise
+coprimality. Hence it is enough, unconditionally, to solve signatures whose
+exponents lie in
 
 \[
-A_0=A^{k_x},\qquad B_0=B^{k_y},\qquad C_0=C^{k_z}.
+\{4\}\cup\{\text{odd primes}\}.
 \]
 
-Then
+This bridge is formalized in
+
+```text
+BealUnified/ExponentReduction.lean
+```
+
+and culminates in
+
+```text
+bealConjecture_of_canonical_impossibility
+```
+
+which proves Beal from the impossibility of every canonical signature.
+
+## 2. Why exponent `4` cannot be discarded
+
+Replacing a composite exponent by a divisor produces a new base with an
+additional perfect-power constraint. For example,
 
 \[
-A_0^p+B_0^q=C_0^r.
+A^4+B^p=C^q
 \]
 
-Primitivity is preserved: a prime dividing two of \(A_0,B_0,C_0\) divides the
-corresponding two original bases.
-
-Hence it is enough, without any literature input, to solve signatures whose
-exponents are \(4\) or odd primes.
-
-## 2. Prime-or-special reduction
-
-Ratcliffe and Grechuk observe that repeatedly replacing a composite exponent by
-a proper divisor reduces every hyperbolic generalized-Fermat signature either
-to an all-prime signature or to a **special triple**. They classify all special
-triples in Table 1.3 of:
-
-- A. Ratcliffe and B. Grechuk,
-  *Generalised Fermat equation: a survey of solved cases*,
-  [arXiv:2412.11933v2](https://arxiv.org/abs/2412.11933).
-
-The special triples whose minimum exponent is at least \(3\) are exactly
+becomes
 
 \[
-(3,3,4),\quad
-(3,3,6),\quad
-(3,3,9),\quad
-(3,4,4),\quad
-(3,4,5),\quad
-(4,4,4),
+X^2+B^p=C^q,
+\qquad X=A^2.
 \]
 
-up to permutation.
+A theorem solving the unrestricted parent signature \((2,p,q)\) certainly
+solves this square-restricted subcase. But the converse is not true, and one
+cannot infer that all canonical exponent-4 signatures are covered merely from
+a classification of minimal prime-or-special signatures.
 
-The same survey compares its solved-signature table with the special-triple
-classification and states that the only coefficient-one, non-all-prime
-signatures still unresolved are
+The one-\(4\) core therefore remains:
 
 \[
-(2,5,9)\quad\text{and}\quad(2,3,25).
+\boxed{(4,p,q)}
 \]
 
-Both have minimum exponent \(2\), so neither lies in the Beal range.
+up to term placement. If \(p=q\), reduction to \((2,p,p)\) places the case in
+the solved repeated-prime family. The unresolved one-\(4\) core has
+\(p\ne q\).
 
-Therefore:
+Cases with two or three exponent-4 entries reduce to surveyed special or
+spherical signatures, or directly to FLT at exponent 4.
 
-## Global prime-exponent reduction theorem
+## 3. Correct finite boundary after the candidate `(3,5,7)` result
 
-Assuming the solved-signature references collected in the survey, every
-primitive positive Beal counterexample has
+Assume only for this subsection that the candidate conditional proof of the
+primitive signature \((3,5,7)\) is correct.
 
-\[
-\boxed{x,y,z\text{ all odd primes}.}
-\]
-
-This is much sharper than the elementary
-\(\{4\}\cup\{\text{odd primes}\}\) reduction: every composite-exponent Beal
-signature is already covered by existing work.
-
-## 3. What remains after the candidate `(3,5,7)` proof
-
-Order an odd-prime triple as \(p\le q\le r\), allowing sign changes when
-permuting an all-odd generalized-Fermat equation.
-
-The prime-exponent frontier separates into:
-
-1. **Equal primes:** \((p,p,p)\), closed by Fermat's Last Theorem.
-2. **Two equal primes:** \((p,p,q)\), only partially solved as an infinite
-   family.
-3. **Three distinct primes:** \((p,q,r)\), the main multi-Frey frontier.
-
-The survey implies that the smallest open Beal signature was `(3,5,7)`.
-Assume the candidate conditional proof in `Research/Signature357` is correct.
-Then every sorted odd-prime triple of exponent sum below \(19\) is closed:
+Enumerating sorted canonical triples—each entry either `4` or an odd prime—of
+sum below \(16\) gives exactly
 
 \[
 \begin{aligned}
-&(3,3,3),(3,3,5),(3,3,7),(3,3,11),\\
-&(3,5,5),(3,5,7),(3,7,7),\\
-&(5,5,5),(5,5,7).
+&(3,3,3),(3,3,4),(3,3,5),(3,4,4),(3,4,5),\\
+&(4,4,4),(3,3,7),(3,5,5),(4,4,5),(3,4,7),\\
+&(4,5,5),(5,5,5),(3,5,7),(4,4,7).
 \end{aligned}
 \]
 
-At sum \(19\),
+These are covered by FLT, the surveyed small/repeated-exponent families, or the
+candidate \((3,5,7)\) theorem.
+
+At total exponent sum \(16\), there is a unique canonical triple:
 
 \[
-(3,3,13)
+\boxed{(4,5,7).}
 \]
 
-is covered by the solved \((3,3,n)\) range, and
+It is the square-restricted subcase
 
 \[
-(5,7,7)
+X^2+B^5=C^7,
+\qquad X=A^2,
 \]
 
-is the solved signature \((7,7,5)\). The remaining triple is
+of the parent signature \((2,5,7)\). The Ratcliffe--Grechuk survey identifies
+\((2,5,7)\) as the smallest currently open Fermat--Catalan signature. Thus the
+correct next canonical Beal target after \((3,5,7)\) is
 
 \[
-\boxed{(3,5,11).}
+\boxed{(4,5,7),}
 \]
 
-Thus, conditional on the candidate `(3,5,7)` closure, `(3,5,11)` becomes the
-smallest open Beal signature by exponent sum.
+not \((3,5,11)\).
 
-This finite-boundary statement is replayed by
+This boundary computation is replayed by
 
 ```bash
 python3 scripts/check_global_beal_prime_exponent_reduction.py --self-test
 python3 scripts/check_global_beal_prime_exponent_reduction.py
 ```
 
-## 4. Why isolated signatures cannot finish Beal
+## 4. Exact global frontier
 
-The prime reduction still leaves infinitely many signatures. In particular,
-neither of these sets is finite:
+The canonical reduction leaves three infinite cores.
 
-\[
-\{(p,p,q):p,q\text{ odd primes}\},
-\]
+### Square-constrained even core
 
 \[
-\{(p,q,r):p<q<r\text{ odd primes}\}.
+(4,p,q),
+\qquad p\ne q\text{ odd primes}.
 \]
 
-Consequently, proving `(3,5,11)`, then `(3,5,13)`, and so on cannot constitute
-a terminating proof strategy.
+This is a perfect-square-restricted subfamily of \((2,p,q)\), not automatically
+settled by prime-only bookkeeping.
 
-A genuinely global proof needs a cofinal family theorem. One sufficient form
-would be the following contractive criterion.
+### Repeated odd-prime core
 
-> There is an explicit function \(B(p,q)\) and a finite exceptional set such
-> that every primitive solution with sorted odd primes \(p\le q\le r\) satisfies
-> \(r\le B(p,q)\), while \(B(p,q)<q\) outside the exceptional set.
+\[
+(p,p,q),
+\qquad p\ne q.
+\]
 
-Since \(r\ge q\), such a theorem would contradict the existence of every
-solution outside a finite boundary. Current asymptotic modular results generally
-give a bound only after fixing the other exponents; they do not provide this
-contractive uniformity.
+Several infinite subfamilies are known, but no validated theorem in the current
+repository covers every pair.
 
-## 5. Exact remaining global tasks
+### Three-distinct-prime core
 
-Even granting the candidate `(3,5,7)` proof, a full Beal proof still requires:
+\[
+(p,q,r),
+\qquad p<q<r.
+\]
 
-1. a uniform theorem for the repeated-prime family \((p,p,q)\);
-2. a cofinal theorem for three distinct odd primes;
-3. a finite treatment of whatever boundary those theorems leave;
-4. a formal coverage proof showing that the union of the family theorems
-   contains every odd-prime triple.
+This is the principal multi-Frey/hypergeometric frontier.
 
-The present note closes the exponent-reduction bookkeeping. It does not close
-either infinite prime core.
+A proof of isolated signatures cannot terminate the conjecture. A complete
+proof must cover all three infinite cores, or establish a uniform theorem that
+reduces them to a finite, explicitly verified boundary.
+
+## 5. Trust boundary
+
+The elementary factorization and power-absorption bridge are Lean-checked. The
+low-signature coverage statements are literature-assisted and use:
+
+- A. Ratcliffe and B. Grechuk,
+  *Generalized Fermat equation: a survey of solved cases*,
+  [arXiv:2412.11933v2](https://arxiv.org/abs/2412.11933), published in
+  *Expositiones Mathematicae* 43 (2025), 125688.
+
+The candidate \((3,5,7)\) theorem is not treated here as a peer-reviewed or
+trusted Lean theorem.
