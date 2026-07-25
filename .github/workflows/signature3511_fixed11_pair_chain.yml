@@ -10,6 +10,7 @@ on:
       - "scripts/run_signature_3511_magma_packet_attribution.py"
       - "scripts/run_signature_3511_magma_prime2_after_pair_chain.py"
       - "scripts/run_signature_3511_magma_packet_prime2.py"
+      - "scripts/run_signature_3511_magma_level33_attributes.py"
       - ".github/workflows/signature3511_fixed11_pair_chain.yml"
   pull_request:
     paths:
@@ -18,6 +19,7 @@ on:
       - "scripts/run_signature_3511_magma_packet_attribution.py"
       - "scripts/run_signature_3511_magma_prime2_after_pair_chain.py"
       - "scripts/run_signature_3511_magma_packet_prime2.py"
+      - "scripts/run_signature_3511_magma_level33_attributes.py"
       - ".github/workflows/signature3511_fixed11_pair_chain.yml"
   workflow_dispatch:
 
@@ -107,4 +109,20 @@ jobs:
         with:
           name: "signature3511-fixed11-packet-prime2-${{ matrix.level }}"
           path: "signature3511-packet-prime2-${{ matrix.level }}.json"
+          if-no-files-found: error
+
+  level33-attributes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Inspect the level-(3,3) ambient and raw-module attributes
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_level33_attributes.py
+          > ../signature3511-level33-attributes.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature3511-fixed11-level33-attributes
+          path: signature3511-level33-attributes.json
           if-no-files-found: error
