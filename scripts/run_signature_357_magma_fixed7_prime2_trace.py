@@ -2,8 +2,14 @@
 """Split fixed-7 level (3,3) by the exact prime-2 parity traces.
 
 Exact point counts give trace 0 when A is odd and B is even, and trace -1
-when A is even and B is odd.  The same low-memory Hecke matrix therefore
+when A is even and B is odd. The same low-memory Hecke matrix therefore
 measures both parity branches separately and their complete trace union.
+
+The Magma request is deliberately ordered to minimize peak memory: the ambient
+space and modular-form cache are released after construction of the independent
+newspace; prime-specific quaternion precomputation is deleted immediately after
+T_2 is produced and before conversion modulo 7; and the trace union is formed as
+the sum of the two distinct eigenspaces rather than by materializing T(T+1).
 """
 from __future__ import annotations
 
@@ -85,18 +91,30 @@ def magma_code() -> str:
     return r'''
 _<x>:=PolynomialRing(Rationals());
 K<z>:=NumberField(x^2-5); OK:=Integers(K);
+SetStoreModularForms(K,false);
 I5:=Factorisation(5*OK)[1][1]; I2:=Factorisation(2*OK)[1][1]; F7:=GF(7);
 printf "PHASE=space-start\n";
-M0:=HilbertCuspForms(K,3^3*I5^3); M:=NewSubspace(M0);
+M0:=HilbertCuspForms(K,3^3*I5^3);
+M:=NewSubspace(M0);
 n:=Dimension(M); printf "NEW_DIM=%o\n",n;
-O:=QuaternionOrder(M); DeleteHeckePrecomputation(O);
+O:=QuaternionOrder(M);
+delete M0;
+ClearStoredModularForms(K);
+DeleteHeckePrecomputation(O);
+printf "PHASE=ambient-and-cache-cleared\n";
 printf "PHASE=T2-start\n";
-TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,ThetaPrec:=0);
-T:=Matrix(F7,TQ); delete TQ; DeleteHeckePrecomputation(O,I2);
+TQ:=HeckeOperator(M,I2 : LowMemory:=true,UseLLL:=false,UseAuto:=true,ThetaPrec:=0);
+printf "PHASE=T2-rational-ready\n";
+DeleteHeckePrecomputation(O,I2);
+ClearStoredModularForms(K);
+printf "PHASE=T2-precomputation-cleared\n";
+T:=Matrix(F7,TQ);
+delete TQ;
+printf "PHASE=T2-mod7-ready\n";
 I:=IdentityMatrix(F7,n);
 S_even_B:=Kernel(T);
 S_odd_B:=Kernel(T+I);
-S_union:=Kernel(T*(T+I));
+S_union:=S_even_B+S_odd_B;
 printf "B_EVEN_TRACE0_DIM=%o\n",Dimension(S_even_B);
 printf "B_ODD_TRACE_MINUS1_DIM=%o\n",Dimension(S_odd_B);
 printf "TRACE_UNION_DIM=%o\n",Dimension(S_union);
@@ -115,7 +133,7 @@ def parse(output: str, marker: str) -> int:
 def main() -> int:
     source = magma_code()
     body: dict[str, Any] = {
-        "schema_version": 4,
+        "schema_version": 5,
         "status": "fixed-7 level-(3,3) exact prime-2 parity decomposition",
         "calculator": CALCULATOR_URL,
         "level_exponents": [3, 3],
@@ -127,6 +145,11 @@ def main() -> int:
         },
         "allowed_traces_mod7": [0, 6],
         "annihilating_polynomial": "T*(T+1)",
+        "union_implementation": "ker(T) direct-sum ker(T+1), avoiding T*(T+1)",
+        "memory_policy": (
+            "delete ambient space and HMF cache after newspace construction; delete "
+            "prime-specific Hecke precomputation before reducing the rational matrix mod 7"
+        ),
         "input_bytes": len(source.encode()),
         "soundness": (
             "zero B-even trace-0 dimension closes that parity branch; zero union "
@@ -146,7 +169,9 @@ def main() -> int:
         union_dimension = parse(output, "TRACE_UNION_DIM")
         direct_sum_error = parse(output, "DIRECT_SUM_CHECK")
         if direct_sum_error != 0 or even_dimension + odd_dimension != union_dimension:
-            raise ResearchError("distinct trace eigenspaces did not form the recorded direct sum")
+            raise ResearchError(
+                "distinct trace eigenspaces did not form the recorded direct sum"
+            )
         body.update(
             {
                 "request_status": "completed",
