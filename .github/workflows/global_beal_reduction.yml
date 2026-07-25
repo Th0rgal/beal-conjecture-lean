@@ -32,6 +32,10 @@ jobs:
         run: |
           python3 scripts/check_global_beal_repeated_exponent_audit.py --self-test
           python3 scripts/check_global_beal_repeated_exponent_audit.py
+      - name: Replay uniform two-base repeated-core contraction
+        run: |
+          python3 scripts/check_global_beal_two_base_order_contraction.py --self-test
+          python3 scripts/check_global_beal_two_base_order_contraction.py
       - name: Replay uniform one-four core theorem
         run: |
           python3 scripts/check_global_beal_one_four_core.py --self-test
