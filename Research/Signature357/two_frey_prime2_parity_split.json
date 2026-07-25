@@ -1,5 +1,5 @@
 {
-  "certificate_sha256": "c861090cc8839af2cce2a7ba1ec943e3fd211f5dcd95d49b0af51c4f5d0a0608",
+  "certificate_sha256": "850104e9017c7c77192cd3683daa7dfd40022dad7bcd911c8ec50c1e5a00ea9e",
   "equation": "A^3+B^5=C^7",
   "fixed7_dependency": {
     "certificate_sha256": "fa04a60320986ce5076a71a63f1b59bd69d7fd106f8ef08fb13822ae705d1dec",
