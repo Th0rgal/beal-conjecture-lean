@@ -21,7 +21,7 @@
       "cyclotomic_untwist_path": "Research/Signature357/odd_mod5_cyclotomic_untwist.json",
       "cyclotomic_untwist_sha256": "b12a4088ecf4fcac4481901fda47e8e4dd75fde188f78bcd65c73879bcf3cca8",
       "exact_monodromy_path": "Research/Signature357/odd_mod5_exact_monodromy.json",
-      "exact_monodromy_sha256": "d6f5dc5c580445da64d469ef28fa689fbb46bbe11575a1c4e2f35b26342f43f7",
+      "exact_monodromy_sha256": "683332f92a913ba6270a72e93123380106feea45e89112617a67b83b561024a4",
       "fixed7_pairing": {
         "e3_2": {
           "closed_levels": [
@@ -165,7 +165,7 @@
       }
     }
   },
-  "certificate_sha256": "c76d5e9cfcdfc91bdcb45be45a97cf6c0ecde22b841cb4d1802111f961d564ab",
+  "certificate_sha256": "7f8f3079360d0b71fc4fc2cd25c78af1c5d80c1c4bc78c019b04906db99260d9",
   "compression": {
     "closed_level_norms": [
       729,
