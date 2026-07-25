@@ -136,7 +136,8 @@ theorem noCoprimeSolution_of_canonical
   have reduced :=
     reduce_solution_by_exponent_factorizations sol hp hq hr hx hy hz
   have hpowers :=
-    pairwise_coprime_powers hpair.1 hpair.2.1 hpair.2.2
+    pairwise_coprime_powers (kx := kx) (ky := ky) (kz := kz)
+      hpair.1 hpair.2.1 hpair.2.2
   exact
     hcanonical
       (A ^ kx) (B ^ ky) (C ^ kz) p q r
