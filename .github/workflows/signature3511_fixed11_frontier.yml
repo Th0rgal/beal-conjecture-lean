@@ -1,0 +1,63 @@
+name: Signature 3511 fixed-11 residual frontier
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_residual.py"
+      - "scripts/run_signature_3511_magma_fixed11_chain.py"
+      - ".github/workflows/signature3511_fixed11_frontier.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_residual.py"
+      - "scripts/run_signature_3511_magma_fixed11_chain.py"
+      - ".github/workflows/signature3511_fixed11_frontier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chain:
+    strategy:
+      fail-fast: false
+      matrix:
+        level:
+          - "2,2"
+          - "2,3"
+          - "3,2"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Intersect fixed-11 local trace conditions
+        run: >-
+          python3 scripts/run_signature_3511_magma_fixed11_chain.py
+          --level "${{ matrix.level }}"
+          > "signature3511-chain-${{ matrix.level }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-chain-${{ matrix.level }}"
+          path: "signature3511-chain-${{ matrix.level }}.json"
+          if-no-files-found: error
+
+  level33-prime:
+    strategy:
+      fail-fast: false
+      matrix:
+        prime: [13, 17, 19, 29, 31, 41, 59, 61, 71]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Test one auxiliary prime at fixed-11 level 3,3
+        run: >-
+          python3 scripts/run_signature_3511_magma_fixed11_residual.py
+          --level "3,3" --prime "${{ matrix.prime }}"
+          > "signature3511-level33-prime-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-level33-prime-${{ matrix.prime }}"
+          path: "signature3511-level33-prime-${{ matrix.prime }}.json"
+          if-no-files-found: error
