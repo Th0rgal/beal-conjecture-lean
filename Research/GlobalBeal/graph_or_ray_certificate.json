@@ -1,0 +1,67 @@
+{
+  "certificate_sha256": "94b32fbbac349ae18312e0cee067f9439aeed4c3daff6c3e9d27111c80a9ecc8",
+  "characteristic_number_corollary": {
+    "alpha": "y+zeta*x",
+    "conclusion": "For t in J_k, alpha^t=1 mod 2 and beta(t) mod P belongs to mu_q for every P|2.",
+    "obstruction": "The q-th-power identity is blind modulo 2 and cannot itself prove that beta(t) mod P is nontrivial.",
+    "parity_reductions": {
+      "x_even": "alpha=1 mod 2",
+      "x_y_odd": "alpha=1+zeta mod 2",
+      "y_even": "alpha=zeta mod 2"
+    }
+  },
+  "date": "2026-07-25",
+  "finite_audit": {
+    "interpretation": "Finite replay of the group-ring identity; not a substitute for the symbolic proof.",
+    "prime_bound": 59,
+    "rows": [
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 4, "p": 5, "phi_zero_ordered_pairs": 4},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 8, "p": 7, "phi_zero_ordered_pairs": 10},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 20, "p": 11, "phi_zero_ordered_pairs": 40},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 28, "p": 13, "phi_zero_ordered_pairs": 64},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 48, "p": 17, "phi_zero_ordered_pairs": 144},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 60, "p": 19, "phi_zero_ordered_pairs": 198},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 88, "p": 23, "phi_zero_ordered_pairs": 352},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 140, "p": 29, "phi_zero_ordered_pairs": 700},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 160, "p": 31, "phi_zero_ordered_pairs": 850},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 228, "p": 37, "phi_zero_ordered_pairs": 1440},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 280, "p": 41, "phi_zero_ordered_pairs": 1960},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 308, "p": 43, "phi_zero_ordered_pairs": 2254},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 368, "p": 47, "phi_zero_ordered_pairs": 2944},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 468, "p": 53, "phi_zero_ordered_pairs": 4212},
+      {"all_generator_identities_verified": true, "conjugate_fueter_count": 580, "p": 59, "phi_zero_ordered_pairs": 17168}
+    ]
+  },
+  "graph_or_ray_class_dichotomy": {
+    "lattice": "M_p={theta in I_0: relative_weight(theta) is even}.",
+    "nonzero_branch": "If beta(t) mod P is nontrivial for some P,t, then ord_q(2)|ord_p(2) with odd quotient.",
+    "ray_annihilator": "The ray class [A]_m lies in R_p={c in Cl_m(K):c^theta=1 for all theta in M_p}, where M_p=<J>_Z.",
+    "zero_branch": "If all residues are trivial, then beta(t)=1 modulo m=2*O_K*(1-zeta)^2 for every t in J."
+  },
+  "imported_source_facts": [
+    "definitions of I, I_0, J_k and phi",
+    "multiplicativity and G-equivariance of beta",
+    "beta(t)^q=alpha^t modulo primes above 2",
+    "beta(theta)=1 mod (1-zeta)^2",
+    "(beta(theta))=A^theta"
+  ],
+  "mod2_collapse_theorem": {
+    "hypothesis": "theta is a positive Stickelberger element with (1+j)theta=r*N",
+    "key_norm": "Norm_K/Q(zeta+zeta^(-1))=Phi_p(-1)=1",
+    "phi_zero_corollary": "theta in I_0 implies (1+zeta)^theta=1 mod 2",
+    "statement": "(1+zeta)^theta=zeta^(phi(theta)/2) in O_K/2O_K"
+  },
+  "new_direction": {
+    "replacement_target": "Compute and control R_p uniformly using the ray-class exact sequence, G-character decomposition, Stickelberger annihilation, and reflection.",
+    "uniform_shape": "Every repeated-prime counterexample is either on a well-founded exponent graph or in a finite ray-class annihilator branch.",
+    "withdrawn_target": "Do not try to prove nonvanishing from alpha^t mod 2."
+  },
+  "nonclaim": "This does not prove the repeated-prime family or Beal. It proves the mod-2 collapse and the exact graph-or-ray-class reduction from the cited Jacobi/Stickelberger construction.",
+  "schema_version": 1,
+  "scope": {
+    "family": "x^p+y^p=z^q",
+    "field": "K=Q(zeta_p)",
+    "p_q": "distinct odd primes, p>=5"
+  },
+  "status": "unconditional-mod2-collapse-and-graph-or-ray-class-dichotomy"
+}

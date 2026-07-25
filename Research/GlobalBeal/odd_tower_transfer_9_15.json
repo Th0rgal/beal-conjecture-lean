@@ -1,0 +1,83 @@
+{
+  "certificate_sha256": "71e991d826e8842c3f9a140fa0d469f758e2b255a55304f523721e80d74ba82a",
+  "combined_conclusion": "For n in {9,15}, a>=2 and b,c>=1, no pairwise-coprime positive integers solve a coefficient-one generalized Fermat equation whose exponent multiset is {2a,3b,nc}.",
+  "conditional_n11_extension": "Using the GRH-conditional Freitas-Naskrecki-Stoll classification gives the analogous {2a,3b,11c} family; certifying five degree-36 class groups would make that instance unconditional.",
+  "instances": {
+    "n15": {
+      "conclusion": "no primitive positive coefficient-one equation with exponent multiset {2a,3b,15c} exists for a>=2,b,c>=1",
+      "odd_exponent": 15,
+      "orientation_reductions": {
+        "right_cubic_exponent": {
+          "compatible_rows": [],
+          "form": "A^(2a)+B^(15c)=C^(3b)",
+          "substitution": "(x,y,z)=(A^a,-C^b,-B^c)"
+        },
+        "right_even_exponent": {
+          "compatible_rows": [[3,-2,1]],
+          "form": "A^(3b)+B^(15c)=C^(2a)",
+          "substitution": "(x,y,z)=(C^a,-A^b,B^c)"
+        },
+        "right_odd_exponent": {
+          "compatible_rows": [],
+          "form": "A^(2a)+B^(3b)=C^(15c)",
+          "substitution": "(x,y,z)=(A^a,B^b,C^c)"
+        }
+      },
+      "positive_x_coordinates_requiring_proper_power": [3],
+      "primitive_integer_solutions_x2_y3_zn": [[-1,-1,0],[1,-1,0],[-1,0,1],[1,0,1],[0,1,1],[0,-1,-1],[-3,-2,1],[3,-2,1]],
+      "solution_count": 8,
+      "source": {
+        "arxiv": "1309.4421",
+        "authors": ["Samir Siksek","Michael Stoll"],
+        "journal": "Archiv der Mathematik 102 (2014), 411-421",
+        "theorem": "Theorem 1.1",
+        "title": "The generalised Fermat equation x^2+y^3=z^15",
+        "translation": "identity"
+      },
+      "valuation_one_witnesses": [{"prime":3,"valuation":1,"x_coordinate":3}]
+    },
+    "n9": {
+      "conclusion": "no primitive positive coefficient-one equation with exponent multiset {2a,3b,9c} exists for a>=2,b,c>=1",
+      "odd_exponent": 9,
+      "orientation_reductions": {
+        "right_cubic_exponent": {
+          "compatible_rows": [],
+          "form": "A^(2a)+B^(9c)=C^(3b)",
+          "substitution": "(x,y,z)=(A^a,-C^b,-B^c)"
+        },
+        "right_even_exponent": {
+          "compatible_rows": [[3,-2,1]],
+          "form": "A^(3b)+B^(9c)=C^(2a)",
+          "substitution": "(x,y,z)=(C^a,-A^b,B^c)"
+        },
+        "right_odd_exponent": {
+          "compatible_rows": [[13,7,2]],
+          "form": "A^(2a)+B^(3b)=C^(9c)",
+          "substitution": "(x,y,z)=(A^a,B^b,C^c)"
+        }
+      },
+      "positive_x_coordinates_requiring_proper_power": [3,13],
+      "primitive_integer_solutions_x2_y3_zn": [[0,-1,-1],[1,0,1],[-1,0,1],[1,-1,0],[-1,-1,0],[3,-2,1],[-3,-2,1],[13,7,2],[-13,7,2]],
+      "solution_count": 9,
+      "source": {
+        "arxiv": "math/0311002",
+        "authors": ["Nils Bruin"],
+        "journal": "Journal of Number Theory 111 (2005), 179-189",
+        "theorem": "Theorem 1.1",
+        "title": "The primitive solutions to x^3+y^9=z^2",
+        "translation": "(X,Y,Z)=(z,-x,y)"
+      },
+      "valuation_one_witnesses": [{"prime":3,"valuation":1,"x_coordinate":3},{"prime":13,"valuation":1,"x_coordinate":13}]
+    }
+  },
+  "nonclaim": "The replay verifies the exact displayed solution lists, equations, primitivity, sign filters, and valuation-one obstructions. Completeness of each list is imported from the cited peer-reviewed theorem.",
+  "relationship_to_existing_n7_result": "The same transfer principle recovers the previously certified {2a,3b,7c} family from Poonen-Schaefer-Stoll.",
+  "schema_version": 1,
+  "status": "unconditional-odd-classification-to-infinite-Beal-tower-transfer",
+  "transfer_principle": {
+    "criterion": "in every classified row compatible with one of the three sign patterns, the positive x-coordinate is not a proper power",
+    "permutation_coverage": "the three choices of right-hand exponent, together with swapping the two positive summands, cover all six permutations",
+    "scope": "odd n and a complete primitive-integer classification of x^2+y^3=z^n",
+    "three_orientations": ["(A^a,B^b,C^c)","(C^a,-A^b,B^c)","(A^a,-C^b,-B^c)"]
+  }
+}

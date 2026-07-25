@@ -1,0 +1,64 @@
+{
+  "certificate_sha256": "3c664d65e7238ab6951fcc9da25261fa0b1cbe151eeda22a8b4360e094605ebe",
+  "impact": {
+    "D_equals_one": "may still be true, but the displayed proof does not establish it",
+    "relative_splitting": "cannot presently be imported as a theorem from this proof",
+    "two_base_graph_application": "must be stated under an explicit D=1/relative-splitting assumption, not as a proved consequence of the preprint"
+  },
+  "logical_gap": {
+    "missing_hypothesis": "coprimality of beta(t1) and beta(t2), or a separate valuation argument proving additive divisibility",
+    "quoted_inference": [
+      "beta(t1) divides chi",
+      "beta(t2) divides chi",
+      "therefore chi=beta(t1)*beta(t2)*chi_prime"
+    ],
+    "source_does_not_supply_it": true
+  },
+  "nonclaim": "This is a proof audit, not a counterexample to D=1 and not a proof or disproof of the repeated-prime Fermat-Catalan family.",
+  "p5_exact_audit": {
+    "all_weight_two_I0_sums": [
+      [1, 1, 1, 1]
+    ],
+    "conclusion": "the construction used in Fact 2 produces only the norm element N at relative weight two",
+    "conjugate_fueter_vectors": [
+      [0, 0, 1, 1],
+      [0, 1, 0, 1],
+      [1, 0, 1, 0],
+      [1, 1, 0, 0]
+    ],
+    "fermat_quotients": [1, 2, 3, 4],
+    "final_contradiction_failure": "for t=N, alpha^(2*t*p)=Norm(alpha)^(2*p) is rational and integral, so the asserted non-integrality is false",
+    "unique_element": [1, 1, 1, 1]
+  },
+  "p7_exact_audit": {
+    "conclusion": "the non-norm elements 2*psi have the unique decomposition psi+psi, making the omitted coprimality maximally false",
+    "conjugate_fueter_count": 8,
+    "double_rows": [
+      {
+        "beta_consequence": "beta(t1)=beta(t2), so beta(t1)|chi and beta(t2)|chi do not imply beta(t1)*beta(t2)|chi",
+        "fermat_quotient": 0,
+        "fueter_vector": [0, 0, 1, 0, 1, 1],
+        "j1_element": [0, 0, 2, 0, 2, 2],
+        "ordered_decompositions": [[6, 6]]
+      },
+      {
+        "beta_consequence": "beta(t1)=beta(t2), so beta(t1)|chi and beta(t2)|chi do not imply beta(t1)*beta(t2)|chi",
+        "fermat_quotient": 0,
+        "fueter_vector": [1, 1, 0, 1, 0, 0],
+        "j1_element": [2, 2, 0, 2, 0, 0],
+        "ordered_decompositions": [[7, 7]]
+      }
+    ],
+    "phi_zero_fueter_vectors": [
+      [0, 0, 1, 0, 1, 1],
+      [1, 1, 0, 1, 0, 0]
+    ]
+  },
+  "schema_version": 1,
+  "source": {
+    "arxiv": "2509.18275",
+    "target": "Lemma 5 and its use of a decomposition t=t1+t2",
+    "title": "The strong Fermat-Catalan Equation"
+  },
+  "status": "unconditional-finite-audit-of-the-D-equals-one-proof"
+}

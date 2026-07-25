@@ -1,0 +1,70 @@
+name: Signature 3511 fixed-11 level33 raw Brandt probe
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_signature_3511_magma_level33_raw_prime2.py"
+      - "scripts/run_signature_3511_magma_finite_brandt_probe.py"
+      - "scripts/run_signature_3511_magma_ramified_order_probe.py"
+      - ".github/workflows/signature3511_fixed11_level33_raw.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_3511_magma_level33_raw_prime2.py"
+      - "scripts/run_signature_3511_magma_finite_brandt_probe.py"
+      - "scripts/run_signature_3511_magma_ramified_order_probe.py"
+      - ".github/workflows/signature3511_fixed11_level33_raw.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  raw-prime2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compute norm-4 parity cover on the residual raw Brandt module
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_level33_raw_prime2.py
+          > ../signature3511-level33-raw-prime2.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature3511-fixed11-level33-raw-prime2
+          path: signature3511-level33-raw-prime2.json
+          if-no-files-found: error
+
+  finite-brandt-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Probe direct finite-field Brandt construction
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_finite_brandt_probe.py
+          > ../signature3511-finite-brandt-api.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature3511-finite-brandt-api
+          path: signature3511-finite-brandt-api.json
+          if-no-files-found: error
+
+  ramified-order:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Realize the newspace using a quaternion algebra ramified at 3 and 5
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_ramified_order_probe.py
+          > ../signature3511-ramified-order.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signature3511-fixed11-ramified-order
+          path: signature3511-ramified-order.json
+          if-no-files-found: error

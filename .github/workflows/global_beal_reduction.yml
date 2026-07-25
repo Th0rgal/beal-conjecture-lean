@@ -1,0 +1,107 @@
+name: Global Beal canonical reduction
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+  pull_request:
+    paths:
+      - "BealUnified/ExponentReduction.lean"
+      - "BealUnified/Research/CyclotomicAudit.lean"
+      - "BealUnified/Research/Signature457.lean"
+      - "Research/GlobalBeal/**"
+      - "Research/Signature3511/**"
+      - "scripts/check_global_beal_*.py"
+      - "scripts/check_signature_3511_*.py"
+      - ".github/workflows/global_beal_reduction.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Replay corrected canonical-exponent reduction
+        run: |
+          python3 scripts/check_global_beal_prime_exponent_reduction.py --self-test
+          python3 scripts/check_global_beal_prime_exponent_reduction.py
+      - name: Replay repeated-exponent proof-gap audit
+        run: |
+          python3 scripts/check_global_beal_repeated_exponent_audit.py --self-test
+          python3 scripts/check_global_beal_repeated_exponent_audit.py
+      - name: Replay the D=1 proof audit
+        run: |
+          python3 scripts/check_global_beal_repeated_exponent_d1_audit.py --self-test
+          python3 scripts/check_global_beal_repeated_exponent_d1_audit.py
+      - name: Replay uniform two-base repeated-core contraction
+        run: |
+          python3 scripts/check_global_beal_two_base_order_contraction.py --self-test
+          python3 scripts/check_global_beal_two_base_order_contraction.py
+      - name: Replay uniform one-four core theorem
+        run: |
+          python3 scripts/check_global_beal_one_four_core.py --self-test
+          python3 scripts/check_global_beal_one_four_core.py
+      - name: Replay the n=9 and n=15 odd tower transfer
+        run: |
+          python3 scripts/check_global_beal_odd_tower_transfer.py --self-test
+          python3 scripts/check_global_beal_odd_tower_transfer.py
+      - name: Replay the exponent-10 tower transfer
+        run: |
+          python3 scripts/check_global_beal_odd_tower_transfer_10.py --self-test
+          python3 scripts/check_global_beal_odd_tower_transfer_10.py
+      - name: Replay signature-(4,5,7) power-residue theorem
+        run: |
+          python3 scripts/check_global_beal_signature457_power_residue.py --self-test
+          python3 scripts/check_global_beal_signature457_power_residue.py
+      - name: Replay signature-(3,5,11) auxiliary research
+        run: |
+          python3 scripts/check_signature_3511_mod5_irreducibility_at3.py --self-test
+          python3 scripts/check_signature_3511_mod5_irreducibility_at3.py
+
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+      - name: Compile canonical exponent reduction
+        id: exponent-reduction
+        run: |
+          set +e
+          lake env lean BealUnified/ExponentReduction.lean > lean-exponent-reduction.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat lean-exponent-reduction.log
+          exit 0
+      - name: Compile signature-(4,5,7) group identities
+        id: signature457
+        run: |
+          set +e
+          lake env lean BealUnified/Research/Signature457.lean > lean-signature457.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat lean-signature457.log
+          exit 0
+      - name: Compile finite cyclotomic audit lemmas
+        id: cyclotomic-audit
+        run: |
+          set +e
+          lake env lean BealUnified/Research/CyclotomicAudit.lean > lean-cyclotomic-audit.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat lean-cyclotomic-audit.log
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: global-beal-lean-logs
+          path: |
+            lean-exponent-reduction.log
+            lean-cyclotomic-audit.log
+            lean-signature457.log
+          if-no-files-found: error
+      - name: Fail on Lean compilation error
+        if: steps.exponent-reduction.outputs.status != '0' || steps.cyclotomic-audit.outputs.status != '0' || steps.signature457.outputs.status != '0'
+        run: exit 1

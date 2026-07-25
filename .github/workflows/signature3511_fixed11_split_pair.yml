@@ -1,0 +1,39 @@
+name: Signature 3511 fixed-11 paired split primes
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_split_pair.py"
+      - ".github/workflows/signature3511_fixed11_split_pair.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_split_pair.py"
+      - ".github/workflows/signature3511_fixed11_split_pair.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paired-prime:
+    strategy:
+      fail-fast: false
+      matrix:
+        level: ["2,2", "2,3", "3,2"]
+        prime: [19, 29, 31, 41]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Apply paired Galois-conjugate trace condition
+        run: >-
+          python3 scripts/run_signature_3511_magma_fixed11_split_pair.py
+          --level "${{ matrix.level }}" --prime "${{ matrix.prime }}"
+          > "signature3511-pair-${{ matrix.level }}-${{ matrix.prime }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-pair-${{ matrix.level }}-${{ matrix.prime }}"
+          path: "signature3511-pair-${{ matrix.level }}-${{ matrix.prime }}.json"
+          if-no-files-found: error

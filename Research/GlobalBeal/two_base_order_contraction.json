@@ -1,0 +1,74 @@
+{
+  "certificate_sha256": "11cd35c6e5650b321b2af7d2df639d1af405127199f774edb53999408f42f837",
+  "conditional_arithmetic_theorem": {
+    "fixed_p_contraction": {
+      "G_p": "gcd(2^a_p-1,3^b_p-1)",
+      "a_p": "ord_p(2)",
+      "b_p": "ord_p(3)",
+      "conclusion": "q is a prime divisor of G_p"
+    },
+    "gcd_exponent_contraction": {
+      "H_g": "gcd(2^g-1,3^g-1)",
+      "conclusion": "q divides H_g",
+      "g": "gcd(p-1,q-1)"
+    },
+    "imported_prefix": "the characteristic-ideal construction and D=1 conclusion through Lemma 5 of arXiv:2509.18275; the invalid later total-splitting inference is not used",
+    "orders": [
+      "ord_q(2) divides ord_p(2)",
+      "ord_q(3) divides ord_p(3)"
+    ]
+  },
+  "new_cyclotomic_lemma": {
+    "consequence": "the rational Stickelberger congruence extends to every odd prime divisor of x-y",
+    "field": "K=Q(zeta_p)",
+    "hypotheses": [
+      "t belongs to J_k",
+      "zeta_p^t=1",
+      "t+complex_conjugate(t)=2*k*N"
+    ],
+    "identity": "(1+zeta_p)^t is +1 or -1"
+  },
+  "nonclaim": "This does not prove the repeated-prime family or the Beal conjecture. The order-graph theorem is unconditional. Applying its order constraints to Diophantine solutions still requires an independent proof or audit of the imported cyclotomic prefix.",
+  "sample_H_values": {
+    "1": 1,
+    "10": 11,
+    "11": 23,
+    "12": 455,
+    "14": 1,
+    "16": 85,
+    "18": 133,
+    "2": 1,
+    "21": 1,
+    "24": 455,
+    "3": 1,
+    "30": 2387,
+    "4": 5,
+    "5": 1,
+    "6": 7
+  },
+  "schema_version": 1,
+  "scope": {
+    "bases": "nonzero pairwise-coprime integers x,y,z",
+    "equation": "x^p+y^p=z^q",
+    "exponents": "distinct odd primes p>3 and q>3"
+  },
+  "source_dependencies": {
+    "cyclotomic_preprint": {
+      "arxiv": "2509.18275",
+      "author": "Preda Mihailescu",
+      "known_gap_not_used": "D_r intersection H'={1} does not imply that the rational prime splits completely in Q(zeta_q)",
+      "title": "The strong Fermat-Catalan Equation",
+      "used_prefix": "definitions of I_0 and J_k, characteristic-ideal construction, and D=1 conclusion through Lemma 5"
+    },
+    "prime_number_theorem": "used only to express the explicit counting estimate as relative density zero"
+  },
+  "status": "unconditional-zero-density-two-base-order-graph-with-conditional-repeated-fermat-catalan-application",
+  "unconditional_order_graph_theorem": {
+    "bound": "S_23(X)=O(X^2/log(X)^3+X^(3/2)/log(X)^2)",
+    "counting_function": "S_23(X)=number of ordered distinct prime pairs p,q<=X satisfying both order conditions",
+    "graph": "ordered prime pairs satisfying both multiplicative-order divisibilities",
+    "relative_density": "S_23(X)/pi(X)^2 tends to 0",
+    "subgroup": "H_q=<2,3> in F_q^times",
+    "subgroup_lower_bound": "|H_q|>(log(q)/log(6))^2"
+  }
+}

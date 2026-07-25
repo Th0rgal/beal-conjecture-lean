@@ -1,0 +1,97 @@
+{
+  "brown_input": {
+    "arxiv": "0911.2932",
+    "authors": [
+      "David Brown"
+    ],
+    "imported_statement": "the displayed 12 triples are all primitive integer solutions of x^2+y^3=z^10",
+    "journal": "International Mathematics Research Notices 2012 (2), 423-436",
+    "solution_count": 12,
+    "solutions": [
+      [-1,-1,0],
+      [1,-1,0],
+      [-1,0,-1],
+      [-1,0,1],
+      [1,0,-1],
+      [1,0,1],
+      [0,1,-1],
+      [0,1,1],
+      [-3,-2,-1],
+      [-3,-2,1],
+      [3,-2,-1],
+      [3,-2,1]
+    ],
+    "theorem": "Theorem 1.1",
+    "title": "Primitive Integral Solutions to x^2+y^3=z^10"
+  },
+  "certificate_sha256": "1989f42fc74d00d006cba4ad725ef322d911e8f5026fca98b48e63209b98b86c",
+  "dahmen_input": {
+    "arxiv": "1002.0020",
+    "authors": [
+      "Sander R. Dahmen"
+    ],
+    "journal": "International Journal of Number Theory 7 (2011), 1303-1316",
+    "theorem_used": "for n=5 there are no solutions in nonzero coprime integers to x^2+y^(2n)=z^3",
+    "title": "A refined modular approach to the Diophantine equation x^2+y^(2n)=z^3"
+  },
+  "finite_obstructions": {
+    "brown_all_positive_rows": [],
+    "brown_positive_negative_positive_rows": [[3,-2,1]],
+    "proper_power_obstruction": {
+      "classified_x_coordinate": 3,
+      "consequence": "3 is not an a-th power in positive integers for any a>=2",
+      "prime": 3,
+      "valuation": 1
+    }
+  },
+  "impact": {
+    "beal_frontier_use": "This removes every canonical or noncanonical Beal signature whose exponents can be grouped as a multiple of 2 at least 4, a multiple of 3, and a multiple of 10, with the indicated power constraints on the bases.",
+    "examples": [
+      "{4,3,10}",
+      "{6,3,10}",
+      "{4,6,20}",
+      "{14,3,10}",
+      "{10,9,30}"
+    ],
+    "family": "an infinite three-parameter family, including all six exponent permutations"
+  },
+  "nonclaim": "The finite replay verifies the substitutions, signs, equations, primitivity and the proper-power obstruction. Completeness of Brown's 12-solution list and Dahmen's n=5 no-solution theorem are imported peer-reviewed mathematical inputs. This does not prove the full Beal conjecture.",
+  "orientation_reductions": {
+    "right_exponent_10c": {
+      "compatible_brown_rows": [],
+      "elimination": "the complete Brown list contains no row with all three coordinates positive",
+      "equation": "A^(2a)+B^(3b)=C^(10c)",
+      "required_signs": "x>0,y>0,z>0",
+      "source_equation": "x^2+y^3=z^10",
+      "substitution": "(x,y,z)=(A^a,B^b,C^c)"
+    },
+    "right_exponent_2a": {
+      "compatible_brown_rows": [[3,-2,1]],
+      "elimination": "the only compatible row is (3,-2,1), which would force C^a=3 and is impossible for a>=2",
+      "equation": "A^(3b)+B^(10c)=C^(2a)",
+      "required_signs": "x>0,y<0,z>0",
+      "source_equation": "x^2+y^3=z^10",
+      "substitution": "(x,y,z)=(C^a,-A^b,B^c)"
+    },
+    "right_exponent_3b": {
+      "compatible_brown_rows": null,
+      "elimination": "Dahmen's theorem for n=5 gives no nonzero coprime solution of x^2+y^(2n)=z^3",
+      "equation": "A^(2a)+B^(10c)=C^(3b)",
+      "required_signs": "x,y,z are nonzero pairwise-coprime integers",
+      "source_equation": "x^2+y^10=z^3",
+      "substitution": "(x,y,z)=(A^a,B^c,C^b)"
+    }
+  },
+  "primitivity_bridge": "Raising pairwise-coprime positive bases to positive powers preserves pairwise coprimality, so every substitution satisfies the hypotheses of the imported primitive/coprime source theorem.",
+  "schema_version": 1,
+  "status": "unconditional-infinite-tower-closure-for-exponent-multiset-2a-3b-10c",
+  "theorem": {
+    "exponent_range": {
+      "a": "a>=2",
+      "b": "b>=1",
+      "c": "c>=1"
+    },
+    "permutation_coverage": "The three choices of right-hand exponent are recorded explicitly; swapping the two positive summands covers all six permutations.",
+    "statement": "For every a>=2 and b,c>=1, no pairwise-coprime positive integers solve any coefficient-one generalized Fermat equation whose exponent multiset is {2a,3b,10c}."
+  }
+}
