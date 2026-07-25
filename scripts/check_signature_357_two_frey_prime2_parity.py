@@ -50,12 +50,11 @@ def digest(value: dict[str, Any]) -> str:
 
 
 def multiplicative_order(value: int, modulus: int) -> int:
-    residue = value % modulus
-    if residue == 0:
+    if value % modulus == 0:
         raise CertificateError("zero has no multiplicative order")
     running = 1
-    for candidate in range(1, modulus):
-        running = running * residue % modulus
+    for candidate in range(1, modulus + 1):
+        running = running * value % modulus
         if running == 1:
             return candidate
     raise CertificateError("multiplicative order was not found")
@@ -71,7 +70,7 @@ def validate_dependency(path: pathlib.Path, expected_digest: str) -> dict[str, A
 
 
 def validate(data: dict[str, Any]) -> str:
-    if data.get("schema_version") != 1 or digest(data) != data.get("certificate_sha256"):
+    if data.get("schema_version") != 2 or digest(data) != data.get("certificate_sha256"):
         raise CertificateError("schema or certificate digest mismatch")
     if data.get("equation") != "A^3+B^5=C^7":
         raise CertificateError("equation changed")
@@ -108,17 +107,30 @@ def validate(data: dict[str, Any]) -> str:
     }:
         raise CertificateError("fixed-7 local field metadata changed")
     mod5_field = fields["mod5"]
-    full_degree = multiplicative_order(2, 7)
+    zeta7_degree = multiplicative_order(2, 7)
     real_degree = next(n for n in range(1, 7) if pow(2, n, 7) in {1, 6})
-    if full_degree != 3 or real_degree != 3:
-        raise CertificateError("residue-degree calculation at 2 changed")
-    if (
-        mod5_field["full_cyclotomic_residue_degree"] != full_degree
-        or mod5_field["real_subfield_residue_degree"] != real_degree
-        or mod5_field["cyclotomic_untwist_value_at_2"] != 1
-        or mod5_field["prime_norm"] != 8
-    ):
-        raise CertificateError("mod-5 local field or untwist metadata changed")
+    trace_degree = multiplicative_order(2, 21)
+    if (zeta7_degree, real_degree, trace_degree) != (3, 3, 6):
+        raise CertificateError("cyclotomic residue-degree calculation changed")
+    expected_fields = {
+        "field": "K7=Q(zeta_7)^+",
+        "prime_norm": 8,
+        "residual_characteristic": 5,
+        "untwist_extension": "Q(zeta_7)/K7",
+        "zeta7_residue_degree": zeta7_degree,
+        "real_subfield_residue_degree": real_degree,
+        "untwist_local_residue_degree": zeta7_degree // real_degree,
+        "cyclotomic_untwist_value_at_2": 1,
+        "reason_untwist_is_trivial": (
+            "ord_7(2)=3 in both Q(zeta_7) and K7, so the unique K7-prime "
+            "above 2 splits in Q(zeta_7)/K7"
+        ),
+        "trace_field": "Q(zeta_21)",
+        "trace_field_residue_degree": trace_degree,
+        "trace_field_relative_residue_degree_over_K7": trace_degree // real_degree,
+    }
+    if mod5_field != expected_fields:
+        raise CertificateError("mod-5 local field tower changed")
 
     primitive_parities = []
     for a in (0, 1):
@@ -135,14 +147,17 @@ def validate(data: dict[str, Any]) -> str:
         "B_even",
     ]:
         raise CertificateError("parity branch inventory changed")
+
     odd = branches[0]
     if odd.get("parity") != {"A_mod2": 0, "B_mod2": 1, "C_mod2": 1}:
         raise CertificateError("B-odd parity changed")
     if (
         odd.get("fixed7_trace_integer") != -1
         or odd.get("fixed7_trace_mod7") != 6
-        or odd.get("mod5_trace_integer") != 0
-        or odd.get("mod5_trace_mod5") != 0
+        or odd.get("mod5_full_trace_integer") != -16
+        or odd.get("mod5_full_to_base_transform") != "-16=a_P^2-2*8"
+        or odd.get("mod5_base_trace_integer") != 0
+        or odd.get("mod5_base_trace_mod5") != 0
         or odd.get("residual_trace_pairs_mod5_mod7") != [[0, 6]]
     ):
         raise CertificateError("B-odd trace pair changed")
@@ -155,11 +170,11 @@ def validate(data: dict[str, Any]) -> str:
     if (
         even.get("fixed7_trace_integer") != 0
         or even.get("fixed7_trace_mod7") != 0
-        or even.get("mod5_trace_integers") != multiplicative
-        or even.get("mod5_trace_mod5") != multiplicative_mod5
+        or even.get("mod5_level_lowered_hecke_targets_integers") != multiplicative
+        or even.get("mod5_level_lowered_hecke_targets_mod5") != multiplicative_mod5
         or even.get("residual_trace_pairs_mod5_mod7") != [[1, 0], [4, 0]]
     ):
-        raise CertificateError("B-even trace pairs changed")
+        raise CertificateError("B-even trace targets changed")
     if "5*v_2(B)>0" not in even.get("mod5_parameter_behavior", ""):
         raise CertificateError("B-even multiplicative parameter condition missing")
 
@@ -184,11 +199,11 @@ def self_test() -> None:
     mutated["parity_branches"][0]["fixed7_trace_mod7"] = 0
     expect_rejection(mutated, "a mutated B-odd fixed-7 trace")
     mutated = copy.deepcopy(base)
-    mutated["parity_branches"][1]["mod5_trace_mod5"] = [0]
-    expect_rejection(mutated, "a mutated multiplicative trace set")
+    mutated["parity_branches"][1]["mod5_level_lowered_hecke_targets_mod5"] = [0]
+    expect_rejection(mutated, "a mutated multiplicative Hecke target set")
     mutated = copy.deepcopy(base)
-    mutated["local_fields"]["mod5"]["full_cyclotomic_residue_degree"] = 6
-    expect_rejection(mutated, "a mutated residue degree")
+    mutated["local_fields"]["mod5"]["trace_field_residue_degree"] = 3
+    expect_rejection(mutated, "a conflated trace-field residue degree")
     with tempfile.NamedTemporaryFile("w", delete=False) as fixture:
         fixture.write('{"x":1,"x":2}')
         path = pathlib.Path(fixture.name)
@@ -214,8 +229,8 @@ def main() -> int:
         return 0
     certificate = validate(load(args.manifest))
     print("two-Frey prime-2 parity certificate valid")
-    print("  B odd:  (a_5,a_7)=(0,6)")
-    print("  B even: (a_5,a_7)=(1,0) or (4,0)")
+    print("  B odd:  (base a_5,a_7)=(0,6)")
+    print("  B even: (level-lowered a_5,a_7)=(1,0) or (4,0)")
     print(f"  certificate sha256: {certificate}")
     return 0
 
