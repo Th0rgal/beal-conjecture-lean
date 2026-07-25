@@ -4,7 +4,7 @@
     "V": "Z^r+X^p",
     "identities": ["U>0","U*V=Y^q","V-U=2*X^p","V+U=2*Z^r","gcd(U,V) is 1 or 2"]
   },
-  "certificate_sha256": "e650962f5b9ae88b3484646fb151abe0b5e9409f3d8365ab636f8109e9716cc1",
+  "certificate_sha256": "f0c11551565a2daf838b7178ebc82314b5a4df59d90117404d11c7c1bf8b1b92",
   "equation": "X^(2p)+Y^q=Z^(2r)",
   "even_Y_branch": {
     "consequence": "The cross-side mask reduces to a two-term q-th-power system with an explicit dyadic coefficient rather than to Sahoo's plus family.",
