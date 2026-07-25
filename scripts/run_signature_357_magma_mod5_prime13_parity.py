@@ -6,12 +6,12 @@ its residual frontier into the distinct eigenspaces
 
     ker(T2), ker(T2-1), ker(T2+1)
 
-of dimensions 38, 46 and 46.  This producer constructs the prime-13 Hecke
+of dimensions 38, 46 and 46. This producer constructs the prime-13 Hecke
 operator once, restricts it to those small stable spaces, and compares each
 restricted characteristic polynomial with the complete generic/zero/infinity/
 multiplicative HGM trace union modulo 5.
 
-A gcd of degree zero eliminates the corresponding parity branch.  Positive
+A gcd of degree zero eliminates the corresponding parity branch. Positive
 degree is only a necessary residual survivor, and every failed request is
 recorded explicitly.
 """
@@ -171,9 +171,11 @@ printf "TRACE_MINUS1_GCD_DEGREE=%o\n",Degree(Gm);
 printf "TRACE0_GCD=%o\n",G0;
 printf "TRACE_PLUS1_GCD=%o\n",Gp;
 printf "TRACE_MINUS1_GCD=%o\n",Gm;
-printf "B_ODD_SURVIVES=%o\n",Degree(G0) gt 0;
-printf "B_EVEN_SURVIVES=%o\n",Degree(Gp) gt 0 or Degree(Gm) gt 0;
-printf "FINAL_SURVIVING_PARITY_COUNT=%o\n",(Degree(G0) gt 0 select 1 else 0)+(Degree(Gp) gt 0 or Degree(Gm) gt 0 select 1 else 0);
+Bodd:=Degree(G0) gt 0;
+Beven:=Degree(Gp) gt 0 or Degree(Gm) gt 0;
+printf "B_ODD_SURVIVES=%o\n",Bodd;
+printf "B_EVEN_SURVIVES=%o\n",Beven;
+printf "FINAL_SURVIVING_PARITY_COUNT=%o\n",(Bodd select 1 else 0)+(Beven select 1 else 0);
 '''
 
 
