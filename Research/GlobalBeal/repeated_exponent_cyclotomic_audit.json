@@ -1,7 +1,7 @@
 {
-  "certificate_sha256": "2992b283de4dd036abb67ae316a231850554672660af2f0646fae317f1fa9233",
+  "certificate_sha256": "108c66d7873514ab1613ee70c201ba4cd438283bd83e633ce735e7bb95f52576",
   "global_impact": {
-    "beal_status": "this audit removes an invalid shortcut and does not prove Beal",
+    "beal_status": "this audit removes invalid shortcuts and does not prove Beal",
     "family_status": "the repeated-prime core (p,p,q) remains open after known published subfamilies",
     "next_valid_requirement": "a new proof of the repeated-prime family must replace both the Stickelberger product step and the semilocal torsion step, or use an independent modular/descent argument"
   },
@@ -44,7 +44,7 @@
     "verdict": "false"
   },
   "nonclaim": "This certificate is an unconditional audit of proof steps, not a no-solution theorem. It withdraws the earlier conditional Mersenne sieve because its imported premise depends on a failed Lemma 5 and a failed Lemma 6 inference.",
-  "schema_version": 2,
+  "schema_version": 3,
   "scope": {
     "equation": "x^p+y^p=z^q",
     "family": "repeated-prime signatures (p,p,q)",
@@ -53,6 +53,16 @@
   },
   "semilocal_torsion_gap": {
     "conclusion": "the displayed congruences determine the principal-unit component but do not force the torsion component rho to be trivial",
+    "exact_q7_hensel_countermodel": {
+      "F": "rho*gamma=1+7",
+      "congruence": "F is congruent to gamma^(1-7^n) modulo 7^n for every verified n",
+      "gamma": "omega^(-1)*(1+7)",
+      "local_field": "Q_7",
+      "rho": "omega",
+      "rho_nontrivial": "rho is congruent to 2 modulo 7",
+      "teichmuller_root": "the unique omega congruent to 2 modulo 7 with omega^3=1",
+      "verified_precisions": [1,2,3,4,5,6,7,8,9,10]
+    },
     "finite_countermodel": {
       "choose": "gamma is a nontrivial cubic root of unity, rho=gamma^(-1), F=rho*gamma=1",
       "for_all_n": "1-7^n is divisible by 3",
@@ -86,7 +96,7 @@
     "the explicit counterexample to the total-splitting inference",
     "the elementary product-divisibility counterexample",
     "the coefficient-pair support lemma",
-    "the Teichmuller-torsion countermodel"
+    "the exact Q_7 Hensel countermodel to the Teichmuller-torsion inversion"
   ],
   "withdrawn_consequences": [
     "the claimed universal proof of x^p+y^p=z^q for distinct odd primes",
