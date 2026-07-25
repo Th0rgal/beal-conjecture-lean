@@ -6,14 +6,18 @@ on:
       - research/signature357-fixed7-prime2-zero
     paths:
       - "Research/Signature357/fixed7_prime2_trace_union.json"
+      - "Research/Signature357/two_frey_prime2_parity_split.json"
       - "scripts/check_signature_357_fixed7_prime2_trace_union.py"
+      - "scripts/check_signature_357_two_frey_prime2_parity.py"
       - "scripts/run_signature_357_magma_fixed7_prime2_trace.py"
       - "scripts/run_signature_357_magma_fixed7_24_28_prime2.py"
       - ".github/workflows/signature357_fixed7_prime2_zero.yml"
   pull_request:
     paths:
       - "Research/Signature357/fixed7_prime2_trace_union.json"
+      - "Research/Signature357/two_frey_prime2_parity_split.json"
       - "scripts/check_signature_357_fixed7_prime2_trace_union.py"
+      - "scripts/check_signature_357_two_frey_prime2_parity.py"
       - "scripts/run_signature_357_magma_fixed7_prime2_trace.py"
       - "scripts/run_signature_357_magma_fixed7_24_28_prime2.py"
       - ".github/workflows/signature357_fixed7_prime2_zero.yml"
@@ -35,6 +39,10 @@ jobs:
         run: python3 scripts/check_signature_357_fixed7_prime2_trace_union.py --self-test
       - name: Replay exact point counts and Weil factorizations
         run: python3 scripts/check_signature_357_fixed7_prime2_trace_union.py
+      - name: Reject mutated two-Frey parity fixtures
+        run: python3 scripts/check_signature_357_two_frey_prime2_parity.py --self-test
+      - name: Replay the parity-labelled mod-5/mod-7 trace pairs
+        run: python3 scripts/check_signature_357_two_frey_prime2_parity.py
 
   level33:
     needs: certificate
@@ -42,14 +50,14 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
-      - name: Compute the universal level-(3,3) trace-union kernel modulo 7
+      - name: Split level (3,3) into the two parity eigenspaces modulo 7
         run: >-
           python3 scripts/run_signature_357_magma_fixed7_prime2_trace.py
-          > fixed7-level33-prime2-trace-union.json
+          > fixed7-level33-prime2-parity.json
       - uses: actions/upload-artifact@v4
         with:
-          name: signature357-fixed7-level33-prime2-trace-union
-          path: fixed7-level33-prime2-trace-union.json
+          name: signature357-fixed7-level33-prime2-parity
+          path: fixed7-level33-prime2-parity.json
           if-no-files-found: error
 
   packets24-28:
