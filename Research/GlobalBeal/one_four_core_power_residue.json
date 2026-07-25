@@ -1,0 +1,68 @@
+{
+  "certificate_sha256": "8f96d30703d277b682aa45dd0cfcfe0091d0137113e8244fd601b8df22827bfb",
+  "common_parameter_mod_A4": {
+    "bezout": "choose integers a,b with a*q+b*p=1",
+    "conclusions": [
+      "t^q=B modulo A^4",
+      "t^p=C modulo A^4"
+    ],
+    "parameter": "t=B^a*C^b in (Z/A^4 Z)^times",
+    "reason": "B^p=C^q modulo A^4"
+  },
+  "full_modulus_fourth_power_theorem": {
+    "explicit_root_mod_Bp": [
+      {
+        "case": "q=4k+1",
+        "root": "A*C^(-k)"
+      },
+      {
+        "case": "q=4k+3",
+        "root": "C^(k+1)*A^(-1)"
+      }
+    ],
+    "explicit_root_mod_Cq": [
+      {
+        "case": "p=4k+1",
+        "root": "A*(-B)^(-k)"
+      },
+      {
+        "case": "p=4k+3",
+        "root": "(-B)^(k+1)*A^(-1)"
+      }
+    ],
+    "mod_Bp": "C is a fourth power in (Z/B^p Z)^times because A^4=C^q and gcd(q,4)=1",
+    "mod_Cq": "-B is a fourth power in (Z/C^q Z)^times because A^4=(-B)^p and gcd(p,4)=1"
+  },
+  "global_impact": {
+    "advance": "one uniform theorem replaces signature-by-signature residue-symbol calculations and couples B,C through one full-modulus parameter",
+    "core": "every canonical one-four Beal signature (4,p,q) with distinct odd primes",
+    "remaining_gap": "the conditions are necessary and uniform but no global contradiction or complete descent is yet proved"
+  },
+  "nonclaim": "This theorem advances the complete infinite one-four core but does not eliminate it and does not prove Beal.",
+  "parity_theorem": {
+    "branches": [
+      {
+        "condition": "B is congruent to C modulo 8",
+        "even_base": "A"
+      },
+      {
+        "condition": "C is congruent to 1 modulo 8",
+        "even_base": "B"
+      },
+      {
+        "condition": "B is congruent to -1 modulo 8",
+        "even_base": "C"
+      }
+    ],
+    "exactly_one_even": true,
+    "modulus": 8
+  },
+  "schema_version": 1,
+  "scope": {
+    "bases": "pairwise-coprime positive integers A,B,C",
+    "equation": "A^4+B^p=C^q",
+    "exponents": "coprime odd positive integers p,q (in the canonical Beal core, distinct odd primes)"
+  },
+  "source_dependencies": "none; the theorem is elementary group arithmetic plus parity",
+  "status": "unconditional-one-four-core-power-residue-structure"
+}
