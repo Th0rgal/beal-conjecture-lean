@@ -34,6 +34,11 @@ SOURCE_URL = (
 )
 EXPECTED_GIT_BLOB = "d829dbdfd5b710b2164f74ee5e1c1f92adae58d2"
 PRIMES = [13, 29, 41, 43]
+# The two inert-prime jobs exceeded the former 20-minute process limit on the
+# hosted runner.  Keep an explicit producer-side bound, but leave sufficient
+# time for a completed certificate rather than turning a slow external
+# computation into a false negative.
+GP_TIMEOUT_SECONDS = 2100
 USER_AGENT = (
     "beal-conjecture-lean-research/1.0 "
     "(+https://github.com/Th0rgal/beal-conjecture-lean)"
@@ -119,7 +124,7 @@ def main() -> int:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=1200,
+            timeout=GP_TIMEOUT_SECONDS,
             check=False,
         )
     if process.returncode:

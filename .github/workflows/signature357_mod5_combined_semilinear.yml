@@ -30,7 +30,9 @@ jobs:
           - {e3: 3, e7: 0, norm: 19683}
           - {e3: 3, e7: 1, norm: 137781}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # The pinned GP producer has its own 35-minute bound; retain time for
+    # setup and the following residual intersection.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
       - name: Install PARI/GP
