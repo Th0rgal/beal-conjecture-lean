@@ -1,0 +1,41 @@
+name: Signature 3511 fixed-11 paired chain
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_split_pair_chain.py"
+      - "scripts/run_signature_3511_magma_fixed11_split_pair_extended.py"
+      - ".github/workflows/signature3511_fixed11_pair_chain.yml"
+  pull_request:
+    paths:
+      - "scripts/run_signature_3511_magma_fixed11_split_pair_chain.py"
+      - "scripts/run_signature_3511_magma_fixed11_split_pair_extended.py"
+      - ".github/workflows/signature3511_fixed11_pair_chain.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paired-chain:
+    strategy:
+      fail-fast: false
+      matrix:
+        level: ["2,2", "2,3", "3,2"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Intersect all paired split-prime trace relations
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_fixed11_split_pair_extended.py
+          --level "${{ matrix.level }}"
+          > "../signature3511-pair-chain-${{ matrix.level }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-pair-chain-${{ matrix.level }}"
+          path: "signature3511-pair-chain-${{ matrix.level }}.json"
+          if-no-files-found: error
