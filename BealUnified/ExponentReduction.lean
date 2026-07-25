@@ -5,10 +5,9 @@ set_option linter.style.header false
 /-!
 # Beal conjecture: exponent-factor reduction
 
-This module formalizes the algebraic part of the global exponent reduction.  It
-does not yet prove the elementary number-theoretic fact that every `n ≥ 3`
-factors through `4` or an odd prime; that fact is exposed as
-`CanonicalFactorizationProperty`.
+This module formalizes the elementary reduction of every exponent at least `3`
+to either exponent `4` or an odd prime, together with the algebraic bridge from
+canonical signatures to the full primitive Beal statement.
 
 The literature-assisted step that removes all composite-exponent Beal
 signatures is intentionally kept outside the trusted namespace.
@@ -24,6 +23,45 @@ def CanonicalExponent (n : ℕ) : Prop :=
 def CanonicalFactorizationProperty : Prop :=
   ∀ n : ℕ, 3 ≤ n →
     ∃ e k : ℕ, 3 ≤ e ∧ CanonicalExponent e ∧ n = k * e
+
+/-- Every natural exponent at least `3` factors through `4` or an odd prime. -/
+theorem canonicalFactorizationProperty : CanonicalFactorizationProperty := by
+  intro n hn
+  by_cases h4 : 4 ∣ n
+  · obtain ⟨k, hk⟩ := h4
+    refine ⟨4, k, by omega, Or.inl rfl, ?_⟩
+    simpa only [Nat.mul_comm] using hk
+  · by_cases h2 : 2 ∣ n
+    · obtain ⟨m, hm⟩ := h2
+      have hm2 : 2 ≤ m := by omega
+      obtain ⟨p, hp, hpm⟩ := Nat.exists_prime_and_dvd (by omega : m ≠ 1)
+      rcases hp.eq_two_or_odd with hp2 | hpodd
+      · subst p
+        exfalso
+        apply h4
+        obtain ⟨t, ht⟩ := hpm
+        refine ⟨t, ?_⟩
+        omega
+      · have hp3 : 3 ≤ p := by
+          have hpge := hp.two_le
+          omega
+        obtain ⟨t, ht⟩ := hpm
+        refine ⟨p, 2 * t, hp3, Or.inr ⟨hp, hpodd⟩, ?_⟩
+        calc
+          n = 2 * m := hm
+          _ = 2 * (p * t) := by rw [ht]
+          _ = (2 * t) * p := by ac_rfl
+    · obtain ⟨p, hp, hpn⟩ :=
+        Nat.exists_prime_and_dvd (by omega : n ≠ 1)
+      rcases hp.eq_two_or_odd with hp2 | hpodd
+      · subst p
+        exact False.elim (h2 hpn)
+      · have hp3 : 3 ≤ p := by
+          have hpge := hp.two_le
+          omega
+        obtain ⟨k, hk⟩ := hpn
+        refine ⟨p, k, hp3, Or.inr ⟨hp, hpodd⟩, ?_⟩
+        simpa only [Nat.mul_comm] using hk
 
 /--
 The primitive canonical-signature statement, formulated with pairwise coprime
@@ -91,9 +129,9 @@ theorem noCoprimeSolution_of_canonical
   obtain ⟨r, kz, hr, hcr, hz⟩ := hfactor z sol.hz
   have hpair :=
     pairwise_coprime_of_solution
-      (show 1 ≤ x by omega)
-      (show 1 ≤ y by omega)
-      (show 1 ≤ z by omega)
+      (le_trans (by decide : 1 ≤ 3) sol.hx)
+      (le_trans (by decide : 1 ≤ 3) sol.hy)
+      (le_trans (by decide : 1 ≤ 3) sol.hz)
       hgcd sol.eqn
   have reduced :=
     reduce_solution_by_exponent_factorizations sol hp hq hr hx hy hz
@@ -104,6 +142,12 @@ theorem noCoprimeSolution_of_canonical
       (A ^ kx) (B ^ ky) (C ^ kz) p q r
       reduced hcp hcq hcr hpowers.1 hpowers.2.1 hpowers.2.2
 
+/-- The full primitive statement follows from impossibility of canonical signatures. -/
+theorem noCoprimeSolution_of_canonical_impossibility
+    (hcanonical : NoCanonicalPairwiseSolution) :
+    NoCoprimeSolution :=
+  noCoprimeSolution_of_canonical canonicalFactorizationProperty hcanonical
+
 /-- Common-factor Beal follows from the canonical primitive statement. -/
 theorem bealConjecture_of_canonical
     (hfactor : CanonicalFactorizationProperty)
@@ -111,5 +155,11 @@ theorem bealConjecture_of_canonical
     BealConjecture :=
   beal_iff_no_coprime_solution.mpr
     (noCoprimeSolution_of_canonical hfactor hcanonical)
+
+/-- The Beal conjecture follows once all canonical signatures are excluded. -/
+theorem bealConjecture_of_canonical_impossibility
+    (hcanonical : NoCanonicalPairwiseSolution) :
+    BealConjecture :=
+  bealConjecture_of_canonical canonicalFactorizationProperty hcanonical
 
 end BealUnified
