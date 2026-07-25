@@ -11,6 +11,7 @@ on:
       - "Research/GlobalBeal/cross_side_square_mask_descent.json"
       - "Research/GlobalBeal/ORIENTED_SQUARE_MASK_PROGRAM.md"
       - "scripts/check_global_beal_oriented_square_mask.py"
+      - "scripts/check_global_beal_cross_side_localization.py"
       - ".github/workflows/global_beal_square_mask.yml"
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - "Research/GlobalBeal/cross_side_square_mask_descent.json"
       - "Research/GlobalBeal/ORIENTED_SQUARE_MASK_PROGRAM.md"
       - "scripts/check_global_beal_oriented_square_mask.py"
+      - "scripts/check_global_beal_cross_side_localization.py"
       - ".github/workflows/global_beal_square_mask.yml"
   workflow_dispatch:
 
@@ -35,3 +37,5 @@ jobs:
         run: python3 scripts/check_global_beal_oriented_square_mask.py --self-test
       - name: Replay square-mask cofinality and descent
         run: python3 scripts/check_global_beal_oriented_square_mask.py
+      - name: Replay complementary q-localization
+        run: python3 scripts/check_global_beal_cross_side_localization.py
