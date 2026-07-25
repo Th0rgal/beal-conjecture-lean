@@ -9,6 +9,7 @@ on:
       - "scripts/run_signature_3511_magma_fixed11_split_pair_extended.py"
       - "scripts/run_signature_3511_magma_packet_attribution.py"
       - "scripts/run_signature_3511_magma_prime2_after_pair_chain.py"
+      - "scripts/run_signature_3511_magma_packet_prime2.py"
       - ".github/workflows/signature3511_fixed11_pair_chain.yml"
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - "scripts/run_signature_3511_magma_fixed11_split_pair_extended.py"
       - "scripts/run_signature_3511_magma_packet_attribution.py"
       - "scripts/run_signature_3511_magma_prime2_after_pair_chain.py"
+      - "scripts/run_signature_3511_magma_packet_prime2.py"
       - ".github/workflows/signature3511_fixed11_pair_chain.yml"
   workflow_dispatch:
 
@@ -84,4 +86,25 @@ jobs:
         with:
           name: "signature3511-fixed11-prime2-cover-${{ matrix.level }}"
           path: "signature3511-prime2-cover-${{ matrix.level }}.json"
+          if-no-files-found: error
+
+  packet-prime2:
+    strategy:
+      fail-fast: false
+      matrix:
+        level: ["2,2", "2,3", "3,2"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read norm-4 traces of the source exceptional packets
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_packet_prime2.py
+          --level "${{ matrix.level }}"
+          > "../signature3511-packet-prime2-${{ matrix.level }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-packet-prime2-${{ matrix.level }}"
+          path: "signature3511-packet-prime2-${{ matrix.level }}.json"
           if-no-files-found: error
