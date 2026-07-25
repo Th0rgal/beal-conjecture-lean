@@ -77,9 +77,10 @@ try
   TQ:=HeckeOperator(M,I2);
   printf "T2_RETURNED=true\n";
   printf "T2_ROWS=%o\n",Nrows(TQ);
-catch error
+catch e
   printf "T2_RETURNED=false\n";
-  printf "T2_ERROR=%o\n",error;
+  printf "T2_ERROR_TYPE=%o\n",e`Type;
+  printf "T2_ERROR_OBJECT=%o\n",e`Object;
 end try;
 for name in ["Hecke","HeckeBig","HeckeBigColumns","HeckeCharPoly"] do
   assoc:=M``name;
@@ -102,7 +103,7 @@ end for;
 printf "DONE=true\n";
 '''
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "level-19683 post-failure Hecke cache inventory",
     }
     output = ""
@@ -112,13 +113,13 @@ printf "DONE=true\n";
             raise RuntimeError("cache inventory did not finish")
         body.update({
             "request_status": "completed",
-            "output_tail": output[-16000:],
+            "output_tail": output[-18000:],
         })
     except Exception as exc:
         body.update({
             "request_status": "failed",
             "error": f"{type(exc).__name__}: {exc}",
-            "output_tail": output[-20000:],
+            "output_tail": output[-22000:],
         })
     result = dict(body)
     result["certificate_sha256"] = digest(body)
