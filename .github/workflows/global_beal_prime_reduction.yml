@@ -1,0 +1,36 @@
+name: Global Beal prime-exponent reduction
+
+on:
+  push:
+    branches:
+      - agent/global-beal-prime-reduction
+    paths:
+      - "Research/GlobalBeal/**"
+      - "scripts/check_global_beal_prime_exponent_reduction.py"
+      - "scripts/check_global_beal_repeated_prime_audit.py"
+      - ".github/workflows/global_beal_prime_reduction.yml"
+  pull_request:
+    paths:
+      - "Research/GlobalBeal/**"
+      - "scripts/check_global_beal_prime_exponent_reduction.py"
+      - "scripts/check_global_beal_repeated_prime_audit.py"
+      - ".github/workflows/global_beal_prime_reduction.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Replay global prime-exponent reduction
+        run: |
+          python3 scripts/check_global_beal_prime_exponent_reduction.py --self-test
+          python3 scripts/check_global_beal_prime_exponent_reduction.py --factor-bound 100000
+      - name: Replay repeated-prime decomposition-group audit
+        run: |
+          python3 scripts/check_global_beal_repeated_prime_audit.py --self-test
+          python3 scripts/check_global_beal_repeated_prime_audit.py --bound 150
