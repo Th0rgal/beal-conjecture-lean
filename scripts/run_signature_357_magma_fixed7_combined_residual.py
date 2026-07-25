@@ -241,7 +241,7 @@ def main() -> int:
         final_dimension = parse_int(output, "FINAL_DIM")
         if final_dimension == 0:
             for prime in PRIMES:
-                dimensions.setdefault(prime, 0)
+                dimensions.setdefault(str(prime), 0)
         body.update(
             {
                 "request_status": "completed",
