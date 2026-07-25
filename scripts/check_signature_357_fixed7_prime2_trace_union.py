@@ -72,24 +72,6 @@ def polynomial_gcd(a: int, b: int) -> int:
     return a
 
 
-def irreducible_binary(modulus: int, extension_degree: int) -> bool:
-    if degree(modulus) != extension_degree or not (modulus & 1):
-        return False
-    x = 0b10
-    power = x
-    for divisor in range(1, extension_degree // 2 + 1):
-        power = field_square(power, extension_degree, modulus)
-        if (
-            extension_degree % divisor == 0
-            and polynomial_gcd(power ^ x, modulus) != 1
-        ):
-            return False
-    power = x
-    for _ in range(extension_degree):
-        power = field_square(power, extension_degree, modulus)
-    return power == x
-
-
 def field_mul(a: int, b: int, extension_degree: int, modulus: int) -> int:
     result = 0
     while b:
@@ -104,6 +86,21 @@ def field_mul(a: int, b: int, extension_degree: int, modulus: int) -> int:
 
 def field_square(a: int, extension_degree: int, modulus: int) -> int:
     return field_mul(a, a, extension_degree, modulus)
+
+
+def irreducible_binary(modulus: int, extension_degree: int) -> bool:
+    if degree(modulus) != extension_degree or not (modulus & 1):
+        return False
+    x = 0b10
+    power = x
+    for divisor in range(1, extension_degree // 2 + 1):
+        power = field_square(power, extension_degree, modulus)
+        if extension_degree % divisor == 0 and polynomial_gcd(power ^ x, modulus) != 1:
+            return False
+    power = x
+    for _ in range(extension_degree):
+        power = field_square(power, extension_degree, modulus)
+    return power == x
 
 
 def field_pow(a: int, exponent: int, extension_degree: int, modulus: int) -> int:
@@ -145,9 +142,7 @@ def polynomial_mul(a: list[int], b: list[int]) -> list[int]:
 
 
 def validate(data: dict[str, Any]) -> str:
-    if data.get("schema_version") != 1 or digest(data) != data.get(
-        "certificate_sha256"
-    ):
+    if data.get("schema_version") != 1 or digest(data) != data.get("certificate_sha256"):
         raise CertificateError("schema or certificate digest mismatch")
     if data.get("equation") != "A^3+B^5=C^7":
         raise CertificateError("equation changed")
@@ -168,10 +163,7 @@ def validate(data: dict[str, Any]) -> str:
     field_specs = {"F4": (2, 0b111), "F16": (4, 0b10011)}
     for label, (extension_degree, modulus) in field_specs.items():
         record = fields.get(label, {})
-        if (
-            record.get("degree") != extension_degree
-            or record.get("modulus_binary") != modulus
-        ):
+        if record.get("degree") != extension_degree or record.get("modulus_binary") != modulus:
             raise CertificateError(f"{label} metadata changed")
         if not irreducible_binary(modulus, extension_degree):
             raise CertificateError(f"{label} modulus is reducible")
@@ -203,9 +195,7 @@ def validate(data: dict[str, Any]) -> str:
         },
     }
     records = data.get("cases")
-    if not isinstance(records, list) or [
-        record.get("name") for record in records
-    ] != list(expected_cases):
+    if not isinstance(records, list) or [record.get("name") for record in records] != list(expected_cases):
         raise CertificateError("parity case order changed")
     for record in records:
         name = record["name"]
@@ -216,16 +206,10 @@ def validate(data: dict[str, Any]) -> str:
             label: affine_count(name, degree_value, modulus)
             for label, (degree_value, modulus) in field_specs.items()
         }
-        if (
-            computed_affine != expected["affine"]
-            or record.get("affine_counts") != computed_affine
-        ):
+        if computed_affine != expected["affine"] or record.get("affine_counts") != computed_affine:
             raise CertificateError(f"{name} affine point count changed")
         projective = {label: count + 2 for label, count in computed_affine.items()}
-        if (
-            projective != expected["projective"]
-            or record.get("projective_counts") != projective
-        ):
+        if projective != expected["projective"] or record.get("projective_counts") != projective:
             raise CertificateError(f"{name} projective point count changed")
         q = 4
         s1 = q + 1 - projective["F4"]
@@ -239,16 +223,10 @@ def validate(data: dict[str, Any]) -> str:
             raise CertificateError(f"{name} power sums changed")
         if record.get("power_sums") != {"S1": s1, "S2": s2}:
             raise CertificateError(f"{name} recorded power sums changed")
-        if (
-            weil != expected["weil"]
-            or record.get("weil_polynomial_descending") != weil
-        ):
+        if weil != expected["weil"] or record.get("weil_polynomial_descending") != weil:
             raise CertificateError(f"{name} Weil polynomial changed")
         factor = expected["factor"]
-        if (
-            polynomial_mul(factor, factor) != weil
-            or record.get("rm_factor_descending") != factor
-        ):
+        if polynomial_mul(factor, factor) != weil or record.get("rm_factor_descending") != factor:
             raise CertificateError(f"{name} RM factorization changed")
         trace = -factor[1]
         if trace != expected["trace"] or record.get("rm_trace") != trace:

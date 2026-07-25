@@ -19,9 +19,9 @@
         "7 does not divide B*C"
       ],
       "cyclotomic_untwist_path": "Research/Signature357/odd_mod5_cyclotomic_untwist.json",
-      "cyclotomic_untwist_sha256": "0612b49a472b51b85416ea63e2f75ba2c6e8dd2528b250510372fb6f9502d84d",
+      "cyclotomic_untwist_sha256": "b12a4088ecf4fcac4481901fda47e8e4dd75fde188f78bcd65c73879bcf3cca8",
       "exact_monodromy_path": "Research/Signature357/odd_mod5_exact_monodromy.json",
-      "exact_monodromy_sha256": "d6f5dc5c580445da64d469ef28fa689fbb46bbe11575a1c4e2f35b26342f43f7",
+      "exact_monodromy_sha256": "683332f92a913ba6270a72e93123380106feea45e89112617a67b83b561024a4",
       "fixed7_pairing": {
         "e3_2": {
           "closed_levels": [
@@ -55,6 +55,37 @@
       },
       "global_mod5_irreducibility_path": "Research/Signature357/mod5_irreducibility_at3.json",
       "global_mod5_irreducibility_sha256": "df815f6ebf008640c51840f19d1d2110f7ce37fd03185caa5cc3bb5cbdbfe21e",
+      "prime2_parity_split": {
+        "B_even": {
+          "fixed7_trace_mod7": 0,
+          "mod5_trace_mod5": [
+            1,
+            4
+          ],
+          "target": "eliminate the trace-zero subspace at fixed-7 level (3,3)"
+        },
+        "B_odd": {
+          "fixed7_trace_mod7": 6,
+          "mod5_trace_mod5": 0,
+          "target": "eliminate the trace-zero subspaces at levels 19683 and 137781"
+        },
+        "path": "Research/Signature357/two_frey_prime2_parity_split.json",
+        "residual_trace_pairs_mod5_mod7": [
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ],
+        "sha256": "d80e498a2242b1466db2fa1ebb5706e4ab06e93994c631e9217f37530107acd0"
+      },
       "remaining_e3": [
         3
       ],
@@ -134,7 +165,7 @@
       }
     }
   },
-  "certificate_sha256": "de29dabd33056b8ccd2ed756827b0cb94f7f174ef313fe58219b244e5eb6e921",
+  "certificate_sha256": "7f8f3079360d0b71fc4fc2cd25c78af1c5d80c1c4bc78c019b04906db99260d9",
   "compression": {
     "closed_level_norms": [
       729,
@@ -165,9 +196,10 @@
     "level_137781": "e3=3 and v7(A)!=3 mod 5; pair with fixed-7 level (3,3)",
     "level_19683": "e3=3 and v7(A)=3 mod 5; impose the removed-prime-7 trace a_p7=+/-8 mod 5 and pair with fixed-7 level (3,3)",
     "method": "combined residual Hecke-module kernel intersection over F_5 and F_7 with semilinear trace constraints",
+    "prime2_parity_strategy": "B odd is closed by zero mod-5 trace kernels at both remaining levels; B even is closed by a zero fixed-7 trace kernel at level (3,3)",
     "zero_kernel_consequence": "eliminates every residual eigensystem at that level conditional on the imported local trace, monodromy and level-lowering theorems"
   },
   "nonclaim": "the two remaining e3=3 residual Hecke modules and fixed-7 level (3,3) have not all been proved empty; this certificate does not prove the full (3,5,7) equation or Beal",
-  "schema_version": 3,
+  "schema_version": 4,
   "status": "literature-assisted-exact-twisted-odd-frontier-after-e3-2-closure"
 }

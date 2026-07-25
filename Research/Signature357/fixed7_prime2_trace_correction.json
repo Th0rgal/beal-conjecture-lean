@@ -1,0 +1,84 @@
+{
+  "corrected_trace_set": [
+    0,
+    -1
+  ],
+  "diagnosis": {
+    "degree_two_transform": "a_(P^2)=a_P^2-2*Norm(P)=a_P^2-8",
+    "explanation": "-8 is the degree-two trace associated with the base trace 0; -1 is the base trace in the other parity case",
+    "published_pair_mixes_levels": true
+  },
+  "equation": "A^3+B^5=C^7",
+  "fixed7_hecke_condition": {
+    "allowed_base_traces": [
+      0,
+      6
+    ],
+    "annihilating_polynomial": "X*(X+1)",
+    "modulus": 7
+  },
+  "irreducibility_obstruction": {
+    "absolute_norm": 900,
+    "corrected_bound_C2": 5,
+    "prime_support": [
+      2,
+      3,
+      5
+    ],
+    "product": 30,
+    "residual_prime_7_excluded": true,
+    "resultants_at_X_equals_1": [
+      5,
+      6
+    ]
+  },
+  "nonclaim": "The finite-field counts and resultant arithmetic are elementary and replayed; applying the BCDF/Pacetti--Villagra reducibility theorem and Hilbert level lowering remains an imported literature input.",
+  "point_counts": [
+    {
+      "F16": 33,
+      "F4": 5,
+      "case": "A odd, B even",
+      "power_sums": {
+        "S1": 0,
+        "S2": -16
+      },
+      "rm_trace": 0,
+      "weil_polynomial": "T^4+8*T^2+16=(T^2+4)^2"
+    },
+    {
+      "F16": 31,
+      "F4": 7,
+      "case": "A even, B odd",
+      "power_sums": {
+        "S1": -2,
+        "S2": -14
+      },
+      "rm_trace": -1,
+      "weil_polynomial": "T^4+2*T^3+9*T^2+8*T+16=(T^2+T+4)^2"
+    }
+  ],
+  "published_pair": [
+    -1,
+    -8
+  ],
+  "schema_version": 1,
+  "scope": {
+    "base_field": "F_4",
+    "base_prime_norm": 4,
+    "branch": "C odd",
+    "parity_cases": [
+      {
+        "A_mod2": 1,
+        "B_mod2": 0,
+        "reduced_curve": "y^2+x^3*y=x"
+      },
+      {
+        "A_mod2": 0,
+        "B_mod2": 1,
+        "reduced_curve": "y^2+(x^3+1)*y=1"
+      }
+    ]
+  },
+  "status": "elementary-finite-field-correction-of-the-prime2-frey-trace",
+  "certificate_sha256": "875640813abfd1ff8fcb4d1a153f8f25727a65033699de71a445bc93615d578f"
+}

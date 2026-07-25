@@ -124,6 +124,10 @@ def main() -> int:
             prime: int(dimension)
             for prime, dimension in re.findall(r"DIM_AFTER_(\d+)=(\d+)", output)
         }
+        final_dimension = base.parse_int(output, "FINAL_DIM")
+        if final_dimension == 0:
+            for prime in base.INERT_PRIMES + base.SPLIT_PRIMES:
+                dimensions.setdefault(str(prime), 0)
         body.update(
             {
                 "request_status": "completed",
@@ -133,7 +137,7 @@ def main() -> int:
                     output, "AFTER_REMOVED7_DIM"
                 ),
                 "dimensions_after_primes": dimensions,
-                "final_dimension": base.parse_int(output, "FINAL_DIM"),
+                "final_dimension": final_dimension,
                 "output_tail": output[-5000:],
             }
         )

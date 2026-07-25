@@ -6,8 +6,8 @@ on:
       - agent/signature-345-357-certificates
     paths:
       - "Research/Signature357/even_branch_complete_closure.json"
-      - "Research/Signature357/odd_e3_2_zero_test_frontier.json"
-      - "Research/Signature357/fixed7_level33_combined_frontier.json"
+      - "Research/Signature357/fixed7_packets_24_28_zero_tests.json"
+      - "Research/Signature357/fixed7_level33_combined_residual.json"
       - "Research/Signature357/odd_mod5_combined_residual_frontier.json"
       - "Research/Signature357/odd_branch_cm_filter.json"
       - "Research/Signature357/fixed7_level32_superspecial_closure.json"
