@@ -7,11 +7,13 @@ on:
     paths:
       - "scripts/run_signature_3511_magma_fixed11_split_pair_chain.py"
       - "scripts/run_signature_3511_magma_fixed11_split_pair_extended.py"
+      - "scripts/run_signature_3511_magma_packet_attribution.py"
       - ".github/workflows/signature3511_fixed11_pair_chain.yml"
   pull_request:
     paths:
       - "scripts/run_signature_3511_magma_fixed11_split_pair_chain.py"
       - "scripts/run_signature_3511_magma_fixed11_split_pair_extended.py"
+      - "scripts/run_signature_3511_magma_packet_attribution.py"
       - ".github/workflows/signature3511_fixed11_pair_chain.yml"
   workflow_dispatch:
 
@@ -38,4 +40,25 @@ jobs:
         with:
           name: "signature3511-fixed11-pair-chain-${{ matrix.level }}"
           path: "signature3511-pair-chain-${{ matrix.level }}.json"
+          if-no-files-found: error
+
+  packet-attribution:
+    strategy:
+      fail-fast: false
+      matrix:
+        level: ["2,2", "2,3"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Attribute residual survivors to characteristic-zero packets
+        working-directory: scripts
+        run: >-
+          python3 run_signature_3511_magma_packet_attribution.py
+          --level "${{ matrix.level }}"
+          > "../signature3511-packet-attribution-${{ matrix.level }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "signature3511-fixed11-packet-attribution-${{ matrix.level }}"
+          path: "signature3511-packet-attribution-${{ matrix.level }}.json"
           if-no-files-found: error
